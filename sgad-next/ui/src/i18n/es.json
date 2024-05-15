@@ -1,0 +1,30 @@
+{
+  "app": {
+    "navbar": {
+      "title": "SGAD-NEXT"
+    },
+    "menu": {
+      "title": "Menú",
+      "label": {
+        "home" : "Home",
+        "asesorias": "Asesorias"
+      }
+    },
+    "footer": {
+      "title": "Universidad Politécnica Salesiana {year}. Derechos Reservados."
+    },
+
+    "sgadNuxt":{
+      "sumilla":{
+        "title": "RECEPCIÓN Y REGISTRO DE DOCUMENTOS",
+        "fecha": "Fecha:",
+        "hora": "Hora:",
+        "nombreResponsable": "Nombre del responsable",
+        "numHojas": "No. de hojas",
+        "eliminar": "Estás seguro que desea eliminar el registro?"
+      }
+    }
+  }
+ 
+  
+}

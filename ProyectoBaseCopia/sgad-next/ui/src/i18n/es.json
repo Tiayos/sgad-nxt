@@ -1,0 +1,23 @@
+{
+  "app": {
+    "navbar": {
+      "title": "Consultorio Jurídico"
+    },
+    "menu": {
+      "title": "Menú",
+      "label": {
+        "home" : "Home",
+        "asesorias": "Asesorias"
+      }
+    },
+    "footer": {
+      "title": "Universidad Politécnica Salesiana {year}. Derechos Reservados."
+    }
+  },
+  "sgadNuxt":{
+    "login":{
+      "title": "Bienvenido!"
+    }
+  }
+  
+}

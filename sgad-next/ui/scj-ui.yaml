@@ -1,0 +1,29 @@
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: gitlab-pull-secret
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJyZWdpc3RyeS5naXRsYWIuY29tIjp7ImF1dGgiOiJabTF2Ym5SaGJIWnZienBuYkhCaGRDMW1ibTVIZFZweGMyUjBOMUZYUlRKNlJFZGthUT09In19fQ==
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scj-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scj-ui
+  template:
+    metadata:
+      labels:
+        app: scj-ui
+    spec:
+      containers:
+        - name: scj-ui
+          image: registry.gitlab.com/ups-dev/development/web/scj:scj-ui-0.0.3
+      imagePullSecrets:
+        - name: gitlab-pull-secret
