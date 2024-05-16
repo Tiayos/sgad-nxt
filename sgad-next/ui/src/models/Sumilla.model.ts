@@ -4,6 +4,9 @@ export interface Sumilla {
     hora_sumilla:  string;
     numero_hojas:  number|0;
     responsable:   Persona;
+    numero_sumilla: string;
+    numero_tramite: number;
+    sum_sede:       number;
 }
 
 export interface Persona {

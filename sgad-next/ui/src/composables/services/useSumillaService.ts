@@ -15,10 +15,9 @@ export const useSumillaService = () => {
         }
     }
 
-    const getSumillaById = async(codigo:number): Promise<Sumilla|null> => {
+    const getSumillaByNumeroSumilla = async(numeroSumilla:string): Promise<Sumilla|null> => {
         try {
-            const resp = await $fetch<Sumilla>(`${apiUrl}/findSumilla?codigo=${codigo}`)
-            return resp;
+            return await $fetch<Sumilla>(`${apiUrl}/findSumillaByNumSumilla?numeroSumilla=${numeroSumilla}`)
         } catch (error:any) {
             toast.add({
                 severity: "error",
@@ -29,9 +28,9 @@ export const useSumillaService = () => {
         }
     }
 
-    const saveSumilla = async(sumilla:Sumilla)=>{
+    const saveSumilla = async(sumilla:Sumilla, email:string)=>{
         try {
-            await $fetch(`${apiUrl}`,
+            await $fetch(`${apiUrl}?email=${email}`,
             {
                 method: 'POST',
                 body:  sumilla,
@@ -53,7 +52,7 @@ export const useSumillaService = () => {
 
     return {
         getSumillas,
-        getSumillaById,
+        getSumillaByNumeroSumilla,
         saveSumilla,
         deleteSumilla
     }
