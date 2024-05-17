@@ -130,6 +130,7 @@
               v-model="createModal"
               title=""
               title-hidden
+              large
               :primaryAction="{
                 content: 'Guardar Sumilla',
                 onAction: onSubmited,
@@ -211,6 +212,365 @@
                   </FHorizontalStack>
                 </FVerticalStack>
               </FModalSection>
+
+              <FModalSection>
+                <FVerticalStack gap="4" align="center">
+                  <FText
+                    id="remitenteNombreLbl"
+                    as="h6"
+                    variant="bodyMd"
+                    fontWeight="semibold"
+                  >
+                    Nombres remitente:
+                  </FText>
+                  <FTextField
+                    id="remitenteNombre"
+                    v-model="bitacora.nombres_remitente"
+                    :error="v$?.nombres_remitente.$error"
+                    :label="v$?.nombres_remitente.$error ? 'Este campo es requerido' : ''"
+                  />
+                  <FText
+                    id="remitenteApellidoLbl"
+                    as="h6"
+                    variant="bodyMd"
+                    fontWeight="semibold"
+                  >
+                    Apellidos remitente:
+                  </FText>
+                  <FTextField
+                    id="remitenteApellido"
+                    v-model="bitacora.apellidos_remitente"
+                    :error="v$?.apellidos_remitente.$error"
+                    :label="
+                      v$?.apellidos_remitente.$error ? 'Este campo es requerido' : ''
+                    "
+                  />
+
+                  <FHorizontalStack gap="4">
+                    <FText
+                      id="mensajeroLbl"
+                      as="h6"
+                      variant="bodyMd"
+                      fontWeight="semibold"
+                    >
+                      Mensajero:
+                    </FText>
+                    <AutoComplete
+                      @mouseover="
+                        bitacora.mensajero != null
+                          ? (mostrarMensajero = true)
+                          : (mostrarMensajero = false)
+                      "
+                      @mouseleave="mostrarMensajero = false"
+                      v-model="bitacora.mensajero"
+                      optionLabel="nombreCompleto"
+                      :suggestions="filteredItems"
+                      @Complete="searchItem"
+                    />
+                    <span v-if="v$.mensajero.$error" style="color: #c5280c"
+                      >* El campo mensajero es requerido</span
+                    >
+                    <div v-if="mostrarMensajero">
+                      <FText as="p" variant="bodySm" font-weight="semibold">
+                        {{ bitacora.mensajero.per_nombres }}
+                        {{ bitacora.mensajero.per_apellidos }}
+                      </FText>
+                    </div>
+                  </FHorizontalStack>
+
+                  <FText
+                    id="numeroGuiaLbl"
+                    as="h6"
+                    variant="bodyMd"
+                    fontWeight="semibold"
+                  >
+                    Número de guia:
+                  </FText>
+                  <FTextField id="numeroGuia" v-model="bitacora.numero_guia" />
+
+                  <FText
+                    id="observacionesLbl"
+                    as="h6"
+                    variant="bodyMd"
+                    fontWeight="semibold"
+                  >
+                    Observaciones:
+                  </FText>
+                  <FTextField id="observaciones" v-model="bitacora.observaciones" />
+
+                  <FCard
+                    sectioned
+                    style="box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.3)"
+                  >
+                    <FCardSection>
+                      <FVerticalStack gap="4">
+                        <FHorizontalStack gap="4">
+                          <FText
+                            id="destinatarioLbl"
+                            as="h6"
+                            variant="bodyMd"
+                            fontWeight="semibold"
+                          >
+                            Destinatario:
+                          </FText>
+                          <AutoComplete
+                            @mouseover="
+                              bitacora.destinatario != null
+                                ? (mostrarDestinatario = true)
+                                : (mostrarDestinatario = false)
+                            "
+                            @mouseleave="mostrarDestinatario = false"
+                            style="width: 300px"
+                            v-model="bitacora.destinatario"
+                            optionLabel="nombreCompleto"
+                            :suggestions="filteredItems"
+                            @Complete="searchItem"
+                            :style="[
+                              v$.destinatario.$error ? { 'border-color': 'red' } : {},
+                            ]"
+                          />
+                          <span v-if="v$.destinatario.$error" style="color: #c5280c"
+                            >* El campo destinatario es requerido</span
+                          >
+                          <div v-if="mostrarDestinatario">
+                            <FText as="p" variant="bodySm" font-weight="semibold">
+                              {{ bitacora.destinatario.per_nombres }}
+                              {{ bitacora.destinatario.per_apellidos }}
+                            </FText>
+                          </div>
+                        </FHorizontalStack>
+                        <FText
+                          id="asuntolbl"
+                          as="h6"
+                          variant="bodyMd"
+                          fontWeight="semibold"
+                        >
+                          Asunto:
+                        </FText>
+                        <FTextField
+                          id="asunto"
+                          v-model="bitacora.asunto"
+                          :error="v$?.asunto.$error"
+                          :label="v$?.asunto.$error ? 'Este campo es requerido' : ''"
+                        />
+                        <FText
+                          id="lugarDestinolbl"
+                          as="h6"
+                          variant="bodyMd"
+                          fontWeight="semibold"
+                        >
+                          Lugar de destino:
+                        </FText>
+                        <FTextField
+                          id="lugarDestino"
+                          v-model="bitacora.lugar_destino"
+                          :error="v$?.lugar_destino.$error"
+                          :label="
+                            v$?.lugar_destino.$error ? 'Este campo es requerido' : ''
+                          "
+                        />
+                      </FVerticalStack>
+                    </FCardSection>
+                  </FCard>
+
+                  <FCard
+                    sectioned
+                    style="box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.3)"
+                  >
+                    <FHorizontalStack gap="32">
+                      <FText
+                        id="fechaRecepcionlbl"
+                        as="h6"
+                        variant="bodyMd"
+                        fontWeight="semibold"
+                      >
+                        Fecha de recepción:
+                      </FText>
+                      <FText
+                        id="fechaRecepcion"
+                        as="h6"
+                        variant="bodyMd"
+                        fontWeight="regular"
+                      >
+                        {{ sumilla?.fecha_sumilla }}
+                      </FText>
+
+                      <FText
+                        id="horaRecepcionLbl"
+                        as="h6"
+                        variant="bodyMd"
+                        fontWeight="semibold"
+                      >
+                        Hora de recepción:
+                      </FText>
+                      <FText
+                        id="horaRecepcion"
+                        as="h6"
+                        variant="bodyMd"
+                        fontWeight="regular"
+                      >
+                        {{ sumilla?.hora_sumilla }}
+                      </FText>
+                    </FHorizontalStack>
+                  </FCard>
+
+                  <FCard
+                    sectioned
+                    style="box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.3)"
+                  >
+                    <FVerticalStack gap="4">
+                      <FText
+                        id="registroSgadLbl"
+                        as="h6"
+                        variant="bodyMd"
+                        fontWeight="semibold"
+                      >
+                        Registro en el SGAD:
+                      </FText>
+                      <Dropdown
+                        id="registroSgad"
+                        v-model="bitacora.registro_sgad"
+                        placeholder="Seleccione una opción"
+                        :options="options"
+                        optionLabel="label"
+                        optionValue="value"
+                        checkmark
+                        :highlightOnSelect="false"
+                        class="w-full md:w-14rem"
+                        :style="[
+                          v$.registro_sgad.$error ? { 'border-color': 'red' } : {},
+                        ]"
+                      />
+                      <span v-if="v$.registro_sgad.$error" style="color: #c5280c"
+                        >* El campo destinatario es requerido</span
+                      >
+
+                      <div v-if="bitacora.registro_sgad == 'S'">
+                        <FText
+                          id="numeroTramiteLbl"
+                          as="h6"
+                          variant="bodyMd"
+                          fontWeight="semibold"
+                        >
+                          Número de trámite:
+                        </FText>
+                        <FTextField
+                          id="numeroTramite"
+                          v-model="bitacora.numero_tramite"
+                          :error="v$?.numero_tramite.$error"
+                          :label="
+                            v$?.numero_tramite.$error ? 'Este campo es requerido' : ''
+                          "
+                        />
+                      </div>
+                    </FVerticalStack>
+                  </FCard>
+
+                  <FCard
+                    sectioned
+                    style="box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.3)"
+                  >
+                    <FVerticalStack gap="4">
+                      <FHorizontalStack gap="16">
+                        <FText
+                          id="fechaRecepcionlbl"
+                          as="h6"
+                          variant="bodyMd"
+                          fontWeight="semibold"
+                        >
+                          Fecha de entrega:
+                        </FText>
+                        <FTextField
+                          id="fechaEntrega"
+                          type="date"
+                          v-model="fechaEntrega"
+                        />
+
+                        <FText
+                          id="horaEntregaLbl"
+                          for="calendar-timeonly"
+                          as="h6"
+                          variant="bodyMd"
+                          fontWeight="semibold"
+                        >
+                          Hora de entrega:
+                        </FText>
+
+                        <div class="flex-auto">
+                          <Calendar
+                            v-model="bitacora.hora_entrega"
+                            showIcon
+                            iconDisplay="input"
+                            timeOnly
+                            @update:model-value="changeHour"
+                          >
+                          </Calendar>
+                        </div>
+                      </FHorizontalStack>
+
+                      <FHorizontalStack gap="4">
+                        <FText
+                          id="personaEntregaLbl"
+                          as="h6"
+                          variant="bodyMd"
+                          fontWeight="semibold"
+                        >
+                          Persona que entrega:
+                        </FText>
+                        <AutoComplete
+                          @mouseover="
+                            bitacora.usr_emisor != null
+                              ? (mostrarEmisor = true)
+                              : (mostrarEmisor = false)
+                          "
+                          @mouseleave="mostrarEmisor = false"
+                          style="width: 300px"
+                          v-model="bitacora.usr_emisor"
+                          optionLabel="nombreCompleto"
+                          :suggestions="filteredItems"
+                          @Complete="searchItem"
+                        />
+                        <div v-if="mostrarEmisor">
+                          <FText as="p" variant="bodySm" font-weight="semibold">
+                            {{ bitacora.usr_emisor.per_nombres }}
+                            {{ bitacora.usr_emisor.per_apellidos }}
+                          </FText>
+                        </div>
+                      </FHorizontalStack>
+
+                      <FHorizontalStack gap="4">
+                        <FText
+                          id="personaRecibeLbl"
+                          as="h6"
+                          variant="bodyMd"
+                          fontWeight="semibold"
+                        >
+                          Persona que recibe:
+                        </FText>
+                        <AutoComplete
+                          @mouseover="
+                            bitacora.usr_receptor != null
+                              ? (mostrarUsrReceptor = true)
+                              : (mostrarUsrReceptor = false)
+                          "
+                          @mouseleave="mostrarUsrReceptor = false"
+                          style="width: 300px"
+                          v-model="bitacora.usr_receptor"
+                          optionLabel="nombreCompleto"
+                          :suggestions="filteredItems"
+                          @Complete="searchItem"
+                        />
+                        <div v-if="mostrarUsrReceptor">
+                          <FText as="p" variant="bodySm" font-weight="semibold">
+                            {{ bitacora.usr_receptor.per_nombres }}
+                            {{ bitacora.usr_receptor.per_apellidos }}
+                          </FText>
+                        </div>
+                      </FHorizontalStack>
+                    </FVerticalStack>
+                  </FCard>
+                </FVerticalStack>
+              </FModalSection>
             </FModal>
           </FCard>
         </FLayoutSection>
@@ -221,7 +581,7 @@
       <FFormLayout v-if="selected == 1">
         <FFormLayoutGroup>
           <FModalSection title-hidden>
-            <FVerticalStack gap="2">
+            <FVerticalStack gap="4">
               <FText id="buscarSumilla" as="h1" variant="bodyLg">Buscar Sumilla</FText>
               <FTextField type="text" v-model="numeroSumilla" id="codigoSumilla" />
               <FButton
@@ -248,9 +608,18 @@ import {
 import Image from "primevue/image";
 import { Persona, Sumilla } from "../../models/Sumilla.model";
 import { useToast } from "primevue/usetoast";
+import Calendar from "primevue/calendar";
+import AutoComplete from "primevue/autocomplete";
 
 const toast = useToast();
 const { handleSubmit } = useForm();
+
+const mostrarDestinatario = ref<boolean>(false);
+const mostrarMensajero = ref<boolean>(false);
+const mostrarEmisor = ref<boolean>(false);
+const mostrarUsrReceptor = ref<boolean>(false);
+const fechaEntrega = ref<string>("");
+const codigoBitacora = ref<Number>(0);
 
 const {
   sumillaList,
@@ -264,13 +633,38 @@ const {
   getSumillaByNumeroSumilla,
 } = useSumillaComposable();
 
+const {
+  bitacorasList,
+  bitacora,
+  receptorPersonaList,
+  getSumillaById,
+  getUsers,
+  saveBitacora,
+  findBitacoras,
+  editBitacora,
+  deleteBitacora,
+  v$,
+  ErrorMessage,
+} = useBitacoraComposable();
+
 //*Session storage
 const { data: userLogin } = useSessionStorage<Persona>("userLogin");
 const createModal = ref<boolean>(false);
 const deleteModal = ref<boolean>(false);
 const codigoSumillaDelete = ref<Number>(0);
 const numeroSumilla = ref<string>("");
+const filteredItems = ref<Persona[]>([]);
 
+const options = [
+  {
+    label: "SI",
+    value: "S",
+  },
+  {
+    label: "NO",
+    value: "N",
+  },
+];
 const {
   value: numHojas,
   errorMessage: numHojasError,
@@ -288,6 +682,24 @@ const action = ref();
 
 const handleChangeCreateModal = () => {
   createModal.value = !createModal.value;
+};
+
+const searchItem = (event: any) => {
+  console.log(event);
+  const query = event.query.toLowerCase();
+  filteredItems.value = receptorPersonaList.value.filter(
+    (item) =>
+      item.per_nombres.toLowerCase().includes(query) ||
+      item.per_apellidos.toLowerCase().includes(query)
+  );
+};
+
+const changeHour = () => {
+  const fecha = new Date(bitacora.value.hora_entrega);
+  const hora = fecha.getHours();
+  const minutos = fecha.getMinutes();
+  bitacora.value.hora_entrega = `${hora}:${minutos}`;
+  console.log(bitacora.value.hora_entrega, "hora_entrega");
 };
 
 const prepareCreate = () => {
@@ -342,6 +754,12 @@ const onSubmited = handleSubmit(async (values) => {
 });
 
 const selected = ref(0);
+
+interface TabDescriptor {
+  id: string;
+  content: string;
+}
+
 const tabs: TabDescriptor[] = [
   {
     id: "crear-sumilla",
@@ -355,7 +773,8 @@ const tabs: TabDescriptor[] = [
 
 const findSumilla = async () => {
   sumillaEncontrada.value = await getSumillaByNumeroSumilla(numeroSumilla.value.trim());
-  console.log(sumillaEncontrada.value + "<<<");
+  selected.value = 0;
+  await prepareEdit(sumillaEncontrada.value!);
 };
 </script>
 <style lang="css">

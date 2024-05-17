@@ -84,13 +84,13 @@ const getInitials = (name: string) => {
         </FTopBar>
       </template>
 
-      <template #navigation v-if="$route.path != '/bitacora'">
-        <FNavigation :location="$route.path">
-          <!-- <FNavigationSection v-if="activeLinkAsesor" :items="itemAsesor" />
+      <!-- <template #navigation v-if="$route.path != '/bitacora'">
+        <FNavigation :location="$route.path"> -->
+      <!-- <FNavigationSection v-if="activeLinkAsesor" :items="itemAsesor" />
           <FNavigationSection v-if="activeLinkAdmin" :items="itemsRolAdmin" />
           <FNavigationSection v-if="activeLinkSec" :items="itemsSec" /> -->
-        </FNavigation>
-      </template>
+      <!-- </FNavigation>
+      </template> -->
 
       <FPage full-width>
         <LazyNuxtPage />
