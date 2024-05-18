@@ -9,7 +9,7 @@ export const useBitacoraComposable = () =>{
 
     //*services
 const {getBitacoras, saveBitacora, deleteBitacora, editBitacora} = useBitacoraService();
-const {getSumillaById} = useSumillaService();
+const {getSumillaByNumeroSumilla} = useSumillaService();
 const {getUsers} = usePersonaService();
 
     //*New Bitacora
@@ -26,25 +26,10 @@ const reqNumeroTramite = () =>{
 const validateBitacora = {
     nombres_remitente:   { required },
     apellidos_remitente: { required },
-    receptor_documento:  { required },
     lugar_destino:       { required },
-    registro_sgad:       { required },
-    numero_tramite:      { 
-        requiredIf: (value:any, vm:any) => {
-            if(bitacora.value.registro_sgad == 'S' && (bitacora.value.numero_tramite == '' || bitacora.value.numero_tramite == null) ){
-                return false
-            }else{
-             return true;
-            }
-            
-        }
-    },
-    fecha_recepcion:     { required },
-    hora_recepcion:      { required },
     destinatario:        { required },
     asunto:              { required },
     mensajero:           { required },
-    sumilla:             { required },
 }
 
 const v$ = useVuelidate(validateBitacora, bitacora);
@@ -65,7 +50,7 @@ return {
     receptorPersonaList,
     bitacorasList,
     findBitacoras,
-    getSumillaById,
+    getSumillaByNumeroSumilla,
     getUsers,
     saveBitacora,
     editBitacora,

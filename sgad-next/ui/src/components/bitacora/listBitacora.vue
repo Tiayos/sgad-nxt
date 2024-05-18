@@ -14,7 +14,7 @@
         :paginator="true"
         :rows="10"
       >
-        <template #header>
+        <!-- <template #header>
           <div
             class="datatable-header-toolbar flex flex-wrap align-items-center justify-content-between gap-2"
           >
@@ -27,11 +27,9 @@
                 primary
                 >Crear</FButton
               >
-              <!-- <FButton size="slim" secondary :icon="PencilSolid">Editar</FButton>
-                  <FButton size="slim" secondary :icon="TrashCanSolid">Eliminar</FButton> -->
             </FHorizontalStack>
           </div>
-        </template>
+        </template> -->
         <Column field="codigo" header="No. de ref" style="width: 5px"></Column>
         <Column header="Receptor" style="width: 5px">
           <template #body="slotProps">
@@ -367,46 +365,6 @@
 
           <FCard sectioned style="box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.3)">
             <FVerticalStack gap="4">
-              <FText id="registroSgadLbl" as="h6" variant="bodyMd" fontWeight="semibold">
-                Registro en el SGAD:
-              </FText>
-              <Dropdown
-                id="registroSgad"
-                v-model="bitacora.registro_sgad"
-                placeholder="Seleccione una opción"
-                :options="options"
-                optionLabel="label"
-                optionValue="value"
-                checkmark
-                :highlightOnSelect="false"
-                class="w-full md:w-14rem"
-                :style="[v$.registro_sgad.$error ? { 'border-color': 'red' } : {}]"
-              />
-              <span v-if="v$.registro_sgad.$error" style="color: #c5280c"
-                >* El campo destinatario es requerido</span
-              >
-
-              <div v-if="bitacora.registro_sgad == 'S'">
-                <FText
-                  id="numeroTramiteLbl"
-                  as="h6"
-                  variant="bodyMd"
-                  fontWeight="semibold"
-                >
-                  Número de trámite:
-                </FText>
-                <FTextField
-                  id="numeroTramite"
-                  v-model="bitacora.numero_tramite"
-                  :error="v$?.numero_tramite.$error"
-                  :label="v$?.numero_tramite.$error ? 'Este campo es requerido' : ''"
-                />
-              </div>
-            </FVerticalStack>
-          </FCard>
-
-          <FCard sectioned style="box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.3)">
-            <FVerticalStack gap="4">
               <FHorizontalStack gap="16">
                 <FText
                   id="fechaRecepcionlbl"
@@ -558,7 +516,7 @@ const {
   bitacora,
   receptorPersonaList,
   sumilla,
-  getSumillaById,
+  getSumillaByNumeroSumilla,
   getUsers,
   saveBitacora,
   findBitacoras,
@@ -593,15 +551,15 @@ const toDate = (date: string) => {
   return new Date(year, month, day);
 };
 
-watch(
-  () => bitacora.value.registro_sgad,
-  (newValue, oldValue) => {
-    console.log("ESTA ENTRANDO DESDE EL INICIO");
-    if (bitacora.value.registro_sgad === "N") {
-      bitacora.value.numero_tramite = "";
-    }
-  }
-);
+// watch(
+//   () => bitacora.value.registro_sgad,
+//   (newValue, oldValue) => {
+//     console.log("ESTA ENTRANDO DESDE EL INICIO");
+//     if (bitacora.value.registro_sgad === "N") {
+//       bitacora.value.numero_tramite = "";
+//     }
+//   }
+// );
 
 const searchItem = (event: any) => {
   console.log(event);
@@ -621,7 +579,7 @@ enum persistAction {
 const action = ref();
 
 const findSumilla = async () => {
-  sumilla.value = await getSumillaById(parseInt(codigoSumilla.value));
+  // sumilla.value = await getSumillaById(parseInt(codigoSumilla.value));
   receptorPersonaList.value = await getUsers();
   if (sumilla.value) {
     bitacora.value.receptor_documento = sumilla.value?.responsable!;

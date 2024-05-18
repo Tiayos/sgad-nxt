@@ -6,8 +6,6 @@ export interface Bitacora {
     receptor_documento:  Persona;
     lugar_destino:       string;
     numero_guia:         string;
-    registro_sgad:       string;
-    numero_tramite:      string;
     usr_emisor:          Persona;
     usr_receptor:        Persona;
     fecha_entrega:       Date;

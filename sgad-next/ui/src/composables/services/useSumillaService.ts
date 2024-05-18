@@ -28,15 +28,27 @@ export const useSumillaService = () => {
         }
     }
 
-    const saveSumilla = async(sumilla:Sumilla, email:string)=>{
+    const saveSumilla = async(sumilla:Sumilla, email:string): Promise<Sumilla>=>{
         try {
-            await $fetch(`${apiUrl}?email=${email}`,
+           return await $fetch<Sumilla>(`${apiUrl}?email=${email}`,
             {
                 method: 'POST',
+                body:   sumilla,
+            })
+        } catch (error:any) {
+            return {} as Sumilla;
+        }
+    }
+
+    const editSumilla = async(sumilla:Sumilla, codigo:number)=>{
+        try {
+            await $fetch(`${apiUrl}?codigo=${codigo}`,
+            {
+                method: 'PUT',
                 body:  sumilla,
             })
         } catch (error) {
-            
+            throw new Error("Error al editar la bitacora");
         }
     }
 
@@ -54,6 +66,7 @@ export const useSumillaService = () => {
         getSumillas,
         getSumillaByNumeroSumilla,
         saveSumilla,
+        editSumilla,
         deleteSumilla
     }
 }

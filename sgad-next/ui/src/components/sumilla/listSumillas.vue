@@ -246,37 +246,26 @@
                     "
                   />
 
-                  <FHorizontalStack gap="4">
-                    <FText
-                      id="mensajeroLbl"
-                      as="h6"
-                      variant="bodyMd"
-                      fontWeight="semibold"
-                    >
-                      Mensajero:
-                    </FText>
-                    <AutoComplete
-                      @mouseover="
-                        bitacora.mensajero != null
-                          ? (mostrarMensajero = true)
-                          : (mostrarMensajero = false)
-                      "
-                      @mouseleave="mostrarMensajero = false"
-                      v-model="bitacora.mensajero"
-                      optionLabel="nombreCompleto"
-                      :suggestions="filteredItems"
-                      @Complete="searchItem"
-                    />
-                    <span v-if="v$.mensajero.$error" style="color: #c5280c"
-                      >* El campo mensajero es requerido</span
-                    >
-                    <div v-if="mostrarMensajero">
-                      <FText as="p" variant="bodySm" font-weight="semibold">
-                        {{ bitacora.mensajero.per_nombres }}
-                        {{ bitacora.mensajero.per_apellidos }}
-                      </FText>
-                    </div>
-                  </FHorizontalStack>
+                  <FText id="mensajeroLbl" as="h6" variant="bodyMd" fontWeight="semibold">
+                    Mensajero:
+                  </FText>
+
+                  <AutoComplete
+                    @mouseover="
+                      bitacora.mensajero != null
+                        ? (mostrarMensajero = true)
+                        : (mostrarMensajero = false)
+                    "
+                    @mouseleave="mostrarMensajero = false"
+                    v-model="bitacora.mensajero"
+                    optionLabel="nombreCompleto"
+                    :suggestions="filteredItems"
+                    @Complete="searchItem"
+                    class="full-width-autocomplete"
+                  />
+                  <span v-if="v$.mensajero.$error" style="color: #c5280c"
+                    >* El campo mensajero es requerido</span
+                  >
 
                   <FText
                     id="numeroGuiaLbl"
@@ -304,41 +293,39 @@
                   >
                     <FCardSection>
                       <FVerticalStack gap="4">
-                        <FHorizontalStack gap="4">
-                          <FText
-                            id="destinatarioLbl"
-                            as="h6"
-                            variant="bodyMd"
-                            fontWeight="semibold"
-                          >
-                            Destinatario:
+                        <FText
+                          id="destinatarioLbl"
+                          as="h6"
+                          variant="bodyMd"
+                          fontWeight="semibold"
+                        >
+                          Destinatario:
+                        </FText>
+                        <AutoComplete
+                          @mouseover="
+                            bitacora.destinatario != null
+                              ? (mostrarDestinatario = true)
+                              : (mostrarDestinatario = false)
+                          "
+                          @mouseleave="mostrarDestinatario = false"
+                          v-model="bitacora.destinatario"
+                          optionLabel="nombreCompleto"
+                          :suggestions="filteredItems"
+                          class="full-width-autocomplete"
+                          @Complete="searchItem"
+                          :style="[
+                            v$.destinatario.$error ? { 'border-color': 'red' } : {},
+                          ]"
+                        />
+                        <span v-if="v$.destinatario.$error" style="color: #c5280c"
+                          >* El campo destinatario es requerido</span
+                        >
+                        <div v-if="mostrarDestinatario">
+                          <FText as="p" variant="bodySm" font-weight="semibold">
+                            {{ bitacora.destinatario.per_nombres }}
+                            {{ bitacora.destinatario.per_apellidos }}
                           </FText>
-                          <AutoComplete
-                            @mouseover="
-                              bitacora.destinatario != null
-                                ? (mostrarDestinatario = true)
-                                : (mostrarDestinatario = false)
-                            "
-                            @mouseleave="mostrarDestinatario = false"
-                            style="width: 300px"
-                            v-model="bitacora.destinatario"
-                            optionLabel="nombreCompleto"
-                            :suggestions="filteredItems"
-                            @Complete="searchItem"
-                            :style="[
-                              v$.destinatario.$error ? { 'border-color': 'red' } : {},
-                            ]"
-                          />
-                          <span v-if="v$.destinatario.$error" style="color: #c5280c"
-                            >* El campo destinatario es requerido</span
-                          >
-                          <div v-if="mostrarDestinatario">
-                            <FText as="p" variant="bodySm" font-weight="semibold">
-                              {{ bitacora.destinatario.per_nombres }}
-                              {{ bitacora.destinatario.per_apellidos }}
-                            </FText>
-                          </div>
-                        </FHorizontalStack>
+                        </div>
                         <FText
                           id="asuntolbl"
                           as="h6"
@@ -377,7 +364,7 @@
                     sectioned
                     style="box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.3)"
                   >
-                    <FHorizontalStack gap="32">
+                    <FHorizontalStack gap="8" align="center">
                       <FText
                         id="fechaRecepcionlbl"
                         as="h6"
@@ -392,7 +379,7 @@
                         variant="bodyMd"
                         fontWeight="regular"
                       >
-                        {{ sumilla?.fecha_sumilla }}
+                        {{ sumilla?.fecha_sumilla.toLocaleDateString() }}
                       </FText>
 
                       <FText
@@ -412,58 +399,6 @@
                         {{ sumilla?.hora_sumilla }}
                       </FText>
                     </FHorizontalStack>
-                  </FCard>
-
-                  <FCard
-                    sectioned
-                    style="box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.3)"
-                  >
-                    <FVerticalStack gap="4">
-                      <FText
-                        id="registroSgadLbl"
-                        as="h6"
-                        variant="bodyMd"
-                        fontWeight="semibold"
-                      >
-                        Registro en el SGAD:
-                      </FText>
-                      <Dropdown
-                        id="registroSgad"
-                        v-model="bitacora.registro_sgad"
-                        placeholder="Seleccione una opción"
-                        :options="options"
-                        optionLabel="label"
-                        optionValue="value"
-                        checkmark
-                        :highlightOnSelect="false"
-                        class="w-full md:w-14rem"
-                        :style="[
-                          v$.registro_sgad.$error ? { 'border-color': 'red' } : {},
-                        ]"
-                      />
-                      <span v-if="v$.registro_sgad.$error" style="color: #c5280c"
-                        >* El campo destinatario es requerido</span
-                      >
-
-                      <div v-if="bitacora.registro_sgad == 'S'">
-                        <FText
-                          id="numeroTramiteLbl"
-                          as="h6"
-                          variant="bodyMd"
-                          fontWeight="semibold"
-                        >
-                          Número de trámite:
-                        </FText>
-                        <FTextField
-                          id="numeroTramite"
-                          v-model="bitacora.numero_tramite"
-                          :error="v$?.numero_tramite.$error"
-                          :label="
-                            v$?.numero_tramite.$error ? 'Este campo es requerido' : ''
-                          "
-                        />
-                      </div>
-                    </FVerticalStack>
                   </FCard>
 
                   <FCard
@@ -507,66 +442,50 @@
                           </Calendar>
                         </div>
                       </FHorizontalStack>
+                      <FText
+                        id="personaEntregaLbl"
+                        as="h6"
+                        variant="bodyMd"
+                        fontWeight="semibold"
+                      >
+                        Persona que entrega:
+                      </FText>
 
-                      <FHorizontalStack gap="4">
-                        <FText
-                          id="personaEntregaLbl"
-                          as="h6"
-                          variant="bodyMd"
-                          fontWeight="semibold"
-                        >
-                          Persona que entrega:
-                        </FText>
-                        <AutoComplete
-                          @mouseover="
-                            bitacora.usr_emisor != null
-                              ? (mostrarEmisor = true)
-                              : (mostrarEmisor = false)
-                          "
-                          @mouseleave="mostrarEmisor = false"
-                          style="width: 300px"
-                          v-model="bitacora.usr_emisor"
-                          optionLabel="nombreCompleto"
-                          :suggestions="filteredItems"
-                          @Complete="searchItem"
-                        />
-                        <div v-if="mostrarEmisor">
-                          <FText as="p" variant="bodySm" font-weight="semibold">
-                            {{ bitacora.usr_emisor.per_nombres }}
-                            {{ bitacora.usr_emisor.per_apellidos }}
-                          </FText>
-                        </div>
-                      </FHorizontalStack>
+                      <AutoComplete
+                        @mouseover="
+                          bitacora.usr_emisor != null
+                            ? (mostrarEmisor = true)
+                            : (mostrarEmisor = false)
+                        "
+                        @mouseleave="mostrarEmisor = false"
+                        class="full-width-autocomplete"
+                        v-model="bitacora.usr_emisor"
+                        optionLabel="nombreCompleto"
+                        :suggestions="filteredItems"
+                        @Complete="searchItem"
+                      />
 
-                      <FHorizontalStack gap="4">
-                        <FText
-                          id="personaRecibeLbl"
-                          as="h6"
-                          variant="bodyMd"
-                          fontWeight="semibold"
-                        >
-                          Persona que recibe:
-                        </FText>
-                        <AutoComplete
-                          @mouseover="
-                            bitacora.usr_receptor != null
-                              ? (mostrarUsrReceptor = true)
-                              : (mostrarUsrReceptor = false)
-                          "
-                          @mouseleave="mostrarUsrReceptor = false"
-                          style="width: 300px"
-                          v-model="bitacora.usr_receptor"
-                          optionLabel="nombreCompleto"
-                          :suggestions="filteredItems"
-                          @Complete="searchItem"
-                        />
-                        <div v-if="mostrarUsrReceptor">
-                          <FText as="p" variant="bodySm" font-weight="semibold">
-                            {{ bitacora.usr_receptor.per_nombres }}
-                            {{ bitacora.usr_receptor.per_apellidos }}
-                          </FText>
-                        </div>
-                      </FHorizontalStack>
+                      <FText
+                        id="personaRecibeLbl"
+                        as="h6"
+                        variant="bodyMd"
+                        fontWeight="semibold"
+                      >
+                        Persona que recibe:
+                      </FText>
+                      <AutoComplete
+                        @mouseover="
+                          bitacora.usr_receptor != null
+                            ? (mostrarUsrReceptor = true)
+                            : (mostrarUsrReceptor = false)
+                        "
+                        @mouseleave="mostrarUsrReceptor = false"
+                        class="full-width-autocomplete"
+                        v-model="bitacora.usr_receptor"
+                        optionLabel="nombreCompleto"
+                        :suggestions="filteredItems"
+                        @Complete="searchItem"
+                      />
                     </FVerticalStack>
                   </FCard>
                 </FVerticalStack>
@@ -610,6 +529,7 @@ import { Persona, Sumilla } from "../../models/Sumilla.model";
 import { useToast } from "primevue/usetoast";
 import Calendar from "primevue/calendar";
 import AutoComplete from "primevue/autocomplete";
+import { Bitacora } from "../../models/Bitacora.model";
 
 const toast = useToast();
 const { handleSubmit } = useForm();
@@ -628,16 +548,16 @@ const {
   data,
   //*Service
   saveSumilla,
+  editSumilla,
   findSumillas,
   deleteSumilla,
+  receptorPersonaList,
   getSumillaByNumeroSumilla,
 } = useSumillaComposable();
 
 const {
   bitacorasList,
   bitacora,
-  receptorPersonaList,
-  getSumillaById,
   getUsers,
   saveBitacora,
   findBitacoras,
@@ -704,10 +624,14 @@ const changeHour = () => {
 
 const prepareCreate = () => {
   action.value = persistAction.create;
-  handleChangeCreateModal();
+  bitacora.value = {} as Bitacora;
+  sumilla.value = {} as Sumilla;
+  resetNumHojas();
+  v$.value.$reset();
   sumilla.value.responsable = userLogin.value;
   sumilla.value.fecha_sumilla = new Date();
   sumilla.value.hora_sumilla = new Date().getHours() + ":" + new Date().getMinutes();
+  handleChangeCreateModal();
 };
 
 const prepareEdit = async (sumillaParam: Sumilla) => {
@@ -738,19 +662,46 @@ const changeDeleteModal = () => {
 };
 
 const onSubmited = handleSubmit(async (values) => {
-  sumilla.value.numero_hojas = parseInt(numHojas.value);
-  sumilla.value.fecha_sumilla = new Date();
-  sumilla.value.hora_sumilla = new Date().getHours() + ":" + new Date().getMinutes();
-  await saveSumilla(sumilla.value, data.value?.user?.email!);
-  await findSumillas();
-  toast.add({
-    severity: "success",
-    summary: "Sumilla",
-    detail: `Se ha guardado la sumilla correctamente`,
-    life: 5000,
-  });
-  createModal.value = !createModal.value;
-  resetNumHojas();
+  console.log("ENTRA AL HANDLESUBMIT");
+  v$.value.$validate();
+
+  if (!v$.value.$error) {
+    console.log("NO HAY ERROR");
+
+    if (action.value == persistAction.create) {
+      console.log(action.value, " ACTION VALUE");
+
+      sumilla.value.numero_hojas = parseInt(numHojas.value);
+      sumilla.value.fecha_sumilla = new Date();
+      sumilla.value.hora_sumilla = new Date().getHours() + ":" + new Date().getMinutes();
+      sumilla.value = await saveSumilla(sumilla.value, data.value?.user?.email!);
+    } else if (action.value == persistAction.edit) {
+      await editSumilla(sumilla.value, sumilla.value.codigo!);
+    }
+
+    await findSumillas();
+
+    if (action.value == persistAction.edit) {
+      await editBitacora(bitacora.value, bitacora.value.codigo);
+    } else {
+      bitacora.value.receptor_documento = sumilla.value?.responsable!;
+      bitacora.value.fecha_recepcion = sumilla.value?.fecha_sumilla!;
+      bitacora.value.hora_recepcion = sumilla.value?.hora_sumilla!;
+      await saveBitacora(bitacora.value);
+    }
+
+    await findBitacoras();
+
+    createModal.value = !createModal.value;
+    resetNumHojas();
+
+    toast.add({
+      severity: "success",
+      summary: "Sumilla",
+      detail: `Se ha guardado la sumilla correctamente`,
+      life: 5000,
+    });
+  }
 });
 
 const selected = ref(0);
@@ -774,6 +725,7 @@ const tabs: TabDescriptor[] = [
 const findSumilla = async () => {
   sumillaEncontrada.value = await getSumillaByNumeroSumilla(numeroSumilla.value.trim());
   selected.value = 0;
+
   await prepareEdit(sumillaEncontrada.value!);
 };
 </script>
@@ -795,5 +747,28 @@ const findSumilla = async () => {
 
 .datatable-header-toolbar .FButton:last-child {
   margin-right: 0;
+}
+
+.p-autocomplete {
+  height: 35px;
+  widows: auto;
+}
+
+.p-calendar {
+  height: 33px;
+}
+
+.full-width-autocomplete .p-autocomplete {
+  width: 100%;
+}
+
+.full-width-autocomplete .p-autocomplete-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Asegúrate de que el contenedor del AutoComplete ocupe el ancho completo */
+.full-width-autocomplete {
+  width: 100%;
 }
 </style>
