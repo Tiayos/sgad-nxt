@@ -17,7 +17,7 @@ export const useSumillaService = () => {
 
     const getSumillaByNumeroSumilla = async(numeroSumilla:string): Promise<Sumilla|null> => {
         try {
-            return await $fetch<Sumilla>(`${apiUrl}/findSumillaByNumSumilla?numeroSumilla=${numeroSumilla}`)
+            return await $fetch<Sumilla|null>(`${apiUrl}/findSumillaByNumSumilla?numeroSumilla=${numeroSumilla}`)
         } catch (error:any) {
             toast.add({
                 severity: "error",

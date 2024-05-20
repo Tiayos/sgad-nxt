@@ -33,8 +33,9 @@
                     </FHorizontalStack>
                   </div>
                 </template>
-                <Column field="codigo" header="No. sumilla" style="width: 5px"> </Column>
-                <Column field="numero_sumilla" header="No. Trámite" style="width: 5px">
+                <Column field="codigo" header="Codigo Sumilla" style="width: 2px">
+                </Column>
+                <Column field="numero_sumilla" header="Número Sumilla" style="width: 5px">
                 </Column>
                 <Column
                   field="fecha_sumilla"
@@ -93,7 +94,7 @@
               </DataTable>
             </FVerticalStack>
 
-            <!-- ELIMINAR -->
+            <!-- ELIMINAR MODAL-->
 
             <FModal
               v-model="deleteModal"
@@ -118,13 +119,15 @@
                     :font-weight="'semibold'"
                     style="text-align: center"
                   >
-                    {{ $t("app.sgadNuxt.sumilla.eliminar") }}
+                    {{ $t("app.sgadNuxt.sumilla.eliminar") }}:
+                    <br />
+                    <span style="font-weight: 700">{{ sumilla.numero_sumilla }}</span>
                   </FText>
                 </FVerticalStack>
               </FModalSection>
             </FModal>
 
-            <!-- CREAR -->
+            <!-- CREAR MODAL-->
 
             <FModal
               v-model="createModal"
@@ -171,7 +174,7 @@
                       :font-weight="'regular'"
                       v-if="action == persistAction.create"
                     >
-                      {{ sumilla.fecha_sumilla.toLocaleDateString() }}
+                      {{ sumilla.fecha_sumilla }}
                     </FText>
                     <FText
                       as="h5"
@@ -317,15 +320,7 @@
                             v$.destinatario.$error ? { 'border-color': 'red' } : {},
                           ]"
                         />
-                        <span v-if="v$.destinatario.$error" style="color: #c5280c"
-                          >* El campo destinatario es requerido</span
-                        >
-                        <div v-if="mostrarDestinatario">
-                          <FText as="p" variant="bodySm" font-weight="semibold">
-                            {{ bitacora.destinatario.per_nombres }}
-                            {{ bitacora.destinatario.per_apellidos }}
-                          </FText>
-                        </div>
+
                         <FText
                           id="asuntolbl"
                           as="h6"
@@ -346,7 +341,7 @@
                           variant="bodyMd"
                           fontWeight="semibold"
                         >
-                          Lugar de destino:
+                          Destino UPS:
                         </FText>
                         <FTextField
                           id="lugarDestino"
@@ -379,7 +374,11 @@
                         variant="bodyMd"
                         fontWeight="regular"
                       >
-                        {{ sumilla?.fecha_sumilla.toLocaleDateString() }}
+                        {{
+                          sumilla?.fecha_sumilla
+                            ? new Date(sumilla.fecha_sumilla).toLocaleDateString()
+                            : ""
+                        }}
                       </FText>
 
                       <FText
@@ -544,6 +543,7 @@ const codigoBitacora = ref<Number>(0);
 const {
   sumillaList,
   sumilla,
+  bitacora,
   sumillaEncontrada,
   data,
   //*Service
@@ -551,21 +551,15 @@ const {
   editSumilla,
   findSumillas,
   deleteSumilla,
-  receptorPersonaList,
-  getSumillaByNumeroSumilla,
-} = useSumillaComposable();
-
-const {
-  bitacorasList,
-  bitacora,
-  getUsers,
   saveBitacora,
   findBitacoras,
   editBitacora,
   deleteBitacora,
   v$,
-  ErrorMessage,
-} = useBitacoraComposable();
+  receptorPersonaList,
+  getSumillaByNumeroSumilla,
+  getBitacoraByNumSumilla,
+} = useSumillaComposable();
 
 //*Session storage
 const { data: userLogin } = useSessionStorage<Persona>("userLogin");
@@ -574,6 +568,7 @@ const deleteModal = ref<boolean>(false);
 const codigoSumillaDelete = ref<Number>(0);
 const numeroSumilla = ref<string>("");
 const filteredItems = ref<Persona[]>([]);
+const selected = ref(0);
 
 const options = [
   {
@@ -619,7 +614,6 @@ const changeHour = () => {
   const hora = fecha.getHours();
   const minutos = fecha.getMinutes();
   bitacora.value.hora_entrega = `${hora}:${minutos}`;
-  console.log(bitacora.value.hora_entrega, "hora_entrega");
 };
 
 const prepareCreate = () => {
@@ -637,6 +631,33 @@ const prepareCreate = () => {
 const prepareEdit = async (sumillaParam: Sumilla) => {
   action.value = persistAction.edit;
   sumilla.value = { ...sumillaParam };
+  console.log(sumilla.value.numero_hojas, "sumilla.value.numero_hojas");
+  numHojas.value =
+    sumilla.value.numero_hojas != null ? sumilla.value.numero_hojas.toString() : "";
+
+  bitacora.value = await getBitacoraByNumSumilla(sumilla.value.numero_sumilla);
+  fechaEntrega.value =
+    bitacora.value.fecha_entrega != null ? bitacora.value.fecha_entrega.toString() : "";
+
+  bitacora.value.mensajero.nombreCompleto = bitacora.value.mensajero.per_apellidos
+    .concat(" ")
+    .concat(bitacora.value.mensajero.per_nombres);
+  bitacora.value.destinatario.nombreCompleto = bitacora.value.destinatario.per_apellidos
+    .concat(" ")
+    .concat(bitacora.value.destinatario.per_nombres);
+
+  if (bitacora.value.usr_emisor != null) {
+    bitacora.value.usr_emisor.nombreCompleto = bitacora.value.usr_emisor.per_apellidos
+      .concat(" ")
+      .concat(bitacora.value.usr_emisor.per_nombres);
+  }
+
+  if (bitacora.value.usr_receptor != null) {
+    bitacora.value.usr_receptor.nombreCompleto = bitacora.value.usr_receptor.per_apellidos
+      .concat(" ")
+      .concat(bitacora.value.usr_receptor.per_nombres);
+  }
+
   createModal.value = !createModal.value;
 };
 
@@ -652,9 +673,10 @@ const confirmDelete = async () => {
   changeDeleteModal();
 };
 
-const handleChangeDeleteModal = (sum: any) => {
+const handleChangeDeleteModal = async (sum: any) => {
   deleteModal.value = !deleteModal.value;
   codigoSumillaDelete.value = sum.codigo;
+  sumilla.value = sum;
 };
 
 const changeDeleteModal = () => {
@@ -662,20 +684,15 @@ const changeDeleteModal = () => {
 };
 
 const onSubmited = handleSubmit(async (values) => {
-  console.log("ENTRA AL HANDLESUBMIT");
-  v$.value.$validate();
-
+  v$.value.$validate;
   if (!v$.value.$error) {
-    console.log("NO HAY ERROR");
-
     if (action.value == persistAction.create) {
-      console.log(action.value, " ACTION VALUE");
-
       sumilla.value.numero_hojas = parseInt(numHojas.value);
       sumilla.value.fecha_sumilla = new Date();
       sumilla.value.hora_sumilla = new Date().getHours() + ":" + new Date().getMinutes();
       sumilla.value = await saveSumilla(sumilla.value, data.value?.user?.email!);
     } else if (action.value == persistAction.edit) {
+      sumilla.value.numero_hojas = Number(numHojas.value);
       await editSumilla(sumilla.value, sumilla.value.codigo!);
     }
 
@@ -687,11 +704,12 @@ const onSubmited = handleSubmit(async (values) => {
       bitacora.value.receptor_documento = sumilla.value?.responsable!;
       bitacora.value.fecha_recepcion = sumilla.value?.fecha_sumilla!;
       bitacora.value.hora_recepcion = sumilla.value?.hora_sumilla!;
+      bitacora.value.sumilla = sumilla.value;
+
       await saveBitacora(bitacora.value);
     }
 
     await findBitacoras();
-
     createModal.value = !createModal.value;
     resetNumHojas();
 
@@ -703,8 +721,6 @@ const onSubmited = handleSubmit(async (values) => {
     });
   }
 });
-
-const selected = ref(0);
 
 interface TabDescriptor {
   id: string;
@@ -724,9 +740,25 @@ const tabs: TabDescriptor[] = [
 
 const findSumilla = async () => {
   sumillaEncontrada.value = await getSumillaByNumeroSumilla(numeroSumilla.value.trim());
-  selected.value = 0;
+  if (sumillaEncontrada.value) {
+    selected.value = 0;
+    await prepareEdit(sumillaEncontrada.value!);
+  }
+};
 
-  await prepareEdit(sumillaEncontrada.value!);
+watch(
+  () => fechaEntrega.value,
+  (newValue, oldValue) => {
+    bitacora.value.fecha_entrega = toDate(fechaEntrega.value);
+  }
+);
+
+const toDate = (date: string) => {
+  const dateParts = date.split("-");
+  const year = parseInt(dateParts[0]);
+  const month = parseInt(dateParts[1]) - 1; // Month is zero-based
+  const day = parseInt(dateParts[2]);
+  return new Date(year, month, day);
 };
 </script>
 <style lang="css">

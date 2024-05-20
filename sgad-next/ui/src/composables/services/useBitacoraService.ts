@@ -13,6 +13,14 @@ export const useBitacoraService = () => {
         }
     }
 
+    const getBitacoraByNumSumilla = async(numSumilla:string): Promise<Bitacora> => {
+        try {
+            return await $fetch<Bitacora>(`${apiUrl}/getBitacoraByNumSumilla?numSumilla=${numSumilla}`)
+        } catch (error) {
+            throw new Error("Error al consultar las bitacoras");
+        }
+    }
+
     const saveBitacora = async(bitacora:Bitacora)=>{
         try {
             await $fetch(`${apiUrl}`,
@@ -49,6 +57,7 @@ export const useBitacoraService = () => {
 
     return {
         getBitacoras,
+        getBitacoraByNumSumilla,
         saveBitacora,
         editBitacora,
         deleteBitacora
