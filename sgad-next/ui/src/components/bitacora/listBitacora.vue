@@ -7,6 +7,7 @@
         >BITÁCORAS</FText
       >
       <DataTable
+        v-model:filters="filtersSumillaBitacora"
         :value="bitacorasList"
         :showGridlines="true"
         :stripedRows="true"
@@ -14,6 +15,25 @@
         :paginator="true"
         :rows="10"
       >
+        <template #header>
+          <div
+            class="datatable-header-toolbar flex flex-wrap align-items-center justify-content-between gap-2"
+          >
+            <FHorizontalStack gap="2" align="space-between">
+              <br />
+
+              <FTextField
+                type="text"
+                id="filterSumillaBitacora"
+                v-model="filtersSumillaBitacora['global'].value"
+                placeholder="N° Sumilla"
+                :disabled="true"
+              >
+              </FTextField>
+            </FHorizontalStack>
+          </div>
+        </template>
+
         <Column field="codigo" header="No. de ref" style="width: 5px"></Column>
         <Column
           field="sumilla.numero_sumilla"
@@ -172,7 +192,12 @@
 <script setup lang="ts">
 import { Bitacora } from "../../models/Bitacora.model";
 
-const { bitacorasList, findBitacoras, deleteBitacora } = useSumillaComposable();
+const {
+  bitacorasList,
+  findBitacoras,
+  deleteBitacora,
+  filtersSumillaBitacora,
+} = useSumillaComposable();
 
 const codigoBitacora = ref<Number>(0);
 const deleteModal = ref<boolean>(false);

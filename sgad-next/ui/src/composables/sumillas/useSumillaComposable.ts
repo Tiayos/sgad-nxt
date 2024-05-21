@@ -6,12 +6,12 @@ import { useVuelidate, ValidationRuleWithParams  } from '@vuelidate/core';
 export const useSumillaComposable = () =>{
 
 const useStore = useArchivosStore();
-const {bitacorasList} = storeToRefs(useStore);
+const {bitacorasList, filtersSumillaBitacora} = storeToRefs(useStore);
 
     //*services
-const {getSumillas, saveSumilla, deleteSumilla, getSumillaByNumeroSumilla, editSumilla, } = useSumillaService();
+const {getSumillas, saveSumilla, deleteSumilla, getSumillaByNumeroSumilla, editSumilla } = useSumillaService();
 const {getUsers} = usePersonaService();
-const {getBitacoras, saveBitacora, deleteBitacora, editBitacora, getBitacoraByNumSumilla} = useBitacoraService();
+const {getBitacoras, saveBitacora, deleteBitacora, editBitacora, getBitacoraByNumSumilla, deleteBitacoraByNumSumilla} = useBitacoraService();
 
 
     //*New Sumilla
@@ -70,6 +70,8 @@ return {
     deleteBitacora,
     getUsers,
     getBitacoraByNumSumilla,
+    deleteBitacoraByNumSumilla,
+    filtersSumillaBitacora,
     v$,
     data
 }

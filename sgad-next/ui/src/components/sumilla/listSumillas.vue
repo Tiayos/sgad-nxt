@@ -10,6 +10,7 @@
               >
 
               <DataTable
+                v-model:filters="filtersSumillaBitacora"
                 :value="sumillaList"
                 :showGridlines="true"
                 :stripedRows="true"
@@ -21,7 +22,7 @@
                   <div
                     class="datatable-header-toolbar flex flex-wrap align-items-center justify-content-between gap-2"
                   >
-                    <FHorizontalStack gap="2">
+                    <FHorizontalStack gap="2" align="space-between">
                       <FButton
                         @click="prepareCreate"
                         size="medium"
@@ -30,6 +31,13 @@
                         primary
                         >Crear</FButton
                       >
+                      <FTextField
+                        type="text"
+                        id="filterSumilla"
+                        v-model="filtersSumillaBitacora['global'].value"
+                        placeholder="N° Sumilla"
+                      >
+                      </FTextField>
                     </FHorizontalStack>
                   </div>
                 </template>
@@ -555,10 +563,12 @@ const {
   findBitacoras,
   editBitacora,
   deleteBitacora,
+  deleteBitacoraByNumSumilla,
   v$,
   receptorPersonaList,
   getSumillaByNumeroSumilla,
   getBitacoraByNumSumilla,
+  filtersSumillaBitacora,
 } = useSumillaComposable();
 
 //*Session storage
@@ -662,8 +672,10 @@ const prepareEdit = async (sumillaParam: Sumilla) => {
 };
 
 const confirmDelete = async () => {
-  await deleteSumilla(codigoSumillaDelete.value);
+  await deleteBitacoraByNumSumilla(sumilla.value.codigo!);
+  await deleteSumilla(sumilla.value.codigo!);
   await findSumillas();
+  await findBitacoras();
   toast.add({
     severity: "success",
     summary: "Sumilla",
@@ -673,9 +685,9 @@ const confirmDelete = async () => {
   changeDeleteModal();
 };
 
-const handleChangeDeleteModal = async (sum: any) => {
+const handleChangeDeleteModal = async (sum: Sumilla) => {
   deleteModal.value = !deleteModal.value;
-  codigoSumillaDelete.value = sum.codigo;
+  codigoSumillaDelete.value = sum.codigo!;
   sumilla.value = sum;
 };
 
@@ -743,6 +755,7 @@ const findSumilla = async () => {
   if (sumillaEncontrada.value) {
     selected.value = 0;
     await prepareEdit(sumillaEncontrada.value!);
+    filtersSumillaBitacora.value.global.value = sumillaEncontrada.value.numero_sumilla;
   }
 };
 

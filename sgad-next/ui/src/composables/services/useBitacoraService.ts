@@ -55,11 +55,23 @@ export const useBitacoraService = () => {
         }
     }
 
+    const deleteBitacoraByNumSumilla = async(sumCodigo: number)=>{
+        try {
+            await $fetch(`${apiUrl}/deleteBitacoraBySumCodigo?sumCodigo=${sumCodigo}`,{
+                method: 'DELETE'
+            })
+        } catch (error) {
+            throw error;
+        }
+    }
+
     return {
         getBitacoras,
         getBitacoraByNumSumilla,
         saveBitacora,
         editBitacora,
-        deleteBitacora
+        deleteBitacora,
+        deleteBitacoraByNumSumilla
+
     }
 }
