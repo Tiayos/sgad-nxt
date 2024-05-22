@@ -10,7 +10,7 @@ const {bitacorasList, filtersSumillaBitacora} = storeToRefs(useStore);
 
     //*services
 const {getSumillas, saveSumilla, deleteSumilla, getSumillaByNumeroSumilla, editSumilla } = useSumillaService();
-const {getUsers} = usePersonaService();
+const {getUsers, getUsrLogin} = usePersonaService();
 const {getBitacoras, saveBitacora, deleteBitacora, editBitacora, getBitacoraByNumSumilla, deleteBitacoraByNumSumilla} = useBitacoraService();
 
 
@@ -61,6 +61,7 @@ return {
     saveSumilla,
     editSumilla,
     findSumillas,
+    getUsrLogin,
     receptorPersonaList,
     deleteSumilla,
     getSumillaByNumeroSumilla,

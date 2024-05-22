@@ -17,4 +17,5 @@ export interface Bitacora {
     mensajero:           Persona;
     observaciones:       string;
     sumilla:             Sumilla;
+    doc_archivo:         any;
 }

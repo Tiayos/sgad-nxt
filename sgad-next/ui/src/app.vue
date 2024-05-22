@@ -28,6 +28,7 @@ const toggleMobileNavigationActive = () =>
 
 const cerrarSesion = async () => {
   try {
+    sessionStorage.clear();
     signOut();
   } catch (error) {}
 };
