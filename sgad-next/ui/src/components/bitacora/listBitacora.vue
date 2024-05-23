@@ -156,6 +156,45 @@
           bodyStyle="text-align: center;"
         >
         </Column>
+
+        <Column header="Archivo" style="width: 10px" bodyStyle="text-align: center;">
+          <template #body="slotProps">
+            <span v-if="slotProps.data.doc_archivo">
+              <a :href="getDownloadUrl(slotProps.data.doc_archivo)" target="_blank">{{
+                slotProps.data.nombre_archivo
+              }}</a>
+            </span>
+          </template>
+        </Column>
+
+        <Column :exportable="false" style="min-width: 8rem">
+          <template #body="slotProps">
+            <FileUpload
+              style="
+                display: inline-block;
+                padding: 10px 10px;
+                background-color: #3b82f6;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                font-size: 14px;
+                cursor: pointer;
+                text-align: center;
+                text-decoration: none;
+                transition: background-color 0.3s ease;
+                width: max-content;
+              "
+              mode="basic"
+              name="demo[]"
+              url="./upload.php"
+              accept=".pdf"
+              chooseLabel="  Subir Documento"
+              :maxFileSize="10000000"
+              @select="onUpload($event, slotProps.data)"
+              @before-upload="hol(slotProps.data)"
+            />
+          </template>
+        </Column>
       </DataTable>
     </FVerticalStack>
 
@@ -196,7 +235,10 @@ const {
   bitacorasList,
   findBitacoras,
   deleteBitacora,
+  editBitacora,
+  getBitacoraByNumSumilla,
   filtersSumillaBitacora,
+  bitacora,
 } = useSumillaComposable();
 
 const codigoBitacora = ref<Number>(0);
@@ -206,15 +248,85 @@ const changeDeleteModal = () => {
   deleteModal.value = !deleteModal.value;
 };
 
-const handleChangeDeleteModal = (bitacorParam: Bitacora) => {
-  deleteModal.value = !deleteModal.value;
-  codigoBitacora.value = bitacorParam.codigo;
-};
-
 const confirmDelete = async () => {
   await deleteBitacora(codigoBitacora.value);
   await findBitacoras();
   changeDeleteModal();
+};
+
+const uploadedDocuments = ref<Bitacora[]>([]);
+
+const hol = async (bitacoraParam: Bitacora) => {
+  const existingDocument = uploadedDocuments.value.find(
+    (document) => document.doc_archivo === bitacoraParam.doc_archivo
+  );
+
+  if (existingDocument) {
+    const index = uploadedDocuments.value.indexOf(existingDocument);
+    uploadedDocuments.value.splice(index, 1); // Eliminar documento existente del arreglo
+  }
+};
+
+const onUpload = async ({ files }: any, bitacoraParam: Bitacora) => {
+  // bitacora.value = await getBitacoraByNumSumilla(sumilla.numero_sumilla);
+  bitacora.value = bitacoraParam;
+  const file = files[0];
+  const fileContent = await readFileAsByteArray(file);
+  bitacora.value.doc_archivo = Array.from(fileContent);
+  bitacora.value.nombre_archivo = files[0].name;
+  console.log(bitacora.value.nombre_archivo);
+  console.log(files[0]);
+  const existingDocument = uploadedDocuments.value.find(
+    (document) => document.doc_archivo === bitacora.value.doc_archivo
+  );
+
+  if (existingDocument) {
+    const index = uploadedDocuments.value.indexOf(existingDocument);
+    uploadedDocuments.value.splice(index, 1); // Eliminar documento existente del arreglo
+    console.log(bitacora.value, "bitacora splice");
+  }
+  uploadedDocuments.value.push(bitacora.value!);
+  await editBitacora(bitacora.value, bitacora.value.codigo);
+  await findBitacoras();
+};
+
+const readFileAsByteArray = (file: File): Promise<Uint8Array> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const arrayBuffer = reader.result as ArrayBuffer;
+      const byteArray = new Uint8Array(arrayBuffer);
+      resolve(byteArray);
+    };
+    reader.onerror = (error) => reject(error);
+    reader.readAsArrayBuffer(file);
+  });
+};
+
+const getDownloadUrl = (byteArray: number[] | string) => {
+  let uint8Array;
+
+  if (typeof byteArray === "string") {
+    // Convierte la cadena base64 a un Uint8Array
+    const binaryString = window.atob(byteArray);
+    const len = binaryString.length;
+    uint8Array = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      uint8Array[i] = binaryString.charCodeAt(i);
+    }
+  } else {
+    // Asume que ya es un Uint8Array
+    uint8Array = new Uint8Array(byteArray);
+  }
+
+  const blob = new Blob([uint8Array], { type: "application/pdf" });
+  return URL.createObjectURL(blob);
+};
+
+const uint8ArrayToFile = (byteArray: number[], fileName: string): File => {
+  const uint8Array = new Uint8Array(byteArray);
+  const blob = new Blob([uint8Array], { type: "application/pdf" });
+  return new File([blob], fileName, { type: "application/pdf" });
 };
 </script>
 <style lang="css">

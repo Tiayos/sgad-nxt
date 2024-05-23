@@ -79,40 +79,6 @@
                 >
                 </Column>
 
-                <Column :exportable="false" style="min-width: 8rem">
-                  <template #body="slotProps">
-                    <div :style="{ width: '50px', height: '50px' }">
-                      <div class="card flex justify-content-center">
-                        <FileUpload
-                          style="
-                            display: inline-block;
-                            padding: 10px 10px;
-                            background-color: #3b82f6;
-                            color: white;
-                            border: none;
-                            border-radius: 5px;
-                            font-size: 14px;
-                            cursor: pointer;
-                            text-align: center;
-                            text-decoration: none;
-                            transition: background-color 0.3s ease;
-                            width: max-content;
-                          "
-                          mode="basic"
-                          name="demo[]"
-                          url="./upload.php"
-                          accept=".pdf"
-                          chooseLabel="  Subir Documento"
-                          :maxFileSize="10000000"
-                          @select="onUpload($event, slotProps.data)"
-                          @before-upload="hol(slotProps.data)"
-                        />
-                        <FButton @click="handleDownload">Descargar archivo</FButton>
-                      </div>
-                    </div>
-                  </template>
-                </Column>
-
                 <Column style="width: 10px">
                   <template #body="slotProps">
                     <FButton
@@ -695,6 +661,7 @@ const prepareCreate = async () => {
   sumilla.value.responsable = userLogin.value;
   sumilla.value.fecha_sumilla = new Date();
   sumilla.value.hora_sumilla = new Date().getHours() + ":" + new Date().getMinutes();
+  bitacora.value.doc_archivo = null;
   fechaSumillaView.value = sumilla.value.fecha_sumilla.toLocaleDateString();
   handleChangeCreateModal();
 };
@@ -833,75 +800,6 @@ const toDate = (date: string) => {
   const month = parseInt(dateParts[1]) - 1; // Month is zero-based
   const day = parseInt(dateParts[2]);
   return new Date(year, month, day);
-};
-
-const {
-  value: documento,
-  errorMessage: documentoError,
-  resetField: resetDocumento,
-} = useField<Blob>("documento", {
-  required: true,
-});
-
-const archivoNombre = ref<string | null>(null);
-
-const handleChangeDocumento = () => {
-  documentModal.value = !documentModal.value;
-};
-
-const uploadedDocuments = ref<Bitacora[]>([]);
-
-const hol = async (sumilla: Sumilla) => {
-  const existingDocument = uploadedDocuments.value.find(
-    (document) => document.doc_archivo === bitacora.value.doc_archivo
-  );
-
-  if (existingDocument) {
-    const index = uploadedDocuments.value.indexOf(existingDocument);
-    uploadedDocuments.value.splice(index, 1); // Eliminar documento existente del arreglo
-    console.log(bitacora.value, "bitacora splice");
-  }
-};
-
-const onUpload = async ({ files }: any, sumilla: Sumilla) => {
-  bitacora.value = await getBitacoraByNumSumilla(sumilla.numero_sumilla);
-
-  const file = files[0];
-  const fileContent = await readFileAsByteArray(file);
-  bitacora.value.doc_archivo = Array.from(fileContent);
-
-  const existingDocument = uploadedDocuments.value.find(
-    (document) => document.doc_archivo === bitacora.value.doc_archivo
-  );
-
-  if (existingDocument) {
-    const index = uploadedDocuments.value.indexOf(existingDocument);
-    uploadedDocuments.value.splice(index, 1); // Eliminar documento existente del arreglo
-    console.log(bitacora.value, "bitacora splice");
-  }
-  console.log(bitacora.value, "bitacora psh");
-  uploadedDocuments.value.push(bitacora.value!);
-};
-
-const readFileAsByteArray = (file: File): Promise<Uint8Array> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const arrayBuffer = reader.result as ArrayBuffer;
-      const byteArray = new Uint8Array(arrayBuffer);
-      resolve(byteArray);
-    };
-    reader.onerror = (error) => reject(error);
-    reader.readAsArrayBuffer(file);
-  });
-};
-const handleDownload = () => {
-  if (bitacora.value.doc_archivo) {
-    const link = document.createElement("a");
-    link.href = bitacora.value.doc_archivo;
-    link.download = "documento.pdf"; // Cambia el nombre del archivo según sea necesario
-    link.click();
-  }
 };
 </script>
 <style lang="css">

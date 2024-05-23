@@ -18,4 +18,5 @@ export interface Bitacora {
     observaciones:       string;
     sumilla:             Sumilla;
     doc_archivo:         any;
+    nombre_archivo:      string;
 }
