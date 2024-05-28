@@ -1,4 +1,5 @@
 import { Sumilla } from "models/Sumilla.model"
+import { SedeProjection } from "models/projection/SedeProjection.model";
 import { useToast } from "primevue/usetoast";
 
 export const useSumillaService = () => {
@@ -10,6 +11,14 @@ export const useSumillaService = () => {
         try {
             const resp = await $fetch<Sumilla[]>(`${apiUrl}`)
             return resp;
+        } catch (error) {
+            throw new Error("Error al consultar las sumillas");
+        }
+    }
+
+    const getSedeByEmail = async(email:string): Promise<SedeProjection> => {
+        try {
+            return await $fetch<SedeProjection>(`${apiUrl}/getSedeByEmail?email=${email}`)
         } catch (error) {
             throw new Error("Error al consultar las sumillas");
         }
@@ -70,5 +79,6 @@ export const useSumillaService = () => {
         saveSumilla,
         editSumilla,
         deleteSumilla,
+        getSedeByEmail
     }
 }

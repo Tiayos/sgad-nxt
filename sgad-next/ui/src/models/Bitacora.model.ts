@@ -19,4 +19,5 @@ export interface Bitacora {
     sumilla:             Sumilla;
     doc_archivo:         any;
     nombre_archivo:      string;
+    estado_transferencia: string;
 }

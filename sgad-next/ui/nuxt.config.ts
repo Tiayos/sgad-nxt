@@ -53,6 +53,7 @@ export default defineNuxtConfig({
            SGAD_SUMILLA: '/sgad-nuxt/sumilla',
            SGAD_BITACORA: '/sgad-nuxt/bitacora',
            SGAD_PERSONA: '/sgad-nuxt/persona',
+           SGAD_TRANSFERENCIA: '/sgad-nuxt/transferencia',
 
         }
     },

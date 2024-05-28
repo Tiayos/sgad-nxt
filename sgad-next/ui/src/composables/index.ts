@@ -23,3 +23,6 @@ export {
 export {
     useBitacoraService,
 } from './services/useBitacoraService'
+export {
+    useTransferenciaDocumentalService,
+} from './services/useTransferenciaDocumentalService'

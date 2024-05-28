@@ -40,6 +40,16 @@
           header="Número Sumilla"
           style="width: 5px"
         ></Column>
+        <Column header="Estado Transferencia" style="width: 5px">
+          <template #body="slotProps">
+            <FBadge v-if="slotProps.data.estado_transferencia === 'N'" status="critical"
+              >EDICION</FBadge
+            >
+            <FBadge v-if="slotProps.data.estado_transferencia == 'S'" status="success"
+              >ENVIADO</FBadge
+            >
+          </template>
+        </Column>
 
         <Column header="Receptor" style="width: 5px">
           <template #body="slotProps">

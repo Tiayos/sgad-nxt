@@ -2,16 +2,19 @@ import { Persona, Sumilla } from "models/Sumilla.model";
 import { required, is_not } from "@vee-validate/rules";
 import { Bitacora } from "models/Bitacora.model";
 import { useVuelidate, ValidationRuleWithParams  } from '@vuelidate/core';
+import { SedeProjection } from "models/projection/SedeProjection.model";
 
 export const useSumillaComposable = () =>{
-
+//*Session storage
+const { data: userLogin } = useSessionStorage<Persona>("userLogin");
 const useStore = useArchivosStore();
 const {bitacorasList, filtersSumillaBitacora} = storeToRefs(useStore);
 
     //*services
-const {getSumillas, saveSumilla, deleteSumilla, getSumillaByNumeroSumilla, editSumilla } = useSumillaService();
+const {getSumillas, saveSumilla, deleteSumilla, getSumillaByNumeroSumilla, editSumilla, getSedeByEmail } = useSumillaService();
 const {getUsers, getUsrLogin} = usePersonaService();
 const {getBitacoras, saveBitacora, deleteBitacora, editBitacora, getBitacoraByNumSumilla, deleteBitacoraByNumSumilla} = useBitacoraService();
+const {saveTransferencia} = useTransferenciaDocumentalService();
 
 
     //*New Sumilla
@@ -23,6 +26,7 @@ const receptorPersonaList = ref<Persona[]>([]);
 
 const bitacora = ref<Bitacora>({} as Bitacora);
 
+const sede = ref<SedeProjection>({} as SedeProjection);
 
 const validateBitacora = {
     nombres_remitente:   { required },
@@ -38,7 +42,6 @@ onMounted(async() => {
     await findSumillas();
     await findBitacoras();
     receptorPersonaList.value = await getUsers();
-
 })
 
 const findBitacoras = async() =>{
@@ -72,8 +75,11 @@ return {
     getUsers,
     getBitacoraByNumSumilla,
     deleteBitacoraByNumSumilla,
+    getSedeByEmail,
+    saveTransferencia,
     filtersSumillaBitacora,
     v$,
-    data
+    data,
+    sede
 }
 }

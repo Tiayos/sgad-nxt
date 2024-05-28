@@ -22,22 +22,34 @@
                   <div
                     class="datatable-header-toolbar flex flex-wrap align-items-center justify-content-between gap-2"
                   >
-                    <FHorizontalStack gap="2" align="space-between">
-                      <FButton
-                        @click="prepareCreate"
-                        size="medium"
-                        :icon="PlusSolid"
-                        PlusSolid
-                        primary
-                        >Crear</FButton
-                      >
-                      <FTextField
-                        type="text"
-                        id="filterSumilla"
-                        v-model="filtersSumillaBitacora['global'].value"
-                        placeholder="N° Sumilla"
-                      >
-                      </FTextField>
+                    <FHorizontalStack gap="4" align="space-between">
+                      <FHorizontalStack gap="2">
+                        <FButton
+                          @click="prepareCreate"
+                          size="medium"
+                          :icon="PlusSolid"
+                          PlusSolid
+                          primary
+                          >Crear</FButton
+                        >
+                        <FButton
+                          @click="prepareTransferencia"
+                          size="medium"
+                          :icon="InboxSolid"
+                          secondary
+                          >Transferencia Documental</FButton
+                        >
+                      </FHorizontalStack>
+
+                      <FHorizontalStack gap="4">
+                        <FTextField
+                          type="text"
+                          id="filterSumilla"
+                          v-model="filtersSumillaBitacora['global'].value"
+                          placeholder="N° Sumilla"
+                        >
+                        </FTextField>
+                      </FHorizontalStack>
                     </FHorizontalStack>
                   </div>
                 </template>
@@ -163,7 +175,7 @@
                     :font-weight="'semibold'"
                     style="text-align: center"
                   >
-                    --CAMPUS--
+                    {{ sede.dee_descripcion }}
                   </FText>
                   <FText as="h6" variant="headingMd" style="text-align: center">
                     {{ $t("app.sgadNuxt.sumilla.title") }}
@@ -445,7 +457,7 @@
                             showIcon
                             iconDisplay="input"
                             timeOnly
-                            @update:model-value="changeHour"
+                            @update:="changeHour"
                           >
                           </Calendar>
                         </div>
@@ -500,25 +512,61 @@
               </FModalSection>
             </FModal>
 
-            <!-- MODAL DOCUMENTO -->
-            <!-- 
+            <!-- MODAL TRANSFERENCIA DOCUMENTAL -->
+
             <FModal
-              v-model="createModal"
+              v-model="transferenciaModal"
               title=""
               title-hidden
               large
               :primaryAction="{
-                content: 'Guardar Documento',
-                onAction: onSubmited,
+                content: 'Enviar Transferencia',
+                onAction: onSubmitTransferencia,
               }"
               :secondaryActions="[
                 {
                   content: 'Cancelar',
-                  onAction: handleChangeDocumento,
+                  onAction: handleChangeTransferencia,
                 },
               ]"
             >
-            </FModal> -->
+              <FCard sectioned>
+                <FVerticalStack gap="4">
+                  <FText
+                    id="transferenciaTituloLbl"
+                    as="h6"
+                    variant="headingLg"
+                    fontWeight="semibold"
+                  >
+                    Transferencia Documental:
+                  </FText>
+                  <FDivider />
+                </FVerticalStack>
+                <FCardSection>
+                  <FVerticalStack gap="4">
+                    <FText
+                      id="FechaInicioLbl"
+                      as="h6"
+                      variant="bodyMd"
+                      fontWeight="semibold"
+                    >
+                      Fecha Inicio:
+                    </FText>
+                    <FTextField id="FechaInicioTxt" type="date" v-model="fechaInicial" />
+
+                    <FText
+                      id="FechaFinLbl"
+                      as="h6"
+                      variant="bodyMd"
+                      fontWeight="semibold"
+                    >
+                      Fecha Fin:
+                    </FText>
+                    <FTextField id="FechaFinTxt" type="date" v-model="fechaFinal" />
+                  </FVerticalStack>
+                </FCardSection>
+              </FCard>
+            </FModal>
           </FCard>
         </FLayoutSection>
 
@@ -552,6 +600,8 @@ import {
   TrashCanSolid,
   MagnifyingGlassSolid,
   ArrowUpFromLineSolid,
+  EllipsisSolid,
+  InboxSolid,
 } from "@ups-dev/freya-icons";
 import Image from "primevue/image";
 import { Persona, Sumilla } from "../../models/Sumilla.model";
@@ -588,11 +638,14 @@ const {
   deleteBitacora,
   getUsrLogin,
   deleteBitacoraByNumSumilla,
+  saveTransferencia,
   v$,
   receptorPersonaList,
   getSumillaByNumeroSumilla,
   getBitacoraByNumSumilla,
+  getSedeByEmail,
   filtersSumillaBitacora,
+  sede,
 } = useSumillaComposable();
 
 //*Session storage
@@ -652,6 +705,7 @@ const changeHour = () => {
 };
 
 const prepareCreate = async () => {
+  sede.value = await getSedeByEmail(data.value?.user?.email!);
   userLogin.value = await getUsrLogin(data.value?.user?.email!);
   action.value = persistAction.create;
   bitacora.value = {} as Bitacora;
@@ -745,6 +799,7 @@ const onSubmited = handleSubmit(async (values) => {
       bitacora.value.fecha_recepcion = sumilla.value?.fecha_sumilla!;
       bitacora.value.hora_recepcion = sumilla.value?.hora_sumilla!;
       bitacora.value.sumilla = sumilla.value;
+      bitacora.value.estado_transferencia = "N";
 
       await saveBitacora(bitacora.value);
     }
@@ -800,6 +855,24 @@ const toDate = (date: string) => {
   const month = parseInt(dateParts[1]) - 1; // Month is zero-based
   const day = parseInt(dateParts[2]);
   return new Date(year, month, day);
+};
+
+// TRANSFERENCIA DOCUMENTAL
+
+const transferenciaModal = ref<boolean>(false);
+const fechaInicial = ref<string>("");
+const fechaFinal = ref<string>("");
+
+const handleChangeTransferencia = () => {
+  transferenciaModal.value = !transferenciaModal.value;
+};
+
+const prepareTransferencia = () => {
+  handleChangeTransferencia();
+};
+
+const onSubmitTransferencia = async () => {
+  await saveTransferencia(fechaInicial.value, fechaFinal.value);
 };
 </script>
 <style lang="css">
