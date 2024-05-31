@@ -36,6 +36,7 @@
                           @click="prepareTransferencia"
                           size="medium"
                           :icon="InboxSolid"
+                          :disabled="bitacorasList.length == 0"
                           secondary
                           >Transferencia Documental</FButton
                         >
@@ -623,6 +624,7 @@ const fechaSumillaView = ref();
 
 const {
   sumillaList,
+  bitacorasList,
   sumilla,
   bitacora,
   sumillaEncontrada,
@@ -873,6 +875,14 @@ const prepareTransferencia = () => {
 
 const onSubmitTransferencia = async () => {
   await saveTransferencia(fechaInicial.value, fechaFinal.value);
+  handleChangeTransferencia();
+  toast.add({
+    severity: "success",
+    summary: "Transferencia",
+    detail: `Se ha realizado la transferencia correctamente`,
+    life: 3000,
+  });
+  await findBitacoras();
 };
 </script>
 <style lang="css">
