@@ -12,7 +12,7 @@ const {bitacorasList, filtersSumillaBitacora} = storeToRefs(useStore);
 
     //*services
 const {getSumillas, saveSumilla, deleteSumilla, getSumillaByNumeroSumilla, editSumilla, getSedeByEmail } = useSumillaService();
-const {getUsers, getUsrLogin, getUsersAmbitosGestionDocumental} = usePersonaService();
+const {getUsers, getUsrLogin} = usePersonaService();
 const {getBitacoras, saveBitacora, deleteBitacora, editBitacora, getBitacoraByNumSumilla, deleteBitacoraByNumSumilla} = useBitacoraService();
 const {saveTransferencia} = useTransferenciaDocumentalService();
 
@@ -23,10 +23,9 @@ const { data } = useAuth();
 
 const sumillaList = ref<Sumilla[]>([]);
 const receptorPersonaList = ref<Persona[]>([]);
-const usersGestionDocumentalList = ref<Persona[]>([]);
-
 
 const bitacora = ref<Bitacora>({} as Bitacora);
+
 const sede = ref<SedeProjection>({} as SedeProjection);
 
 const validateBitacora = {
@@ -43,7 +42,6 @@ onMounted(async() => {
     await findSumillas();
     await findBitacoras();
     receptorPersonaList.value = await getUsers();
-    usersGestionDocumentalList.value = await getUsersAmbitosGestionDocumental();
 })
 
 const findBitacoras = async() =>{
@@ -59,7 +57,6 @@ const sumillaEncontrada = ref<Sumilla|null>({} as Sumilla)
 
 return {
     sumillaList,
-    usersGestionDocumentalList,
     bitacorasList,
     sumilla,
     bitacora,

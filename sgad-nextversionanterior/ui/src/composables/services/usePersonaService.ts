@@ -22,18 +22,8 @@ export const usePersonaService = () => {
         }
     }
 
-    const getUsersAmbitosGestionDocumental = async(): Promise<Persona[]> => {
-        try {
-            const resp = await $fetch<Persona[]>(`${apiUrl}/findPersonasGestionDocumental`)
-            return resp.map(a=>({...a, nombreCompleto: `${a.per_nombres} ${a.per_apellidos}`}))
-        } catch (error) {
-            throw new Error("Error al consultar las sumillas");
-        }
-    }
-
     return {
         getUsrLogin,
-        getUsers,
-        getUsersAmbitosGestionDocumental
+        getUsers
     }
 }

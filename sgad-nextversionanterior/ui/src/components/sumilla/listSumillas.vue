@@ -564,23 +564,6 @@
                       Fecha Fin:
                     </FText>
                     <FTextField id="FechaFinTxt" type="date" v-model="fechaFinal" />
-
-                    <FText
-                      id="FechaFinLbl"
-                      as="h6"
-                      variant="bodyMd"
-                      fontWeight="semibold"
-                    >
-                      Usuario gestión documental:
-                    </FText>
-                    <Dropdown
-                      v-model="userTransferenciaDocumental"
-                      :options="usersGestionDocumentalList"
-                      optionLabel="nombreCompleto"
-                      optionValue="codigo"
-                      placeholder="Seleccione"
-                      :filter="true"
-                    />
                   </FVerticalStack>
                 </FCardSection>
               </FCard>
@@ -630,18 +613,17 @@ import { Bitacora } from "../../models/Bitacora.model";
 
 const toast = useToast();
 const { handleSubmit } = useForm();
-const nom = ref("");
+
 const mostrarDestinatario = ref<boolean>(false);
 const mostrarMensajero = ref<boolean>(false);
 const mostrarEmisor = ref<boolean>(false);
 const mostrarUsrReceptor = ref<boolean>(false);
 const fechaEntrega = ref<string>("");
+const codigoBitacora = ref<Number>(0);
 const fechaSumillaView = ref();
-const userTransferenciaDocumental = ref<Persona>();
 
 const {
   sumillaList,
-  usersGestionDocumentalList,
   bitacorasList,
   sumilla,
   bitacora,
@@ -676,7 +658,6 @@ const documentModal = ref<boolean>(false);
 const codigoSumillaDelete = ref<Number>(0);
 const numeroSumilla = ref<string>("");
 const filteredItems = ref<Persona[]>([]);
-
 const selected = ref(0);
 
 const options = [
@@ -709,6 +690,7 @@ const handleChangeCreateModal = () => {
 };
 
 const searchItem = (event: any) => {
+  console.log(event);
   const query = event.query.toLowerCase();
   filteredItems.value = receptorPersonaList.value.filter(
     (item) =>
@@ -892,7 +874,7 @@ const prepareTransferencia = () => {
 };
 
 const onSubmitTransferencia = async () => {
-  await saveTransferencia(fechaInicial.value, fechaFinal.value, userTransferenciaDocumental.value);
+  await saveTransferencia(fechaInicial.value, fechaFinal.value);
   handleChangeTransferencia();
   toast.add({
     severity: "success",
@@ -944,16 +926,5 @@ const onSubmitTransferencia = async () => {
 /* Asegúrate de que el contenedor del AutoComplete ocupe el ancho completo */
 .full-width-autocomplete {
   width: 100%;
-}
-
-/* *DROPDOWN */
-
-.p-inputtext {
-  width: 100% !important;
-  padding: 0.5rem !important;
-  box-sizing: border-box !important;
-  color: #000 !important;
-  background-color: #fff !important;
-  border: 1px solid #ccc !important;
 }
 </style>
