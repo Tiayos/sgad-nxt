@@ -523,6 +523,7 @@
               :primaryAction="{
                 content: 'Enviar Transferencia',
                 onAction: onSubmitTransferencia,
+                disabled: bitacorasListTransferenciaDocumental.length == 0,
               }"
               :secondaryActions="[
                 {
@@ -563,7 +564,12 @@
                     >
                       Fecha Fin:
                     </FText>
-                    <FTextField id="FechaFinTxt" type="date" v-model="fechaFinal" />
+                    <FTextField
+                      id="FechaFinTxt"
+                      type="date"
+                      v-model="fechaFinal"
+                      :disabled="fechaInicial == ''"
+                    />
 
                     <FText
                       id="FechaFinLbl"
@@ -580,7 +586,57 @@
                       optionValue="codigo"
                       placeholder="Seleccione"
                       :filter="true"
+                      :disabled="fechaFinal == ''"
                     />
+
+                    <FText
+                      id="mensajeTransferencia"
+                      as="h6"
+                      variant="bodyMd"
+                      fontWeight="semibold"
+                      color="critical"
+                      v-if="
+                        bitacorasListTransferenciaDocumental.length == 0 &&
+                        mensajeTransferencia != ''
+                      "
+                    >
+                      {{ mensajeTransferencia }}
+                    </FText>
+
+                    <DataTable
+                      v-if="bitacorasListTransferenciaDocumental.length != 0"
+                      :value="bitacorasListTransferenciaDocumental"
+                      :showGridlines="true"
+                      :stripedRows="true"
+                      tableStyle="min-width: 50rem"
+                      :paginator="true"
+                      :rows="10"
+                    >
+                      <Column
+                        field="codigo"
+                        header="No. de ref"
+                        style="width: 5px"
+                      ></Column>
+                      <Column
+                        field="sumilla.numero_sumilla"
+                        header="Número Sumilla"
+                        style="width: 5px"
+                      ></Column>
+                      <Column header="Estado Transferencia" style="width: 5px">
+                        <template #body="slotProps">
+                          <FBadge
+                            v-if="slotProps.data.estado_transferencia === 'N'"
+                            status="critical"
+                            >EDICION</FBadge
+                          >
+                          <FBadge
+                            v-if="slotProps.data.estado_transferencia == 'S'"
+                            status="success"
+                            >ENVIADO</FBadge
+                          >
+                        </template>
+                      </Column>
+                    </DataTable>
                   </FVerticalStack>
                 </FCardSection>
               </FCard>
@@ -637,11 +693,12 @@ const mostrarEmisor = ref<boolean>(false);
 const mostrarUsrReceptor = ref<boolean>(false);
 const fechaEntrega = ref<string>("");
 const fechaSumillaView = ref();
-const userTransferenciaDocumental = ref<Persona>();
+const userTransferenciaDocumental = ref<number>();
 
 const {
   sumillaList,
   usersGestionDocumentalList,
+  bitacorasListTransferenciaDocumental,
   bitacorasList,
   sumilla,
   bitacora,
@@ -666,6 +723,8 @@ const {
   getSedeByEmail,
   filtersSumillaBitacora,
   sede,
+  findBitacorasByFechaTransferencia,
+  mensajeTransferencia,
 } = useSumillaComposable();
 
 //*Session storage
@@ -883,16 +942,34 @@ const transferenciaModal = ref<boolean>(false);
 const fechaInicial = ref<string>("");
 const fechaFinal = ref<string>("");
 
+watch(
+  () => fechaFinal.value,
+  (newValue, oldValue) => {
+    if (fechaFinal.value != "") {
+      findBitacorasByFechaTransferencia(fechaInicial.value, fechaFinal.value);
+    }
+  }
+);
+
 const handleChangeTransferencia = () => {
   transferenciaModal.value = !transferenciaModal.value;
 };
 
 const prepareTransferencia = () => {
+  bitacorasListTransferenciaDocumental.value = [];
+  fechaInicial.value = "";
+  fechaFinal.value = "";
+  userTransferenciaDocumental.value = 0;
+  mensajeTransferencia.value = "";
   handleChangeTransferencia();
 };
 
 const onSubmitTransferencia = async () => {
-  await saveTransferencia(fechaInicial.value, fechaFinal.value, userTransferenciaDocumental.value);
+  await saveTransferencia(
+    fechaInicial.value,
+    fechaFinal.value,
+    userTransferenciaDocumental.value!
+  );
   handleChangeTransferencia();
   toast.add({
     severity: "success",

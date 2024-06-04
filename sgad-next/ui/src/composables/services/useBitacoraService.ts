@@ -13,6 +13,24 @@ export const useBitacoraService = () => {
         }
     }
 
+    const getBitacorasBySede = async(sede:number): Promise<Bitacora[]> => {
+        try {
+            const resp = await $fetch<Bitacora[]>(`${apiUrl}/getBitacorasBySede?sede=${sede}`)
+            return resp;
+        } catch (error) {
+            throw new Error("Error al consultar las bitacoras");
+        }
+    }
+
+    const getBitacorasByFechaAndEstado = async(fechaInicio:string, fechaFin:string): Promise<Bitacora[]> => {
+        try {
+            const resp = await $fetch<Bitacora[]>(`${apiUrl}/getBitacorasByFechasAndEstado?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`)
+            return resp;
+        } catch (error) {
+            throw new Error("Error al consultar las bitacoras");
+        }
+    }
+
     const getBitacoraByNumSumilla = async(numSumilla:string): Promise<Bitacora> => {
         try {
             return await $fetch<Bitacora>(`${apiUrl}/getBitacoraByNumSumilla?numSumilla=${numSumilla}`)
@@ -67,6 +85,8 @@ export const useBitacoraService = () => {
 
     return {
         getBitacoras,
+        getBitacorasBySede,
+        getBitacorasByFechaAndEstado,
         getBitacoraByNumSumilla,
         saveBitacora,
         editBitacora,

@@ -16,6 +16,15 @@ export const useSumillaService = () => {
         }
     }
 
+    const getSumillasBySede = async(sede: number): Promise<Sumilla[]> => {
+        try {
+            const resp = await $fetch<Sumilla[]>(`${apiUrl}/findSumillasBySede?sede=${sede}`)
+            return resp;
+        } catch (error) {
+            throw new Error("Error al consultar las sumillas");
+        }
+    }
+
     const getSedeByEmail = async(email:string): Promise<SedeProjection> => {
         try {
             return await $fetch<SedeProjection>(`${apiUrl}/getSedeByEmail?email=${email}`)
@@ -75,6 +84,7 @@ export const useSumillaService = () => {
 
     return {
         getSumillas,
+        getSumillasBySede,
         getSumillaByNumeroSumilla,
         saveSumilla,
         editSumilla,

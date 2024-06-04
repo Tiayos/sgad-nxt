@@ -11,9 +11,9 @@ const useStore = useArchivosStore();
 const {bitacorasList, filtersSumillaBitacora} = storeToRefs(useStore);
 
     //*services
-const {getSumillas, saveSumilla, deleteSumilla, getSumillaByNumeroSumilla, editSumilla, getSedeByEmail } = useSumillaService();
+const {getSumillas, getSumillasBySede, saveSumilla, deleteSumilla, getSumillaByNumeroSumilla, editSumilla, getSedeByEmail } = useSumillaService();
 const {getUsers, getUsrLogin, getUsersAmbitosGestionDocumental} = usePersonaService();
-const {getBitacoras, saveBitacora, deleteBitacora, editBitacora, getBitacoraByNumSumilla, deleteBitacoraByNumSumilla} = useBitacoraService();
+const {getBitacoras, getBitacorasBySede, getBitacorasByFechaAndEstado, saveBitacora, deleteBitacora, editBitacora, getBitacoraByNumSumilla, deleteBitacoraByNumSumilla} = useBitacoraService();
 const {saveTransferencia} = useTransferenciaDocumentalService();
 
 
@@ -25,9 +25,11 @@ const sumillaList = ref<Sumilla[]>([]);
 const receptorPersonaList = ref<Persona[]>([]);
 const usersGestionDocumentalList = ref<Persona[]>([]);
 
-
 const bitacora = ref<Bitacora>({} as Bitacora);
 const sede = ref<SedeProjection>({} as SedeProjection);
+const bitacorasListTransferenciaDocumental = ref<Bitacora[]>([]);
+const mensajeTransferencia = ref<string>("");
+
 
 const validateBitacora = {
     nombres_remitente:   { required },
@@ -47,11 +49,20 @@ onMounted(async() => {
 })
 
 const findBitacoras = async() =>{
-    bitacorasList.value = await getBitacoras();
+    sede.value = await getSedeByEmail(data.value?.user?.email!);
+    bitacorasList.value = await getBitacorasBySede(sede.value.dee_codigo);
+}
+
+const findBitacorasByFechaTransferencia = async(fechaInicio:string, fechaFin:string) =>{
+    bitacorasListTransferenciaDocumental.value = await getBitacorasByFechaAndEstado(fechaInicio, fechaFin);
+    if(bitacorasListTransferenciaDocumental.value.length==0){
+        mensajeTransferencia.value = 'No se encuentra ningún documento por enviar en las fechas seleccionadas'
+    }
 }
 
 const findSumillas = async() =>{
-    sumillaList.value = await getSumillas();
+    sede.value = await getSedeByEmail(data.value?.user?.email!);
+    sumillaList.value = await getSumillasBySede(sede.value.dee_codigo);
 }
 
 //* BUSCAR SUMILLA BITACORA
@@ -61,6 +72,8 @@ return {
     sumillaList,
     usersGestionDocumentalList,
     bitacorasList,
+    mensajeTransferencia,
+    bitacorasListTransferenciaDocumental,
     sumilla,
     bitacora,
     sumillaEncontrada,
@@ -80,6 +93,7 @@ return {
     deleteBitacoraByNumSumilla,
     getSedeByEmail,
     saveTransferencia,
+    findBitacorasByFechaTransferencia,
     filtersSumillaBitacora,
     v$,
     data,
