@@ -879,7 +879,7 @@ const onSubmited = handleSubmit(async (values) => {
       bitacora.value.hora_recepcion = sumilla.value?.hora_sumilla!;
       bitacora.value.sumilla = sumilla.value;
       bitacora.value.estado_transferencia = "N";
-
+      bitacora.value.estado_envio_destinatario = "N";
       await saveBitacora(bitacora.value);
     }
 
@@ -955,7 +955,8 @@ const handleChangeTransferencia = () => {
   transferenciaModal.value = !transferenciaModal.value;
 };
 
-const prepareTransferencia = () => {
+const prepareTransferencia = async () => {
+  userLogin.value = await getUsrLogin(data.value?.user?.email!);
   bitacorasListTransferenciaDocumental.value = [];
   fechaInicial.value = "";
   fechaFinal.value = "";
@@ -968,7 +969,8 @@ const onSubmitTransferencia = async () => {
   await saveTransferencia(
     fechaInicial.value,
     fechaFinal.value,
-    userTransferenciaDocumental.value!
+    userTransferenciaDocumental.value!,
+    userLogin.value.codigo
   );
   handleChangeTransferencia();
   toast.add({

@@ -63,6 +63,18 @@ export const useBitacoraService = () => {
         }
     }
 
+    const editEstadoEnvioBitacora = async(bitacora:Bitacora)=>{
+        try {
+            await $fetch(`${apiUrl}/updateEstadoEnvioDestinatario`,
+            {
+                method: 'PUT',
+                body:  bitacora,
+            })
+        } catch (error) {
+            throw new Error("Error al editar la bitacora");
+        }
+    }
+
     const deleteBitacora = async(codigo: Number)=>{
         try {
             await $fetch(`${apiUrl}?codigo=${codigo}`,{
@@ -90,6 +102,7 @@ export const useBitacoraService = () => {
         getBitacoraByNumSumilla,
         saveBitacora,
         editBitacora,
+        editEstadoEnvioBitacora,
         deleteBitacora,
         deleteBitacoraByNumSumilla
 

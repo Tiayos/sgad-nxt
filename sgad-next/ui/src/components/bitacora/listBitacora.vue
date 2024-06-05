@@ -14,6 +14,7 @@
         tableStyle="min-width: 50rem"
         :paginator="true"
         :rows="10"
+        @row-dblclick="onRowDblClick"
       >
         <template #header>
           <div
@@ -40,7 +41,11 @@
           header="Número Sumilla"
           style="width: 5px"
         ></Column>
-        <Column header="Estado Transferencia" style="width: 5px">
+        <Column
+          bodyStyle="text-align:center"
+          header="Estado Transferencia documental"
+          style="width: 5px"
+        >
           <template #body="slotProps">
             <FBadge v-if="slotProps.data.estado_transferencia === 'N'" status="critical"
               >EDICION</FBadge
@@ -51,12 +56,12 @@
           </template>
         </Column>
 
-        <Column header="Receptor" style="width: 5px">
+        <!-- <Column header="Receptor" style="width: 5px">
           <template #body="slotProps">
             {{ slotProps.data.receptor_documento.per_nombres }}
             {{ slotProps.data.receptor_documento.per_apellidos }}
           </template>
-        </Column>
+        </Column> -->
         <Column header="Remitente" style="width: 5px">
           <template #body="slotProps">
             {{ slotProps.data.nombres_remitente }}
@@ -86,20 +91,20 @@
           bodyStyle="text-align: center;"
         >
         </Column>
-        <Column
+        <!-- <Column
           field="fecha_recepcion"
           header="Fecha recepción"
           style="width: 10px"
           bodyStyle="text-align: center;"
         >
-        </Column>
-        <Column
+        </Column> -->
+        <!-- <Column
           field="hora_recepcion"
           header="Hora recepción"
           style="width: 10px"
           bodyStyle="text-align: center;"
         >
-        </Column>
+        </Column> -->
 
         <Column header="Mensajero" style="width: 10px" bodyStyle="text-align: center;">
           <template #body="slotProps">
@@ -127,6 +132,21 @@
           style="width: 10px"
           bodyStyle="text-align: center;"
         >
+        </Column>
+
+        <Column header="Estado envío destinatario" style="width: 5px">
+          <template #body="slotProps">
+            <FBadge
+              v-if="slotProps.data.estado_envio_destinatario === 'N'"
+              status="critical"
+              >Documento pendiente de envío</FBadge
+            >
+            <FBadge
+              v-if="slotProps.data.estado_envio_destinatario == 'S'"
+              status="success"
+              >Documento enviado al destinatario</FBadge
+            >
+          </template>
         </Column>
 
         <Column header="Persona que entrega" style="width: 5px">
@@ -236,6 +256,41 @@
         </FVerticalStack>
       </FModalSection>
     </FModal>
+
+    <FModal
+      v-model="transferenciaModal"
+      title=""
+      title-hidden
+      large
+      :primaryAction="{
+        content: 'Enviar Transferencia',
+        onAction: onSubmitTransferencia,
+        disabled: bitacorasListTransferenciaDocumental.length == 0,
+      }"
+      :secondaryActions="[
+        {
+          content: 'Cancelar',
+          onAction: handleChangeTransferencia,
+        },
+      ]"
+    >
+      <!-- MODAL NOTIFICACION DESTINATARIO -->
+
+      <FCard sectioned>
+        <FVerticalStack gap="4">
+          <FText
+            id="transferenciaTituloLbl"
+            as="h6"
+            variant="headingLg"
+            fontWeight="semibold"
+          >
+            Transferencia Documental:
+          </FText>
+          <FDivider />
+        </FVerticalStack>
+        <FCardSection> </FCardSection>
+      </FCard>
+    </FModal>
   </FCardSection>
 </template>
 <script setup lang="ts">
@@ -337,6 +392,13 @@ const uint8ArrayToFile = (byteArray: number[], fileName: string): File => {
   const uint8Array = new Uint8Array(byteArray);
   const blob = new Blob([uint8Array], { type: "application/pdf" });
   return new File([blob], fileName, { type: "application/pdf" });
+};
+
+const onRowDblClick = (event: any) => {
+  const selectedRowData = event.data;
+  console.log("Double clicked row:", selectedRowData);
+  // Llama a tu método aquí y pasa la fila seleccionada
+  // this.yourMethod(selectedRowData);
 };
 </script>
 <style lang="css">

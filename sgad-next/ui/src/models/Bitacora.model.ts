@@ -20,4 +20,5 @@ export interface Bitacora {
     doc_archivo:         any;
     nombre_archivo:      string;
     estado_transferencia: string;
+    estado_envio_destinatario: string;
 }
