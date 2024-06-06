@@ -13,7 +13,7 @@ const {bitacorasList, filtersSumillaBitacora} = storeToRefs(useStore);
     //*services
 const {getSumillas, getSumillasBySede, saveSumilla, deleteSumilla, getSumillaByNumeroSumilla, editSumilla, getSedeByEmail } = useSumillaService();
 const {getUsers, getUsrLogin, getUsersAmbitosGestionDocumental} = usePersonaService();
-const {getBitacoras, getBitacorasBySede, getBitacorasByFechaAndEstado, saveBitacora, deleteBitacora, editBitacora, getBitacoraByNumSumilla, deleteBitacoraByNumSumilla} = useBitacoraService();
+const {getBitacoras, getBitacorasBySede, getBitacorasByFechaAndEstado, saveBitacora, deleteBitacora, editBitacora, editEstadoEnvioBitacora, getBitacoraByNumSumilla, deleteBitacoraByNumSumilla} = useBitacoraService();
 const {saveTransferencia} = useTransferenciaDocumentalService();
 
 
@@ -94,6 +94,7 @@ return {
     getSedeByEmail,
     saveTransferencia,
     findBitacorasByFechaTransferencia,
+    editEstadoEnvioBitacora,
     filtersSumillaBitacora,
     v$,
     data,

@@ -39,6 +39,14 @@ export const useBitacoraService = () => {
         }
     }
 
+    const getBitacorasByPerCodigoDestinatario = async(perCodigoDestinatario:number): Promise<Bitacora[]> => {
+        try {
+            return await $fetch<Bitacora[]>(`${apiUrl}/getBitacorasByDestinatario?perCodigoDestinatario=${perCodigoDestinatario}`)
+        } catch (error) {
+            throw new Error("Error al consultar las bitacoras");
+        }
+    }
+
     const saveBitacora = async(bitacora:Bitacora)=>{
         try {
             await $fetch(`${apiUrl}`,
@@ -104,7 +112,8 @@ export const useBitacoraService = () => {
         editBitacora,
         editEstadoEnvioBitacora,
         deleteBitacora,
-        deleteBitacoraByNumSumilla
+        deleteBitacoraByNumSumilla,
+        getBitacorasByPerCodigoDestinatario
 
     }
 }

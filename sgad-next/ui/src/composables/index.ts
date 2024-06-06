@@ -10,6 +10,10 @@ export {
 export {
     useBitacoraComposable,
 } from './bitacoras/useBitacoraComposable'
+
+export {
+    useBitacorasDestinatariosComposable,
+} from './bitacoras/useBitacorasDestinatariosComposable'
 //services
 
 export {

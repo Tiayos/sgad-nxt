@@ -1,6 +1,6 @@
 <template>
   <FPage full-width>
-    <BitacoraListBitacora></BitacoraListBitacora>
+    <BitacorasDestinatarios></BitacorasDestinatarios>
   </FPage>
 </template>
 <script setup lang="ts"></script>

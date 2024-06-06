@@ -113,6 +113,18 @@
                     >
                   </template>
                 </Column>
+
+                <Column style="width: 10px">
+                  <template #body="slotProps">
+                    <FButton
+                      size="medium"
+                      primary
+                      :icon="MessageDotsRegular"
+                      @click="prepareEnviarDocumento(slotProps.data)"
+                      >Enviar Documento
+                    </FButton>
+                  </template>
+                </Column>
               </DataTable>
             </FVerticalStack>
 
@@ -641,6 +653,46 @@
                 </FCardSection>
               </FCard>
             </FModal>
+
+            <FModal
+              v-model="envioDocumentoDestinatarioModal"
+              title=""
+              title-hidden
+              large
+              :primaryAction="{
+                content: 'Enviar Documento',
+                onAction: onSubmitEnviarDocumento,
+              }"
+              :secondaryActions="[
+                {
+                  content: 'Cancelar',
+                  onAction: handleChangeEnvioDocumento,
+                },
+              ]"
+            >
+              <FCard sectioned>
+                <FVerticalStack gap="4">
+                  <FText
+                    id="envioDocumentoTitulo"
+                    as="h6"
+                    variant="bodyLg"
+                    fontWeight="semibold"
+                    alignment="center"
+                  >
+                    Está seguro que quiere enviar el documento con el numero de sumilla:
+                    <span style="font-weight: 700"
+                      >{{ bitacora.sumilla.numero_sumilla }}
+                    </span>
+                    al destinatario
+                    <br />
+                    <span style="font-weight: 700"
+                      >{{ bitacora.destinatario.per_nombres }}
+                      {{ bitacora.destinatario.per_apellidos }} </span
+                    >:
+                  </FText>
+                </FVerticalStack>
+              </FCard>
+            </FModal>
           </FCard>
         </FLayoutSection>
 
@@ -676,6 +728,7 @@ import {
   ArrowUpFromLineSolid,
   EllipsisSolid,
   InboxSolid,
+  MessageDotsRegular,
 } from "@ups-dev/freya-icons";
 import Image from "primevue/image";
 import { Persona, Sumilla } from "../../models/Sumilla.model";
@@ -686,7 +739,6 @@ import { Bitacora } from "../../models/Bitacora.model";
 
 const toast = useToast();
 const { handleSubmit } = useForm();
-const nom = ref("");
 const mostrarDestinatario = ref<boolean>(false);
 const mostrarMensajero = ref<boolean>(false);
 const mostrarEmisor = ref<boolean>(false);
@@ -712,6 +764,7 @@ const {
   saveBitacora,
   findBitacoras,
   editBitacora,
+  editEstadoEnvioBitacora,
   deleteBitacora,
   getUsrLogin,
   deleteBitacoraByNumSumilla,
@@ -731,7 +784,6 @@ const {
 const { data: userLogin } = useSessionStorage<Persona>("userLogin");
 const createModal = ref<boolean>(false);
 const deleteModal = ref<boolean>(false);
-const documentModal = ref<boolean>(false);
 const codigoSumillaDelete = ref<Number>(0);
 const numeroSumilla = ref<string>("");
 const filteredItems = ref<Persona[]>([]);
@@ -880,6 +932,7 @@ const onSubmited = handleSubmit(async (values) => {
       bitacora.value.sumilla = sumilla.value;
       bitacora.value.estado_transferencia = "N";
       bitacora.value.estado_envio_destinatario = "N";
+      bitacora.value.adicionado = data.value?.user?.email!;
       await saveBitacora(bitacora.value);
     }
 
@@ -980,6 +1033,51 @@ const onSubmitTransferencia = async () => {
     life: 3000,
   });
   await findBitacoras();
+};
+
+// ENVIO DEL DOCUMENTO
+
+const prepareEnviarDocumento = async (sumillaDocumento: Sumilla) => {
+  bitacora.value = await getBitacoraByNumSumilla(sumillaDocumento.numero_sumilla);
+
+  if (bitacora.value.doc_archivo != null) {
+    if (bitacora.value.estado_envio_destinatario != "N") {
+      toast.add({
+        severity: "info",
+        summary: "Documento",
+        detail: `El documento se encuentra enviado`,
+        life: 3000,
+      });
+    } else {
+      handleChangeEnvioDocumento();
+    }
+  } else {
+    toast.add({
+      severity: "error",
+      summary: "Documento",
+      detail: `No está subido el documento digital`,
+      life: 3000,
+    });
+  }
+};
+
+const envioDocumentoDestinatarioModal = ref<boolean>(false);
+
+const handleChangeEnvioDocumento = () => {
+  envioDocumentoDestinatarioModal.value = !envioDocumentoDestinatarioModal.value;
+};
+
+const onSubmitEnviarDocumento = async () => {
+  bitacora.value.estado_envio_destinatario = "E";
+  await editBitacora(bitacora.value, bitacora.value.codigo); // E- ENVIADO N- NO ENVIADO A- APROBADO R-RECHAZADO
+  toast.add({
+    severity: "success",
+    summary: "Documento",
+    detail: `El documento se envío correctamente `,
+    life: 3000,
+  });
+  await findBitacoras();
+  handleChangeEnvioDocumento();
 };
 </script>
 <style lang="css">
