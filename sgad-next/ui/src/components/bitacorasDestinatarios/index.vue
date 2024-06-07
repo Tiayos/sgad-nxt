@@ -27,18 +27,6 @@
           >
           </Column>
 
-          <Column header="Mensajero" style="width: 10px" bodyStyle="text-align: center;">
-            <template #body="slotProps">
-              {{
-                slotProps.data.mensajero
-                  ? slotProps.data.mensajero.per_nombres +
-                    " " +
-                    slotProps.data.mensajero.per_apellidos
-                  : ""
-              }}
-            </template>
-          </Column>
-
           <Column
             field="numero_guia"
             header="Número de guia"
@@ -47,33 +35,24 @@
           >
           </Column>
 
-          <Column
-            field="observaciones"
-            header="Observaciones"
-            style="width: 10px"
-            bodyStyle="text-align: center;"
-          >
-          </Column>
-
-          <Column
-            header="Estado envío destinatario"
-            style="width: 5px"
-            bodyStyle="text-align:center;"
-          >
+          <Column header="Archivo" style="width: 10px" bodyStyle="text-align: center;">
             <template #body="slotProps">
-              <FBadge
-                v-if="slotProps.data.estado_envio_destinatario === 'N'"
-                status="critical"
-                >PENDIENTE</FBadge
-              >
-              <FBadge
-                v-if="slotProps.data.estado_envio_destinatario == 'E'"
-                status="attention"
-                >ENVIADO</FBadge
-              >
+              <span v-if="slotProps.data.doc_archivo">
+                <a :href="getDownloadUrl(slotProps.data.doc_archivo)" target="_blank">{{
+                  slotProps.data.nombre_archivo
+                }}</a>
+              </span>
             </template>
           </Column>
-
+          <Column header="Archivo" style="width: 10px" bodyStyle="text-align: center;">
+            <template #body="slotProps">
+              <span v-if="slotProps.data.doc_archivo">
+                <a :href="getDownloadUrl(slotProps.data.doc_archivo)" target="_blank">{{
+                  slotProps.data.nombre_archivo
+                }}</a>
+              </span>
+            </template>
+          </Column>
           <Column header="Archivo" style="width: 10px" bodyStyle="text-align: center;">
             <template #body="slotProps">
               <span v-if="slotProps.data.doc_archivo">

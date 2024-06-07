@@ -40,6 +40,56 @@ const validateBitacora = {
     mensajero:           { required },
 }
 const v$ = useVuelidate(validateBitacora, bitacora);
+enum persistAction {
+  create,
+  edit,
+  view,
+}
+const action = ref();
+const createModal = ref<boolean>(false);
+
+const {
+    value: numHojas,
+    errorMessage: numHojasError,
+    resetField: resetNumHojas,
+  } = useField<string>("numHojas", {
+    required: true,
+  })
+  const fechaEntrega = ref<string>("");
+
+const prepareEdit = async (sumillaParam: Sumilla) => {
+    action.value = persistAction.edit;
+    sumilla.value = { ...sumillaParam };
+    console.log(sumilla.value.numero_hojas, "sumilla.value.numero_hojas");
+    numHojas.value =
+      sumilla.value.numero_hojas != null ? sumilla.value.numero_hojas.toString() : "";
+  
+    bitacora.value = await getBitacoraByNumSumilla(sumilla.value.numero_sumilla);
+    fechaEntrega.value =
+      bitacora.value.fecha_entrega != null ? bitacora.value.fecha_entrega.toString() : "";
+  
+    bitacora.value.mensajero.nombreCompleto = bitacora.value.mensajero.per_apellidos
+      .concat(" ")
+      .concat(bitacora.value.mensajero.per_nombres);
+    bitacora.value.destinatario.nombreCompleto = bitacora.value.destinatario.per_apellidos
+      .concat(" ")
+      .concat(bitacora.value.destinatario.per_nombres);
+  
+    if (bitacora.value.usr_emisor != null) {
+      bitacora.value.usr_emisor.nombreCompleto = bitacora.value.usr_emisor.per_apellidos
+        .concat(" ")
+        .concat(bitacora.value.usr_emisor.per_nombres);
+    }
+  
+    if (bitacora.value.usr_receptor != null) {
+      bitacora.value.usr_receptor.nombreCompleto = bitacora.value.usr_receptor.per_apellidos
+        .concat(" ")
+        .concat(bitacora.value.usr_receptor.per_nombres);
+    }
+  
+    createModal.value = !createModal.value;
+  };
+  
 
 onMounted(async() => {
     await findSumillas();
@@ -67,6 +117,7 @@ const findSumillas = async() =>{
 
 //* BUSCAR SUMILLA BITACORA
 const sumillaEncontrada = ref<Sumilla|null>({} as Sumilla)
+
 
 return {
     sumillaList,
@@ -98,6 +149,14 @@ return {
     filtersSumillaBitacora,
     v$,
     data,
-    sede
+    sede,
+    prepareEdit,
+    persistAction,
+    action,
+    numHojas,
+    fechaEntrega,
+    resetNumHojas,
+    numHojasError,
+    createModal
 }
 }
