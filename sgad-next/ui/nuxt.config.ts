@@ -54,6 +54,7 @@ export default defineNuxtConfig({
            SGAD_BITACORA: '/sgad-nuxt/bitacora',
            SGAD_PERSONA: '/sgad-nuxt/persona',
            SGAD_TRANSFERENCIA: '/sgad-nuxt/transferencia',
+           SGAD_EVENTO: '/sgad-nuxt/eventoBitacora',
 
         }
     },

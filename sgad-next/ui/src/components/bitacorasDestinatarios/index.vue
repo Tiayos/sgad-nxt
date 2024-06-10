@@ -3,7 +3,7 @@
     <FFormLayout>
       <FLayoutSection>
         <DataTable
-          :value="bitacorasList"
+          :value="eventosBitacorasList"
           :showGridlines="true"
           :stripedRows="true"
           tableStyle="min-width: 50rem"
@@ -14,13 +14,13 @@
 
           <Column header="Remitente" style="width: 5px">
             <template #body="slotProps">
-              {{ slotProps.data.nombres_remitente }}
-              {{ slotProps.data.apellidos_remitente }}
+              {{ slotProps.data.bitacora.nombres_remitente }}
+              {{ slotProps.data.bitacora.apellidos_remitente }}
             </template>
           </Column>
 
           <Column
-            field="asunto"
+            field="bitacora.asunto"
             header="Asunto"
             style="width: 10px"
             bodyStyle="text-align: center;"
@@ -28,7 +28,7 @@
           </Column>
 
           <Column
-            field="numero_guia"
+            field="bitacora.numero_guia"
             header="Número de guia"
             style="width: 10px"
             bodyStyle="text-align: center;"
@@ -37,7 +37,7 @@
 
           <Column header="Archivo" style="width: 10px" bodyStyle="text-align: center;">
             <template #body="slotProps">
-              <span v-if="slotProps.data.doc_archivo">
+              <span v-if="slotProps.data.bitacora.doc_archivo">
                 <a :href="getDownloadUrl(slotProps.data.doc_archivo)" target="_blank">{{
                   slotProps.data.nombre_archivo
                 }}</a>
@@ -68,7 +68,7 @@
   </FCard>
 </template>
 <script lang="ts" setup>
-const { bitacorasList } = useBitacorasDestinatariosComposable();
+const { eventosBitacorasList } = useBitacorasDestinatariosComposable();
 
 const getDownloadUrl = (byteArray: number[] | string) => {
   let uint8Array;

@@ -3,6 +3,7 @@ import { required, is_not } from "@vee-validate/rules";
 import { Bitacora } from "models/Bitacora.model";
 import { useVuelidate, ValidationRuleWithParams  } from '@vuelidate/core';
 import { SedeProjection } from "models/projection/SedeProjection.model";
+import { EventoBitacora } from "models/EventoBitacora.model";
 
 export const useSumillaComposable = () =>{
 //*Session storage
@@ -15,6 +16,7 @@ const {getSumillas, getSumillasBySede, saveSumilla, deleteSumilla, getSumillaByN
 const {getUsers, getUsrLogin, getUsersAmbitosGestionDocumental} = usePersonaService();
 const {getBitacoras, getBitacorasBySede, getBitacorasByFechaAndEstado, saveBitacora, deleteBitacora, editBitacora, editEstadoEnvioBitacora, getBitacoraByNumSumilla, deleteBitacoraByNumSumilla} = useBitacoraService();
 const {saveTransferencia} = useTransferenciaDocumentalService();
+const {getEventoBitacoraService} = useEventoBitacora();
 
 
     //*New Sumilla
@@ -29,7 +31,7 @@ const bitacora = ref<Bitacora>({} as Bitacora);
 const sede = ref<SedeProjection>({} as SedeProjection);
 const bitacorasListTransferenciaDocumental = ref<Bitacora[]>([]);
 const mensajeTransferencia = ref<string>("");
-
+const eventoVigente = ref<EventoBitacora>({} as EventoBitacora);
 
 const validateBitacora = {
     nombres_remitente:   { required },
@@ -146,6 +148,8 @@ return {
     saveTransferencia,
     findBitacorasByFechaTransferencia,
     editEstadoEnvioBitacora,
+    getEventoBitacoraService,
+    eventoVigente,
     filtersSumillaBitacora,
     v$,
     data,

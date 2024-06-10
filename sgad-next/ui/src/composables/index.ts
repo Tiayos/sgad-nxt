@@ -30,3 +30,7 @@ export {
 export {
     useTransferenciaDocumentalService,
 } from './services/useTransferenciaDocumentalService'
+
+export {
+    useEventoBitacora,
+} from './services/useEventoBitacora'

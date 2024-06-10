@@ -17,24 +17,6 @@
         :paginator="true"
         :rows="10"
       >
-        <!-- <template #header>
-          <div
-            class="datatable-header-toolbar flex flex-wrap align-items-center justify-content-between gap-2"
-          >
-            <FHorizontalStack gap="2" align="space-between">
-              <br />
-              <FTextField
-                type="text"
-                id="filterSumillaBitacora"
-                v-model="filtersSumillaBitacora['global'].value"
-                placeholder="N° Sumilla"
-                :disabled="true"
-              >
-              </FTextField>
-            </FHorizontalStack>
-          </div>
-        </template> -->
-
         <template #header>
           <div
             class="datatable-header-toolbar flex flex-wrap align-items-center justify-content-between gap-2"
@@ -111,13 +93,6 @@
             >
           </template>
         </Column>
-
-        <!-- <Column header="Receptor" style="width: 5px">
-          <template #body="slotProps">
-            {{ slotProps.data.receptor_documento.per_nombres }}
-            {{ slotProps.data.receptor_documento.per_apellidos }}
-          </template>
-        </Column> -->
         <Column header="Remitente" style="width: 5px">
           <template #body="slotProps">
             {{ slotProps.data.nombres_remitente }}
@@ -131,30 +106,6 @@
               " " +
               slotProps.data.destinatario.per_apellidos
             }}
-          </template>
-        </Column>
-
-        <Column
-          header="Estado documento"
-          style="width: 5px"
-          bodyStyle="text-align:center"
-        >
-          <template #body="slotProps">
-            <FPopover
-              :modelValue="activePopover === 'popover1'"
-              autofocusTarget="first-node"
-              @update:modelValue="(active) => togglePopoverActive('popover1', active)"
-            >
-              <template #activator="{ props }">
-                <FButton :icon="MagnifyingGlassSolid" v-bind="props"> </FButton>
-              </template>
-
-              <FCard sectioned>
-                <FHorizontalStack gap="4">
-                  <FText as="h1" variant="bodyMd">Estado documento</FText>
-                </FHorizontalStack>
-              </FCard>
-            </FPopover>
           </template>
         </Column>
 
@@ -197,6 +148,20 @@
           </template>
         </Column>
 
+        <Column
+          header="Estado documento"
+          style="width: 5px"
+          bodyStyle="text-align:center"
+        >
+          <template #body="slotProps">
+            <FButton
+              size="medium"
+              :icon="MagnifyingGlassSolid"
+              @click="prepareEstadoDocumentoModal(slotProps.data)"
+            />
+          </template>
+        </Column>
+
         <Column style="width: 10px">
           <template #body="slotProps">
             <FButton
@@ -218,37 +183,7 @@
             >
           </template>
         </Column>
-
-        <!-- <Column style="width: 10px">
-          <template #body="slotProps">
-            <FButton
-              size="medium"
-              primary
-              :icon="MessageDotsRegular"
-              @click="prepareEnviarDocumento(slotProps.data.sumilla)"
-              >Enviar Documento
-            </FButton>
-          </template>
-        </Column> -->
       </DataTable>
-
-      <!-- <FPopover
-        :modelValue="bitacoraSelected.codigo != null"
-        autofocusTarget="first-node"
-        :placement="'top-start'"
-        @update:modelValue="(active) => togglePopoverActive('popover1', active)"
-      >
-        <template #activator="{ props }">
-          <FButton disclosure v-bind="props"> Más acciones </FButton>
-        </template>
-
-        <FText as="h1">sdasd</FText>
-
-        <FActionList
-          actionRole="menuitem"
-          :items="[{ content: 'Importar' }, { content: 'Exportar' }]"
-        />
-      </FPopover> -->
     </FVerticalStack>
 
     <FModal
@@ -582,6 +517,7 @@
       </FModalSection>
     </FModal>
 
+    <!-- Enviar documento -->
     <FModal
       v-model="envioDocumentoDestinatarioModal"
       title=""
@@ -620,11 +556,13 @@
       </FCard>
     </FModal>
 
+    <!-- TRANSFERENCIA DOCUMENTAL -->
+
     <FModal
       v-model="transferenciaModal"
       title=""
       title-hidden
-      large
+      small
       :primaryAction="{
         content: 'Enviar Transferencia',
         onAction: onSubmitTransferencia,
@@ -728,7 +666,34 @@
       </FCard>
     </FModal>
 
-    <!-- MODAL ENVIAR DOCUMENTO DIGITAL AL DESTINATARIO -->
+    <!-- VER ESTADO DOCUMENTO -->
+    <FModal v-model="estadoDocumentoModal" title="" title-hidden>
+      <FCard sectioned>
+        <FHorizontalStack gap="12" align="center">
+          <FText
+            id="estadoTitleLbl"
+            as="h6"
+            variant="headingLg"
+            fontWeight="semibold"
+            alignment="center"
+          >
+            Estado del documento:
+          </FText>
+
+          <FBadge status="critical">
+            <FText
+              id="estadoTitleLbl"
+              as="h6"
+              variant="headingSm"
+              fontWeight="bold"
+              alignment="center"
+            >
+              {{ eventoVigente.estado.estado_descripcion }}
+            </FText>
+          </FBadge>
+        </FHorizontalStack>
+      </FCard>
+    </FModal>
   </FCardSection>
 </template>
 <script setup lang="ts">
@@ -766,6 +731,8 @@ const {
   saveBitacora,
   findBitacoras,
   editBitacora,
+  getEventoBitacoraService,
+  eventoVigente,
   editEstadoEnvioBitacora,
   deleteBitacora,
   getUsrLogin,
@@ -1058,8 +1025,24 @@ const uint8ArrayToFile = (byteArray: number[], fileName: string): File => {
 };
 
 const activePopover = ref<string | null>(null);
-const togglePopoverActive = (popover: string, active: boolean) => {
+const togglePopoverActive = async (
+  popover: string,
+  active: boolean,
+  bitacoraParam: Bitacora
+) => {
   activePopover.value = active ? popover : null;
+};
+
+const estadoDocumentoModal = ref<boolean>(false);
+
+const handleChangeEstadoDocumental = () => {
+  estadoDocumentoModal.value = !estadoDocumentoModal.value;
+};
+
+const prepareEstadoDocumentoModal = async (bitacoraParam: Bitacora) => {
+  eventoVigente.value = await getEventoBitacoraService(bitacoraParam.codigo);
+  console.log(eventoVigente.value);
+  handleChangeEstadoDocumental();
 };
 </script>
 

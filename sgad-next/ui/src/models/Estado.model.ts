@@ -1,4 +1,4 @@
 export interface Estado {
-    codigo:              number;
-    descripcion:         string;
+    codigo:                     number;
+    estado_descripcion:         string;
 }
