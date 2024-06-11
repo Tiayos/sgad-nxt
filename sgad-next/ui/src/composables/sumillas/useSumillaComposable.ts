@@ -9,14 +9,14 @@ export const useSumillaComposable = () =>{
 //*Session storage
 const { data: userLogin } = useSessionStorage<Persona>("userLogin");
 const useStore = useArchivosStore();
-const {bitacorasList, filtersSumillaBitacora} = storeToRefs(useStore);
+const {bitacorasList, filtersSumillaBitacora, eventoBitacora} = storeToRefs(useStore);
 
     //*services
 const {getSumillas, getSumillasBySede, saveSumilla, deleteSumilla, getSumillaByNumeroSumilla, editSumilla, getSedeByEmail } = useSumillaService();
 const {getUsers, getUsrLogin, getUsersAmbitosGestionDocumental} = usePersonaService();
 const {getBitacoras, getBitacorasBySede, getBitacorasByFechaAndEstado, saveBitacora, deleteBitacora, editBitacora, editEstadoEnvioBitacora, getBitacoraByNumSumilla, deleteBitacoraByNumSumilla} = useBitacoraService();
 const {saveTransferencia} = useTransferenciaDocumentalService();
-const {getEventoBitacoraService} = useEventoBitacora();
+const {getEventoBitacoraService, saveEventoBitacora} = useEventoBitacora();
 
 
     //*New Sumilla
@@ -129,6 +129,7 @@ return {
     bitacorasListTransferenciaDocumental,
     sumilla,
     bitacora,
+    eventoBitacora,
     sumillaEncontrada,
     saveSumilla,
     editSumilla,
@@ -148,7 +149,9 @@ return {
     saveTransferencia,
     findBitacorasByFechaTransferencia,
     editEstadoEnvioBitacora,
+    //*EVENTO BITACORA
     getEventoBitacoraService,
+    saveEventoBitacora,
     eventoVigente,
     filtersSumillaBitacora,
     v$,
@@ -161,6 +164,7 @@ return {
     fechaEntrega,
     resetNumHojas,
     numHojasError,
-    createModal
+    createModal,
+    
 }
 }

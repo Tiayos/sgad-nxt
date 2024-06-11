@@ -517,7 +517,7 @@
       </FModalSection>
     </FModal>
 
-    <!-- Enviar documento -->
+    <!-- Enviar documento modal -->
     <FModal
       v-model="envioDocumentoDestinatarioModal"
       title=""
@@ -702,6 +702,8 @@ import { Bitacora } from "../../models/Bitacora.model";
 import { useToast } from "primevue/usetoast";
 import Calendar from "primevue/calendar";
 import AutoComplete from "primevue/autocomplete";
+import { EventoBitacora } from "../../models/EventoBitacora.model";
+import { Estado } from "../../models/Estado.model";
 
 import {
   PlusSolid,
@@ -715,13 +717,11 @@ import {
 } from "@ups-dev/freya-icons";
 
 const {
-  sumillaList,
   usersGestionDocumentalList,
   bitacorasListTransferenciaDocumental,
   bitacorasList,
   sumilla,
   bitacora,
-  sumillaEncontrada,
   data,
   //*Service
   saveSumilla,
@@ -733,14 +733,11 @@ const {
   editBitacora,
   getEventoBitacoraService,
   eventoVigente,
-  editEstadoEnvioBitacora,
-  deleteBitacora,
   getUsrLogin,
   deleteBitacoraByNumSumilla,
   saveTransferencia,
   v$,
   receptorPersonaList,
-  getSumillaByNumeroSumilla,
   getBitacoraByNumSumilla,
   getSedeByEmail,
   filtersSumillaBitacora,
@@ -755,6 +752,8 @@ const {
   numHojasError,
   prepareEdit,
   createModal,
+  saveEventoBitacora,
+  eventoBitacora,
 } = useSumillaComposable();
 
 const { data: userLogin } = useSessionStorage<Persona>("userLogin");
@@ -893,8 +892,18 @@ const handleChangeEnvioDocumento = () => {
 };
 
 const onSubmitEnviarDocumento = async () => {
-  // bitacora.value.estado_envio_destinatario = "E";
-  await editBitacora(bitacora.value, bitacora.value.codigo); // E- ENVIADO N- NO ENVIADO A- APROBADO R-RECHAZADO
+  eventoBitacora.value.estado = {} as Estado;
+  eventoBitacora.value.per_codigo_responsable = {} as Persona;
+
+  eventoBitacora.value.fecha = new Date();
+  eventoBitacora.value.vigencia = "S";
+  eventoBitacora.value.bitacora = bitacora.value;
+  eventoBitacora.value.estado.codigo = 5;
+  eventoBitacora.value.adicionado = data.value?.user?.email!;
+  eventoBitacora.value.per_codigo_responsable.codigo =
+    bitacora.value.receptor_documento.codigo;
+  await saveEventoBitacora(eventoBitacora.value);
+
   toast.add({
     severity: "success",
     summary: "Documento",

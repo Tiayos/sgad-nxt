@@ -89,17 +89,6 @@ const {
   required: true,
 });
 
-// enum persistAction {
-//   create,
-//   edit,
-//   view,
-// }
-// const action = ref();
-
-// const handleChangeCreateModal = () => {
-//   createModal.value = !createModal.value;
-// };
-
 const searchItem = (event: any) => {
   const query = event.query.toLowerCase();
   filteredItems.value = receptorPersonaList.value.filter(
@@ -139,46 +128,6 @@ const handleChangeDeleteModal = async (sum: Sumilla) => {
 const changeDeleteModal = () => {
   deleteModal.value = !deleteModal.value;
 };
-
-// const onSubmited = handleSubmit(async (values) => {
-//   v$.value.$validate;
-//   if (!v$.value.$error) {
-//     if (action.value == persistAction.create) {
-//       sumilla.value.numero_hojas = parseInt(numHojas.value);
-//       sumilla.value.fecha_sumilla = new Date();
-//       sumilla.value.hora_sumilla = new Date().getHours() + ":" + new Date().getMinutes();
-//       sumilla.value = await saveSumilla(sumilla.value, data.value?.user?.email!);
-//     } else if (action.value == persistAction.edit) {
-//       sumilla.value.numero_hojas = Number(numHojas.value);
-//       await editSumilla(sumilla.value, sumilla.value.codigo!);
-//     }
-
-//     await findSumillas();
-
-//     if (action.value == persistAction.edit) {
-//       await editBitacora(bitacora.value, bitacora.value.codigo);
-//     } else {
-//       bitacora.value.receptor_documento = sumilla.value?.responsable!;
-//       bitacora.value.fecha_recepcion = sumilla.value?.fecha_sumilla!;
-//       bitacora.value.hora_recepcion = sumilla.value?.hora_sumilla!;
-//       bitacora.value.sumilla = sumilla.value;
-//       bitacora.value.estado_transferencia = "N";
-//       bitacora.value.adicionado = data.value?.user?.email!;
-//       await saveBitacora(bitacora.value);
-//     }
-
-//     await findBitacoras();
-//     createModal.value = !createModal.value;
-//     resetNumHojas();
-
-//     toast.add({
-//       severity: "success",
-//       summary: "Sumilla",
-//       detail: `Se ha guardado la sumilla correctamente`,
-//       life: 5000,
-//     });
-//   }
-// });
 
 interface TabDescriptor {
   id: string;

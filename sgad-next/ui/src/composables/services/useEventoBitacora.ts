@@ -12,7 +12,7 @@ export const useEventoBitacora = () => {
         }
     }
 
-    const getAllEventosBitacoraByPerCodigo = async(perCodigo:number): Promise<EventoBitacora[]> => {
+    const getAllEventosVigentesByPerCodigo = async(perCodigo:number): Promise<EventoBitacora[]> => {
         try {
             return await $fetch<EventoBitacora[]>(`${apiUrl}/getEventosByPerCodigo?perCodigo=${perCodigo}`)
         } catch (error) {
@@ -20,8 +20,30 @@ export const useEventoBitacora = () => {
         }
     }
 
+    const getAllEventosByBitCodigo= async(bitCodigo:number): Promise<EventoBitacora[]> => {
+        try {
+            return await $fetch<EventoBitacora[]>(`${apiUrl}/getAllEventos?bitCodigo=${bitCodigo}`)
+        } catch (error) {
+            throw new Error("Error al consultar los eventos");
+        }
+    }
+
+    const saveEventoBitacora = async(evento:EventoBitacora): Promise<EventoBitacora> => {
+        try {
+            return await $fetch<EventoBitacora>(`${apiUrl}`,
+             {
+                 method: 'POST',
+                 body:   evento,
+             })
+         } catch (error:any) {
+             return {} as EventoBitacora;
+         }
+    }
+
     return {
         getEventoBitacoraService,
-        getAllEventosBitacoraByPerCodigo
+        getAllEventosByBitCodigo,
+        getAllEventosVigentesByPerCodigo,
+        saveEventoBitacora
     }
 }

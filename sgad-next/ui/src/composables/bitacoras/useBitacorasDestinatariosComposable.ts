@@ -2,17 +2,19 @@ import { EventoBitacora } from "models/EventoBitacora.model";
 import { Persona } from "models/Sumilla.model";
 
 export const useBitacorasDestinatariosComposable = () =>{
+//* store
+const useStore = useArchivosStore();
+const {eventosBitacorasList} = storeToRefs(useStore);
 
     //*Services
     const {getUsrLogin} = usePersonaService();
-    const {getAllEventosBitacoraByPerCodigo} = useEventoBitacora();
+    const {getAllEventosVigentesByPerCodigo, getAllEventosByBitCodigo} = useEventoBitacora();
 
     //*Auth
     const { data } = useAuth();
 
     //*Session storage
     const { data: userLogin } = useSessionStorage<Persona>("userLogin");
-    const eventosBitacorasList = ref<EventoBitacora[]>([]);
 
     onMounted(async() => {
         await findBitacorasDestinatarios();
@@ -20,11 +22,12 @@ export const useBitacorasDestinatariosComposable = () =>{
 
     const findBitacorasDestinatarios = async() =>{
         userLogin.value = await getUsrLogin(data.value?.user?.email!);
-        eventosBitacorasList.value = await getAllEventosBitacoraByPerCodigo(userLogin.value.codigo);
+        eventosBitacorasList.value = await getAllEventosVigentesByPerCodigo(userLogin.value.codigo);
     }
 
 return {
-    eventosBitacorasList
+    eventosBitacorasList,
+    getAllEventosByBitCodigo
 }
 
 }
