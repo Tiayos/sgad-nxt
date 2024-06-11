@@ -61,11 +61,7 @@
             </template>
           </Column>
 
-          <Column
-            header="Estado documento"
-            style="width: 5px"
-            bodyStyle="text-align:center"
-          >
+          <Column header="Acciones" style="width: 5px" bodyStyle="text-align:center">
             <template #body="slotProps">
               <FButton
                 size="medium"
