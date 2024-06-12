@@ -7,8 +7,8 @@ const useStore = useArchivosStore();
 const {eventosBitacorasList} = storeToRefs(useStore);
 
     //*Services
-    const {getUsrLogin} = usePersonaService();
-    const {getAllEventosVigentesByPerCodigo, getAllEventosByBitCodigo} = useEventoBitacora();
+    const {getUsrLogin,getUsers} = usePersonaService();
+    const {getAllEventosVigentesByPerCodigo, getAllEventosByBitCodigo, getAllEstados, saveEventoBitacora} = useEventoBitacora();
 
     //*Auth
     const { data } = useAuth();
@@ -27,7 +27,11 @@ const {eventosBitacorasList} = storeToRefs(useStore);
 
 return {
     eventosBitacorasList,
-    getAllEventosByBitCodigo
+    getAllEventosByBitCodigo,
+    getAllEstados,
+    getUsers,
+    saveEventoBitacora,
+    userLogin
 }
 
 }

@@ -1,3 +1,4 @@
+import { Estado } from "models/Estado.model"
 import { EventoBitacora } from "models/EventoBitacora.model"
 
 export const useEventoBitacora = () => {
@@ -27,6 +28,27 @@ export const useEventoBitacora = () => {
             throw new Error("Error al consultar los eventos");
         }
     }
+    
+    const getAllEstados= async(): Promise<Estado[]> => {
+        try {
+            const estados = await $fetch<Estado[]>(`${apiUrl}/getAllEstados`);
+            // Filtrar los estados por los códigos especificados
+            const filteredEstados = estados.filter(estado => [3, 4, 7].includes(estado.codigo));
+            // Modificar la descripción del estado con código 7
+            const modifiedEstados = filteredEstados.map(estado => {
+                if (estado.codigo === 7) {
+                    return {
+                        ...estado,
+                        estado_descripcion: 'Reasignar'
+                    };
+                }
+                return estado;
+            });
+            return modifiedEstados     
+        } catch (error) {
+            throw new Error("Error al consultar los eventos");
+        }
+    }
 
     const saveEventoBitacora = async(evento:EventoBitacora): Promise<EventoBitacora> => {
         try {
@@ -43,6 +65,7 @@ export const useEventoBitacora = () => {
     return {
         getEventoBitacoraService,
         getAllEventosByBitCodigo,
+        getAllEstados,
         getAllEventosVigentesByPerCodigo,
         saveEventoBitacora
     }
