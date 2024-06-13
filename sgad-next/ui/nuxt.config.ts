@@ -55,6 +55,7 @@ export default defineNuxtConfig({
            SGAD_PERSONA: '/sgad-nuxt/persona',
            SGAD_TRANSFERENCIA: '/sgad-nuxt/transferencia',
            SGAD_EVENTO: '/sgad-nuxt/eventoBitacora',
+           SGAD_EMAIL: '/sgad-nuxt/email',
 
         }
     },

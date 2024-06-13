@@ -34,3 +34,7 @@ export {
 export {
     useEventoBitacora,
 } from './services/useEventoBitacora'
+
+export {
+    useSendEmailService,
+} from './services/useSendEmailService'

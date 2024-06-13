@@ -62,11 +62,22 @@ export const useEventoBitacora = () => {
          }
     }
 
+    const deleteEventoBitacora = async(bitCodigo: Number)=>{
+        try {
+            await $fetch(`${apiUrl}?bitCodigo=${bitCodigo}`,{
+                method: 'DELETE'
+            })
+        } catch (error) {
+            throw error;
+        }
+    }
+
     return {
         getEventoBitacoraService,
         getAllEventosByBitCodigo,
         getAllEstados,
         getAllEventosVigentesByPerCodigo,
-        saveEventoBitacora
+        saveEventoBitacora,
+        deleteEventoBitacora
     }
 }

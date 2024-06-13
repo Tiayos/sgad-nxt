@@ -219,6 +219,8 @@ const {
   getUsers,
   saveEventoBitacora,
   userLogin,
+  sendEmail,
+  getEventoBitacoraService,
 } = useBitacorasDestinatariosComposable();
 const eventoSelected = ref<EventoBitacora>({} as EventoBitacora);
 const accionesModal = ref<boolean>(false);
@@ -321,23 +323,29 @@ const onSubmitAcciones = handleSubmit(async (values) => {
     });
   } else {
     switch (estadoObj.value) {
-      case 4:
+      case 4: // APROBADO
         eventoSelected.value.estado.codigo = 4;
         eventoSelected.value.codigo = 0;
         eventoSelected.value.per_codigo_responsable.codigo = userLogin.value.codigo;
         await saveEventoBitacora(eventoSelected.value);
         handleChangeAcciones();
         break;
-      case 3:
+      case 3: // NO APROBADO
         eventoSelected.value.estado.codigo = 3;
         eventoSelected.value.codigo = 0;
+        eventoSelected.value.per_codigo_responsable.codigo = userLogin.value.codigo;
         await saveEventoBitacora(eventoSelected.value);
+        enviarEmail(eventoSelected.value);
         handleChangeAcciones();
         break;
     }
     // eventoSelected.value.estado.codigo =
   }
 });
+
+const enviarEmail = async (evento: EventoBitacora) => {
+  await sendEmail(evento);
+};
 </script>
 <style lang="css">
 .p-autocomplete {

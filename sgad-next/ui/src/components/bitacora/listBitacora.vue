@@ -43,7 +43,7 @@
                   size="medium"
                   secondary
                   :icon="MessageDotsRegular"
-                  :disabled="bitacoraSelected.codigo == null"
+                  :disabled="bitacoraSelected.codigo == null || disabledEnviarDocumento"
                   @click="prepareEnviarDocumento(bitacoraSelected.sumilla)"
                   >Enviar Documento
                 </FButton>
@@ -178,7 +178,7 @@
               size="medium"
               secondary
               :icon="TrashCanSolid"
-              @click="handleChangeDeleteModal(slotProps.data.sumilla)"
+              @click="handleChangeDeleteModal(slotProps.data)"
               >Eliminar</FButton
             >
           </template>
@@ -732,6 +732,7 @@ const {
   findBitacoras,
   editBitacora,
   getEventoBitacoraService,
+  deleteBitacora,
   eventoVigente,
   getUsrLogin,
   deleteBitacoraByNumSumilla,
@@ -754,6 +755,7 @@ const {
   createModal,
   saveEventoBitacora,
   eventoBitacora,
+  deleteEventoBitacora,
 } = useSumillaComposable();
 
 const { data: userLogin } = useSessionStorage<Persona>("userLogin");
@@ -771,6 +773,7 @@ const mostrarEmisor = ref<boolean>(false);
 const mostrarUsrReceptor = ref<boolean>(false);
 const codigoSumillaDelete = ref<Number>(0);
 const bitacoraSelected = ref<Bitacora>({} as Bitacora);
+const disabledEnviarDocumento = ref<boolean>(true);
 
 const prepareCreate = async () => {
   sede.value = await getSedeByEmail(data.value?.user?.email!);
@@ -847,10 +850,20 @@ watch(
   }
 );
 
-const handleChangeDeleteModal = async (sum: Sumilla) => {
-  deleteModal.value = !deleteModal.value;
-  codigoSumillaDelete.value = sum.codigo!;
-  sumilla.value = sum;
+const handleChangeDeleteModal = async (bitacoraParam: Bitacora) => {
+  eventoBitacora.value = await getEventoBitacoraService(bitacoraParam.codigo);
+  if (eventoBitacora.value.estado.codigo != 2) {
+    toast.add({
+      severity: "error",
+      summary: "Eliminar",
+      detail: `No se puede eliminar la bitácora`,
+      life: 3000,
+    });
+  } else {
+    deleteModal.value = !deleteModal.value;
+    codigoSumillaDelete.value = bitacoraParam.sumilla.codigo!;
+    sumilla.value = bitacoraParam.sumilla;
+  }
 };
 
 const searchItem = (event: any) => {
@@ -922,7 +935,6 @@ const handleChangeCreateModal = () => {
   createModal.value = !createModal.value;
 };
 
-const codigoBitacora = ref<Number>(0);
 const deleteModal = ref<boolean>(false);
 
 const changeDeleteModal = () => {
@@ -930,17 +942,19 @@ const changeDeleteModal = () => {
 };
 
 const confirmDelete = async () => {
-  await deleteBitacoraByNumSumilla(sumilla.value.codigo!);
-  await deleteSumilla(sumilla.value.codigo!);
-  await findSumillas();
-  await findBitacoras();
-  toast.add({
-    severity: "success",
-    summary: "Sumilla",
-    detail: `Se ha eliminado la sumilla correctamente`,
-    life: 5000,
-  });
-  changeDeleteModal();
+  try {
+    await deleteEventoBitacora(eventoBitacora.value.bitacora.codigo);
+    await deleteBitacoraByNumSumilla(sumilla.value.codigo!);
+    await deleteSumilla(sumilla.value.codigo!);
+    await findBitacoras();
+    toast.add({
+      severity: "success",
+      summary: "Bitácora",
+      detail: `Se ha eliminado la Bitácora correctamente`,
+      life: 5000,
+    });
+    changeDeleteModal();
+  } catch (error) {}
 };
 
 const uploadedDocuments = ref<Bitacora[]>([]);
@@ -1014,7 +1028,6 @@ const getDownloadUrl = (byteArray: number[] | string) => {
 
 const prepareEnviarDocumento = async (sumillaDocumento: Sumilla) => {
   bitacora.value = await getBitacoraByNumSumilla(sumillaDocumento.numero_sumilla);
-
   if (bitacora.value.doc_archivo != null) {
     handleChangeEnvioDocumento();
   } else {
@@ -1026,6 +1039,20 @@ const prepareEnviarDocumento = async (sumillaDocumento: Sumilla) => {
     });
   }
 };
+
+watch(
+  () => bitacoraSelected.value,
+  async (newValue, oldValue) => {
+    const evento: EventoBitacora = await getEventoBitacoraService(
+      bitacoraSelected.value.codigo
+    );
+    if (evento.estado.codigo != 2) {
+      disabledEnviarDocumento.value = true;
+    } else {
+      disabledEnviarDocumento.value = false;
+    }
+  }
+);
 
 const uint8ArrayToFile = (byteArray: number[], fileName: string): File => {
   const uint8Array = new Uint8Array(byteArray);

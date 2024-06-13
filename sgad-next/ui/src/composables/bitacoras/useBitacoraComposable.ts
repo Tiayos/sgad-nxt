@@ -6,7 +6,6 @@ export const useBitacoraComposable = () =>{
     //*services
 const {getSumillaByNumeroSumilla} = useSumillaService();
 const {getUsers} = usePersonaService();
-const {editEstadoEnvioBitacora} = useBitacoraService();
 
     //*New Bitacora
 const bitacora = ref<Bitacora>({} as Bitacora);

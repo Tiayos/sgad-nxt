@@ -8,7 +8,8 @@ const {eventosBitacorasList} = storeToRefs(useStore);
 
     //*Services
     const {getUsrLogin,getUsers} = usePersonaService();
-    const {getAllEventosVigentesByPerCodigo, getAllEventosByBitCodigo, getAllEstados, saveEventoBitacora} = useEventoBitacora();
+    const {getAllEventosVigentesByPerCodigo, getAllEventosByBitCodigo, getAllEstados, saveEventoBitacora, getEventoBitacoraService} = useEventoBitacora();
+    const {sendEmail} = useSendEmailService();
 
     //*Auth
     const { data } = useAuth();
@@ -31,7 +32,9 @@ return {
     getAllEstados,
     getUsers,
     saveEventoBitacora,
-    userLogin
+    userLogin,
+    sendEmail,
+    getEventoBitacoraService
 }
 
 }

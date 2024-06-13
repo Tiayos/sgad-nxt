@@ -16,7 +16,7 @@ const {getSumillas, getSumillasBySede, saveSumilla, deleteSumilla, getSumillaByN
 const {getUsers, getUsrLogin, getUsersAmbitosGestionDocumental} = usePersonaService();
 const {getBitacoras, getBitacorasBySede, getBitacorasByFechaAndEstado, saveBitacora, deleteBitacora, editBitacora, editEstadoEnvioBitacora, getBitacoraByNumSumilla, deleteBitacoraByNumSumilla} = useBitacoraService();
 const {saveTransferencia} = useTransferenciaDocumentalService();
-const {getEventoBitacoraService, saveEventoBitacora} = useEventoBitacora();
+const {getEventoBitacoraService, saveEventoBitacora, deleteEventoBitacora} = useEventoBitacora();
 
 
     //*New Sumilla
@@ -165,6 +165,6 @@ return {
     resetNumHojas,
     numHojasError,
     createModal,
-    
+    deleteEventoBitacora
 }
 }
