@@ -977,8 +977,6 @@ const onUpload = async ({ files }: any, bitacoraParam: Bitacora) => {
   const fileContent = await readFileAsByteArray(file);
   bitacora.value.doc_archivo = Array.from(fileContent);
   bitacora.value.nombre_archivo = files[0].name;
-  console.log(bitacora.value.nombre_archivo);
-  console.log(files[0]);
   const existingDocument = uploadedDocuments.value.find(
     (document) => document.doc_archivo === bitacora.value.doc_archivo
   );

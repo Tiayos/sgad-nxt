@@ -50,6 +50,9 @@
               <FBadge status="critical" v-if="slotProps.data.estado.codigo === 3"
                 >No aprobado</FBadge
               >
+              <FBadge status="attention" v-if="slotProps.data.estado.codigo === 7"
+                >Reasignado</FBadge
+              >
             </template>
           </Column>
 
@@ -294,22 +297,38 @@ const handleChangeAcciones = () => {
   accionesModal.value = !accionesModal.value;
 };
 
-const prepareAcciones = async (EventoParam: EventoBitacora) => {
+const prepareAcciones = async (eventoParam: EventoBitacora) => {
   desabilitarGuardarCambios.value = false;
-  eventoSelected.value = EventoParam;
+  eventoSelected.value = eventoParam;
   eventosBitacorasAcciones.value = await getAllEventosByBitCodigo(
-    EventoParam.bitacora.codigo
+    eventoParam.bitacora.codigo
   );
   estadosList.value = await getAllEstados();
-  console.log(estadosList.value);
   receptorPersonaList.value = await getUsers();
-  eventosBitacorasAcciones.value.forEach((element) => {
-    console.log(element, "element<<<<<<<");
-    if (element.estado.codigo == 3 || element.estado.codigo == 4) {
-      console.log("entro acá ¡???");
+
+  const lastEvent: EventoBitacora =
+    eventosBitacorasAcciones.value[eventosBitacorasAcciones.value.length - 1];
+  console.log(lastEvent);
+  switch (lastEvent.estado.codigo) {
+    case 3:
+    case 4:
       desabilitarGuardarCambios.value = true;
-    }
-  });
+      break;
+    case 7:
+      desabilitarGuardarCambios.value =
+        lastEvent.per_codigo_reasignado.codigo != userLogin.value.codigo ? true : false;
+
+    // console.log(element.per_codigo_reasignado);
+    // if (element.per_codigo_reasignado != null) {
+    //   console.log(element.per_codigo_reasignado.codigo);
+
+    //   desabilitarGuardarCambios.value =
+    //     element.per_codigo_reasignado.codigo == userLogin.value.codigo ? true : false;
+  }
+  // eventosBitacorasAcciones.value.forEach((element) => {
+  //
+  //   }
+  // });
   handleChangeAcciones();
 };
 
@@ -336,6 +355,15 @@ const onSubmitAcciones = handleSubmit(async (values) => {
         eventoSelected.value.per_codigo_responsable.codigo = userLogin.value.codigo;
         await saveEventoBitacora(eventoSelected.value);
         enviarEmail(eventoSelected.value);
+        handleChangeAcciones();
+        break;
+      case 7:
+        eventoSelected.value.estado.codigo = 7;
+        eventoSelected.value.codigo = 0;
+        // eventoSelected.value.per_codigo_responsable.codigo = userLogin.value.codigo;
+        eventoSelected.value.per_codigo_responsable.codigo = userLogin.value.codigo;
+        eventoSelected.value.per_codigo_reasignado.codigo = personaObj.value.codigo;
+        await saveEventoBitacora(eventoSelected.value);
         handleChangeAcciones();
         break;
     }

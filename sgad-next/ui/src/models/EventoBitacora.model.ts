@@ -10,4 +10,6 @@ export interface EventoBitacora {
     estado:              Estado;
     adicionado:          string;
     per_codigo_responsable: Persona;
+    per_codigo_reasignado: Persona;
+
 }

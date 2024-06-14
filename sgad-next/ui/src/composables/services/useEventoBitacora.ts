@@ -21,13 +21,22 @@ export const useEventoBitacora = () => {
         }
     }
 
-    const getAllEventosByBitCodigo= async(bitCodigo:number): Promise<EventoBitacora[]> => {
+    const getAllEventosByBitCodigo = async (bitCodigo: number): Promise<EventoBitacora[]> => {
         try {
-            return await $fetch<EventoBitacora[]>(`${apiUrl}/getAllEventos?bitCodigo=${bitCodigo}`)
+            const resp = await $fetch<EventoBitacora[]>(`${apiUrl}/getAllEventos?bitCodigo=${bitCodigo}`);
+            console.log(resp);
+            const updatedResp = resp.map(evento => {
+                if (evento.estado.codigo === 7) {
+                    evento.estado.estado_descripcion = 'Reasignado';
+                }
+                return evento;
+            });
+    
+            return updatedResp;
         } catch (error) {
             throw new Error("Error al consultar los eventos");
         }
-    }
+    };
     
     const getAllEstados= async(): Promise<Estado[]> => {
         try {
