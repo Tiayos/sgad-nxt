@@ -1,6 +1,7 @@
 import { ErrorMessage } from 'vee-validate';
 import { Bitacora } from "models/Bitacora.model";
 import { Persona, Sumilla } from "models/Sumilla.model";
+import { DocumentoBitacora } from 'models/DocumentoBitacora.model';
 
 export const useBitacoraComposable = () =>{
     //*services
@@ -22,6 +23,6 @@ return {
     receptorPersonaList,
     getSumillaByNumeroSumilla,
     getUsers,
-    ErrorMessage
+    ErrorMessage,
 }
 }

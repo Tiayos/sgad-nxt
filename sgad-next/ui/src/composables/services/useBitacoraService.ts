@@ -1,4 +1,5 @@
 import { Bitacora } from "models/Bitacora.model"
+import { DocumentoBitacora } from "models/DocumentoBitacora.model"
 
 export const useBitacoraService = () => {
     const config = useRuntimeConfig()
@@ -39,6 +40,14 @@ export const useBitacoraService = () => {
         }
     }
 
+    const getDocumentosByBitCodigo = async(bitCodigo:number): Promise<DocumentoBitacora[]> => {
+        try {
+            return await $fetch<DocumentoBitacora[]>(`${apiUrl}/getDocumentosByBitCodigo?bitCodigo=${bitCodigo}`)
+        } catch (error) {
+            throw new Error("Error al consultar los documentos");
+        }
+    }
+
     const getBitacorasByPerCodigoDestinatario = async(perCodigoDestinatario:number): Promise<Bitacora[]> => {
         try {
             return await $fetch<Bitacora[]>(`${apiUrl}/getBitacorasByDestinatario?perCodigoDestinatario=${perCodigoDestinatario}`)
@@ -47,15 +56,27 @@ export const useBitacoraService = () => {
         }
     }
 
-    const saveBitacora = async(bitacora:Bitacora)=>{
+    const saveBitacora = async(bitacora:Bitacora):Promise<Bitacora>=>{
         try {
-            await $fetch(`${apiUrl}`,
+           return await $fetch<Bitacora>(`${apiUrl}`,
             {
                 method: 'POST',
                 body:  bitacora,
             })
         } catch (error) {
             throw new Error("Error al guardar las bitacoras");
+        }
+    }
+
+    const saveDocumentoBitacora = async(documentoBitacora:DocumentoBitacora)=>{
+        try {
+            await $fetch(`${apiUrl}/saveDocumentos`,
+            {
+                method: 'POST',
+                body:  documentoBitacora,
+            })
+        } catch (error) {
+            console.log(error);
         }
     }
 
@@ -113,7 +134,9 @@ export const useBitacoraService = () => {
         editEstadoEnvioBitacora,
         deleteBitacora,
         deleteBitacoraByNumSumilla,
-        getBitacorasByPerCodigoDestinatario
+        getBitacorasByPerCodigoDestinatario,
+        saveDocumentoBitacora,
+        getDocumentosByBitCodigo
 
     }
 }

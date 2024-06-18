@@ -4,6 +4,7 @@ import { Bitacora } from "models/Bitacora.model";
 import { useVuelidate, ValidationRuleWithParams  } from '@vuelidate/core';
 import { SedeProjection } from "models/projection/SedeProjection.model";
 import { EventoBitacora } from "models/EventoBitacora.model";
+import { DocumentoBitacora } from "models/DocumentoBitacora.model";
 
 export const useSumillaComposable = () =>{
 //*Session storage
@@ -14,7 +15,7 @@ const {bitacorasList, filtersSumillaBitacora, eventoBitacora} = storeToRefs(useS
     //*services
 const {getSumillas, getSumillasBySede, saveSumilla, deleteSumilla, getSumillaByNumeroSumilla, editSumilla, getSedeByEmail } = useSumillaService();
 const {getUsers, getUsrLogin, getUsersAmbitosGestionDocumental} = usePersonaService();
-const {getBitacoras, getBitacorasBySede, getBitacorasByFechaAndEstado, saveBitacora, deleteBitacora, editBitacora, editEstadoEnvioBitacora, getBitacoraByNumSumilla, deleteBitacoraByNumSumilla} = useBitacoraService();
+const {getBitacoras, getBitacorasBySede, getBitacorasByFechaAndEstado, saveBitacora, deleteBitacora, editBitacora, editEstadoEnvioBitacora, getBitacoraByNumSumilla, deleteBitacoraByNumSumilla, saveDocumentoBitacora, getDocumentosByBitCodigo} = useBitacoraService();
 const {saveTransferencia} = useTransferenciaDocumentalService();
 const {getEventoBitacoraService, saveEventoBitacora, deleteEventoBitacora} = useEventoBitacora();
 
@@ -32,6 +33,9 @@ const sede = ref<SedeProjection>({} as SedeProjection);
 const bitacorasListTransferenciaDocumental = ref<Bitacora[]>([]);
 const mensajeTransferencia = ref<string>("");
 const eventoVigente = ref<EventoBitacora>({} as EventoBitacora);
+const documentObj = ref<DocumentoBitacora>({} as DocumentoBitacora);
+const files = ref<File[]>([]); // Definir files como un ref que es un arreglo de File
+const documentosBitacoraList = ref<DocumentoBitacora[]>([]);
 
 const validateBitacora = {
     nombres_remitente:   { required },
@@ -67,6 +71,9 @@ const prepareEdit = async (sumillaParam: Sumilla) => {
       sumilla.value.numero_hojas != null ? sumilla.value.numero_hojas.toString() : "";
   
     bitacora.value = await getBitacoraByNumSumilla(sumilla.value.numero_sumilla);
+    documentosBitacoraList.value = await getDocumentosByBitCodigo(bitacora.value.codigo);
+
+
     fechaEntrega.value =
       bitacora.value.fecha_entrega != null ? bitacora.value.fecha_entrega.toString() : "";
   
@@ -92,6 +99,11 @@ const prepareEdit = async (sumillaParam: Sumilla) => {
     createModal.value = !createModal.value;
   };
   
+  const uint8ArrayToFile = (byteArray: number[], fileName: string): File => {
+    const uint8Array = new Uint8Array(byteArray);
+    const blob = new Blob([uint8Array], { type: "application/pdf" });
+    return new File([blob], fileName, { type: "application/pdf" });
+  };
 
 onMounted(async() => {
     await findSumillas();
@@ -165,6 +177,9 @@ return {
     resetNumHojas,
     numHojasError,
     createModal,
-    deleteEventoBitacora
+    deleteEventoBitacora,
+    documentObj,
+    saveDocumentoBitacora,
+    files,
 }
 }

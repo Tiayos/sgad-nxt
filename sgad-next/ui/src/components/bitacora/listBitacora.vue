@@ -79,20 +79,6 @@
           </template>
         </Column>
 
-        <Column
-          bodyStyle="text-align:center"
-          header="Estado Transferencia documental"
-          style="width: 5px"
-        >
-          <template #body="slotProps">
-            <FBadge v-if="slotProps.data.estado_transferencia === 'N'" status="critical"
-              >EDICION</FBadge
-            >
-            <FBadge v-if="slotProps.data.estado_transferencia == 'S'" status="success"
-              >ENVIADO</FBadge
-            >
-          </template>
-        </Column>
         <Column header="Remitente" style="width: 5px">
           <template #body="slotProps">
             {{ slotProps.data.nombres_remitente }}
@@ -109,45 +95,6 @@
           </template>
         </Column>
 
-        <Column header="Archivo" style="width: 10px" bodyStyle="text-align: center;">
-          <template #body="slotProps">
-            <span v-if="slotProps.data.doc_archivo">
-              <a :href="getDownloadUrl(slotProps.data.doc_archivo)" target="_blank">{{
-                slotProps.data.nombre_archivo
-              }}</a>
-            </span>
-          </template>
-        </Column>
-
-        <Column :exportable="false" style="min-width: 8rem">
-          <template #body="slotProps">
-            <FileUpload
-              style="
-                display: inline-block;
-                padding: 10px 10px;
-                background-color: #3b82f6;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                font-size: 14px;
-                cursor: pointer;
-                text-align: center;
-                text-decoration: none;
-                transition: background-color 0.3s ease;
-                width: max-content;
-              "
-              mode="basic"
-              name="demo[]"
-              url="./upload.php"
-              accept=".pdf"
-              chooseLabel="  Subir Documento"
-              :maxFileSize="10000000"
-              @select="onUpload($event, slotProps.data)"
-              @before-upload="hol(slotProps.data)"
-            />
-          </template>
-        </Column>
-
         <Column
           header="Estado documento"
           style="width: 5px"
@@ -159,6 +106,21 @@
               :icon="MagnifyingGlassSolid"
               @click="prepareEstadoDocumentoModal(slotProps.data)"
             />
+          </template>
+        </Column>
+
+        <Column
+          bodyStyle="text-align:center"
+          header="Estado Transferencia documental"
+          style="width: 5px"
+        >
+          <template #body="slotProps">
+            <FBadge v-if="slotProps.data.estado_transferencia === 'N'" status="critical"
+              >EDICION</FBadge
+            >
+            <FBadge v-if="slotProps.data.estado_transferencia == 'S'" status="success"
+              >ENVIADO</FBadge
+            >
           </template>
         </Column>
 
@@ -407,6 +369,18 @@
                   :error="v$?.lugar_destino.$error"
                   :label="v$?.lugar_destino.$error ? 'Este campo es requerido' : ''"
                 />
+
+                <FVerticalStack gap="4">
+                  <FileUpload
+                    ref="fileUpload"
+                    name="file"
+                    accept=".pdf"
+                    multiple
+                    :chooseLabel="'Seleccionar archivos'"
+                    :onSelect="handleFileSelect"
+                    :files="files"
+                  />
+                </FVerticalStack>
               </FVerticalStack>
             </FCardSection>
           </FCard>
@@ -714,6 +688,7 @@ import {
   EllipsisSolid,
   InboxSolid,
   MessageDotsRegular,
+  FileSolid,
 } from "@ups-dev/freya-icons";
 
 const {
@@ -756,6 +731,9 @@ const {
   saveEventoBitacora,
   eventoBitacora,
   deleteEventoBitacora,
+  documentObj,
+  saveDocumentoBitacora,
+  files,
 } = useSumillaComposable();
 
 const { data: userLogin } = useSessionStorage<Persona>("userLogin");
@@ -801,6 +779,10 @@ const prepareTransferencia = async () => {
   handleChangeTransferencia();
 };
 
+const handleFileSelect = (event: any) => {
+  files.value = event.files;
+};
+
 const onSubmited = handleSubmit(async (values) => {
   v$.value.$validate;
   if (!v$.value.$error) {
@@ -825,7 +807,43 @@ const onSubmited = handleSubmit(async (values) => {
       bitacora.value.sumilla = sumilla.value;
       bitacora.value.estado_transferencia = "N";
       bitacora.value.adicionado = data.value?.user?.email!;
-      await saveBitacora(bitacora.value);
+      bitacora.value = await saveBitacora(bitacora.value);
+      console.log(bitacora.value);
+      if (files.value.length > 0) {
+        try {
+          // Procesar cada archivo
+          for (const file of files.value) {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+              try {
+                const result = e.target!.result as ArrayBuffer;
+                const byteArray = new Uint8Array(result);
+
+                // Convertir Uint8Array a byte[]
+                const byteArrayJava = Array.from(byteArray);
+                documentObj.value.bitacora = {} as Bitacora;
+                documentObj.value.codigo = 0;
+                documentObj.value.doc_archivo = byteArrayJava;
+                documentObj.value.doc_nombre_archivo = file.name;
+                documentObj.value.bitacora.codigo = bitacora.value.codigo;
+                documentObj.value.adicionado = bitacora.value.adicionado;
+
+                await saveDocumentoBitacora(documentObj.value);
+              } catch (error) {
+                console.error("Error processing file:", error);
+                // Puedes manejar el error aquí si es necesario
+              }
+            };
+            reader.onerror = (error) => {
+              console.error("Error reading file:", error);
+            };
+            reader.readAsArrayBuffer(file);
+          }
+        } catch (error) {
+          console.error("Error processing files:", error);
+          // Puedes agregar más lógica de manejo de errores aquí si es necesario
+        }
+      }
     }
 
     await findBitacoras();
@@ -957,52 +975,18 @@ const confirmDelete = async () => {
   } catch (error) {}
 };
 
-const uploadedDocuments = ref<Bitacora[]>([]);
+// const uploadedDocuments = ref<Bitacora[]>([]);
 
-const hol = async (bitacoraParam: Bitacora) => {
-  const existingDocument = uploadedDocuments.value.find(
-    (document) => document.doc_archivo === bitacoraParam.doc_archivo
-  );
+// const hol = async (bitacoraParam: Bitacora) => {
+//   const existingDocument = uploadedDocuments.value.find(
+//     (document) => document.doc_archivo === bitacoraParam.doc_archivo
+//   );
 
-  if (existingDocument) {
-    const index = uploadedDocuments.value.indexOf(existingDocument);
-    uploadedDocuments.value.splice(index, 1); // Eliminar documento existente del arreglo
-  }
-};
-
-const onUpload = async ({ files }: any, bitacoraParam: Bitacora) => {
-  // bitacora.value = await getBitacoraByNumSumilla(sumilla.numero_sumilla);
-  bitacora.value = bitacoraParam;
-  const file = files[0];
-  const fileContent = await readFileAsByteArray(file);
-  bitacora.value.doc_archivo = Array.from(fileContent);
-  bitacora.value.nombre_archivo = files[0].name;
-  const existingDocument = uploadedDocuments.value.find(
-    (document) => document.doc_archivo === bitacora.value.doc_archivo
-  );
-
-  if (existingDocument) {
-    const index = uploadedDocuments.value.indexOf(existingDocument);
-    uploadedDocuments.value.splice(index, 1); // Eliminar documento existente del arreglo
-    console.log(bitacora.value, "bitacora splice");
-  }
-  uploadedDocuments.value.push(bitacora.value!);
-  await editBitacora(bitacora.value, bitacora.value.codigo);
-  await findBitacoras();
-};
-
-const readFileAsByteArray = (file: File): Promise<Uint8Array> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const arrayBuffer = reader.result as ArrayBuffer;
-      const byteArray = new Uint8Array(arrayBuffer);
-      resolve(byteArray);
-    };
-    reader.onerror = (error) => reject(error);
-    reader.readAsArrayBuffer(file);
-  });
-};
+//   if (existingDocument) {
+//     const index = uploadedDocuments.value.indexOf(existingDocument);
+//     uploadedDocuments.value.splice(index, 1); // Eliminar documento existente del arreglo
+//   }
+// };
 
 const getDownloadUrl = (byteArray: number[] | string) => {
   let uint8Array;
@@ -1051,12 +1035,6 @@ watch(
     }
   }
 );
-
-const uint8ArrayToFile = (byteArray: number[], fileName: string): File => {
-  const uint8Array = new Uint8Array(byteArray);
-  const blob = new Blob([uint8Array], { type: "application/pdf" });
-  return new File([blob], fileName, { type: "application/pdf" });
-};
 
 const activePopover = ref<string | null>(null);
 const togglePopoverActive = async (
@@ -1364,5 +1342,78 @@ const prepareEstadoDocumentoModal = async (bitacoraParam: Bitacora) => {
 }
 .p-datatable.p-datatable-lg .p-datatable-footer {
   padding: 1.25rem 1.25rem;
+}
+/* Asegurarse de que solo el nombre del archivo se muestra y se ajusta a una sola columna */
+.p-fileupload .p-fileupload-file {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.p-fileupload .p-fileupload-file .p-fileupload-file-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.p-fileupload .p-fileupload-file .p-fileupload-file-size,
+.p-fileupload .p-fileupload-file .p-progressbar,
+.p-fileupload .p-fileupload-file .p-fileupload-file-status,
+.p-fileupload .p-fileupload-file .p-fileupload-file-icon {
+  display: none !important;
+}
+
+.p-fileupload .p-fileupload-file img {
+  display: none !important;
+}
+
+/* Especifica la ocultación de elementos adicionales si siguen apareciendo */
+.p-fileupload .p-fileupload-file .p-fileupload-file-status,
+.p-fileupload .p-fileupload-file .p-fileupload-file-icon {
+  display: none !important;
+}
+
+/* Ajusta el estilo del botón para que se vea como deseas */
+.p-fileupload .p-fileupload-buttonbar {
+  background: #f8f9fa;
+  padding: 1.25rem;
+  border: 1px solid #dee2e6;
+  color: #343a40;
+  border-bottom: 0;
+  border-top-right-radius: 6px;
+  border-top-left-radius: 6px;
+  gap: 0.5rem;
+}
+
+.p-fileupload .p-fileupload-buttonbar .p-button.p-fileupload-choose.p-focus {
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem #c7d2fe;
+}
+
+.p-fileupload .p-fileupload-content {
+  background: #ffffff;
+  padding: 2rem 1rem;
+  border: 1px solid #dee2e6;
+  color: #495057;
+  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+.p-fileupload .p-fileupload-row > div {
+  padding: 1rem;
+}
+.p-fileupload .p-fileupload-upload,
+.p-fileupload .p-fileupload-cancel {
+  display: none !important;
+}
+
+/* Asegurarse de que solo el botón de selección de archivos se muestre */
+.p-fileupload .p-fileupload-choose {
+  display: block !important; /* Asegura que el botón de elegir archivos esté visible */
 }
 </style>

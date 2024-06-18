@@ -358,6 +358,7 @@ const onSubmitAcciones = handleSubmit(async (values) => {
         handleChangeAcciones();
         break;
       case 7:
+        eventoSelected.value.per_codigo_reasignado = {} as Persona;
         eventoSelected.value.estado.codigo = 7;
         eventoSelected.value.codigo = 0;
         // eventoSelected.value.per_codigo_responsable.codigo = userLogin.value.codigo;
