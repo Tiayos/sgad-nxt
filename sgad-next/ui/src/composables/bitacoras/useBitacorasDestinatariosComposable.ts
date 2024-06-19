@@ -1,3 +1,4 @@
+import { DocumentoBitacora } from "models/DocumentoBitacora.model";
 import { EventoBitacora } from "models/EventoBitacora.model";
 import { Persona } from "models/Sumilla.model";
 
@@ -5,10 +6,14 @@ export const useBitacorasDestinatariosComposable = () =>{
 //* store
 const useStore = useArchivosStore();
 const {eventosBitacorasList} = storeToRefs(useStore);
+const documentosBitacoraList = ref<DocumentoBitacora[]>([]);
 
     //*Services
     const {getUsrLogin,getUsers} = usePersonaService();
-    const {getAllEventosVigentesByPerCodigo, getAllEventosByBitCodigo, getAllEstados, saveEventoBitacora, getEventoBitacoraService} = useEventoBitacora();
+    const {getAllEventosVigentesByPerCodigo, getAllEventosByBitCodigo, 
+            getAllEstados, saveEventoBitacora, getEventoBitacoraService} = useEventoBitacora();
+    const {getDocumentosByBitCodigo} = useBitacoraService();
+
     const {sendEmail} = useSendEmailService();
 
     //*Auth
@@ -34,7 +39,9 @@ return {
     saveEventoBitacora,
     userLogin,
     sendEmail,
-    getEventoBitacoraService
+    getEventoBitacoraService,
+    documentosBitacoraList,
+    getDocumentosByBitCodigo
 }
 
 }

@@ -15,7 +15,10 @@ const {bitacorasList, filtersSumillaBitacora, eventoBitacora} = storeToRefs(useS
     //*services
 const {getSumillas, getSumillasBySede, saveSumilla, deleteSumilla, getSumillaByNumeroSumilla, editSumilla, getSedeByEmail } = useSumillaService();
 const {getUsers, getUsrLogin, getUsersAmbitosGestionDocumental} = usePersonaService();
-const {getBitacoras, getBitacorasBySede, getBitacorasByFechaAndEstado, saveBitacora, deleteBitacora, editBitacora, editEstadoEnvioBitacora, getBitacoraByNumSumilla, deleteBitacoraByNumSumilla, saveDocumentoBitacora, getDocumentosByBitCodigo} = useBitacoraService();
+const {getBitacoras, getBitacorasBySede, getBitacorasByFechaAndEstado,
+    saveBitacora, deleteBitacora, editBitacora, editEstadoEnvioBitacora,
+    getBitacoraByNumSumilla, deleteBitacoraByNumSumilla, saveDocumentoBitacora,
+    getDocumentosByBitCodigo, deleteDocumentosByBitCodigo} = useBitacoraService();
 const {saveTransferencia} = useTransferenciaDocumentalService();
 const {getEventoBitacoraService, saveEventoBitacora, deleteEventoBitacora} = useEventoBitacora();
 
@@ -72,7 +75,7 @@ const prepareEdit = async (sumillaParam: Sumilla) => {
   
     bitacora.value = await getBitacoraByNumSumilla(sumilla.value.numero_sumilla);
     documentosBitacoraList.value = await getDocumentosByBitCodigo(bitacora.value.codigo);
-
+    console.log(documentosBitacoraList.value,' documentosBitacoraList');
 
     fechaEntrega.value =
       bitacora.value.fecha_entrega != null ? bitacora.value.fecha_entrega.toString() : "";
@@ -164,6 +167,8 @@ return {
     //*EVENTO BITACORA
     getEventoBitacoraService,
     saveEventoBitacora,
+    deleteDocumentosByBitCodigo,
+    getDocumentosByBitCodigo,
     eventoVigente,
     filtersSumillaBitacora,
     v$,
@@ -181,5 +186,6 @@ return {
     documentObj,
     saveDocumentoBitacora,
     files,
+    documentosBitacoraList
 }
 }

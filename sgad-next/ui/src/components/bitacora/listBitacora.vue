@@ -378,8 +378,38 @@
                     multiple
                     :chooseLabel="'Seleccionar archivos'"
                     :onSelect="handleFileSelect"
-                    :files="files"
                   />
+                  <div v-if="documentosBitacoraList.length > 0">
+                    <h3>Documentos guardados:</h3>
+                    <ul>
+                      <li
+                        v-for="(documento, index) in documentosBitacoraList"
+                        :key="documento.doc_nombre_archivo"
+                      >
+                        <a
+                          :href="
+                            createDownloadLink(
+                              documento.doc_archivo,
+                              documento.doc_nombre_archivo
+                            )
+                          "
+                          :download="documento.doc_nombre_archivo"
+                        >
+                          {{ documento.doc_nombre_archivo }}
+                        </a>
+                        <FButton
+                          plain
+                          destructive
+                          size="micro"
+                          :icon="TrashCanSolid"
+                          @click="deleteFile(index)"
+                          style="margin-left: 2rem; margin-top: 1rem; align-items: end"
+                          >Eliminar</FButton
+                        >
+                        <FDivider :border-width="'4'" />
+                      </li>
+                    </ul>
+                  </div>
                 </FVerticalStack>
               </FVerticalStack>
             </FCardSection>
@@ -690,6 +720,8 @@ import {
   MessageDotsRegular,
   FileSolid,
 } from "@ups-dev/freya-icons";
+import { BitacoraListBitacora } from "../../../.nuxt/components";
+import { DocumentoBitacora } from "../../models/DocumentoBitacora.model";
 
 const {
   usersGestionDocumentalList,
@@ -708,6 +740,8 @@ const {
   editBitacora,
   getEventoBitacoraService,
   deleteBitacora,
+  deleteDocumentosByBitCodigo,
+  getDocumentosByBitCodigo,
   eventoVigente,
   getUsrLogin,
   deleteBitacoraByNumSumilla,
@@ -734,6 +768,7 @@ const {
   documentObj,
   saveDocumentoBitacora,
   files,
+  documentosBitacoraList,
 } = useSumillaComposable();
 
 const { data: userLogin } = useSessionStorage<Persona>("userLogin");
@@ -759,6 +794,8 @@ const prepareCreate = async () => {
   action.value = persistAction.create;
   bitacora.value = {} as Bitacora;
   sumilla.value = {} as Sumilla;
+  files.value = [];
+  documentosBitacoraList.value = [];
   resetNumHojas();
   v$.value.$reset();
   sumilla.value.responsable = userLogin.value;
@@ -800,6 +837,9 @@ const onSubmited = handleSubmit(async (values) => {
 
     if (action.value == persistAction.edit) {
       await editBitacora(bitacora.value, bitacora.value.codigo);
+      if (files.value.length > 0) {
+        saveDocumentos();
+      }
     } else {
       bitacora.value.receptor_documento = sumilla.value?.responsable!;
       bitacora.value.fecha_recepcion = sumilla.value?.fecha_sumilla!;
@@ -808,42 +848,7 @@ const onSubmited = handleSubmit(async (values) => {
       bitacora.value.estado_transferencia = "N";
       bitacora.value.adicionado = data.value?.user?.email!;
       bitacora.value = await saveBitacora(bitacora.value);
-      console.log(bitacora.value);
-      if (files.value.length > 0) {
-        try {
-          // Procesar cada archivo
-          for (const file of files.value) {
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-              try {
-                const result = e.target!.result as ArrayBuffer;
-                const byteArray = new Uint8Array(result);
-
-                // Convertir Uint8Array a byte[]
-                const byteArrayJava = Array.from(byteArray);
-                documentObj.value.bitacora = {} as Bitacora;
-                documentObj.value.codigo = 0;
-                documentObj.value.doc_archivo = byteArrayJava;
-                documentObj.value.doc_nombre_archivo = file.name;
-                documentObj.value.bitacora.codigo = bitacora.value.codigo;
-                documentObj.value.adicionado = bitacora.value.adicionado;
-
-                await saveDocumentoBitacora(documentObj.value);
-              } catch (error) {
-                console.error("Error processing file:", error);
-                // Puedes manejar el error aquí si es necesario
-              }
-            };
-            reader.onerror = (error) => {
-              console.error("Error reading file:", error);
-            };
-            reader.readAsArrayBuffer(file);
-          }
-        } catch (error) {
-          console.error("Error processing files:", error);
-          // Puedes agregar más lógica de manejo de errores aquí si es necesario
-        }
-      }
+      await saveDocumentos();
     }
 
     await findBitacoras();
@@ -858,6 +863,44 @@ const onSubmited = handleSubmit(async (values) => {
     });
   }
 });
+
+const saveDocumentos = async () => {
+  if (files.value.length > 0) {
+    try {
+      // Procesar cada archivo
+      for (const file of files.value) {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          try {
+            const result = e.target!.result as ArrayBuffer;
+            const byteArray = new Uint8Array(result);
+
+            // Convertir Uint8Array a byte[]
+            const byteArrayJava = Array.from(byteArray);
+            documentObj.value.bitacora = {} as Bitacora;
+            documentObj.value.codigo = 0;
+            documentObj.value.doc_archivo = byteArrayJava;
+            documentObj.value.doc_nombre_archivo = file.name;
+            documentObj.value.bitacora.codigo = bitacora.value.codigo;
+            documentObj.value.adicionado = bitacora.value.adicionado;
+
+            await saveDocumentoBitacora(documentObj.value);
+          } catch (error) {
+            console.error("Error processing file:", error);
+            // Puedes manejar el error aquí si es necesario
+          }
+        };
+        reader.onerror = (error) => {
+          console.error("Error reading file:", error);
+        };
+        reader.readAsArrayBuffer(file);
+      }
+    } catch (error) {
+      console.error("Error processing files:", error);
+      // Puedes agregar más lógica de manejo de errores aquí si es necesario
+    }
+  }
+};
 
 watch(
   () => fechaFinal.value,
@@ -1010,7 +1053,9 @@ const getDownloadUrl = (byteArray: number[] | string) => {
 
 const prepareEnviarDocumento = async (sumillaDocumento: Sumilla) => {
   bitacora.value = await getBitacoraByNumSumilla(sumillaDocumento.numero_sumilla);
-  if (bitacora.value.doc_archivo != null) {
+  documentosBitacoraList.value = await getDocumentosByBitCodigo(bitacora.value.codigo);
+
+  if (documentosBitacoraList.value.length > 0) {
     handleChangeEnvioDocumento();
   } else {
     toast.add({
@@ -1055,6 +1100,30 @@ const prepareEstadoDocumentoModal = async (bitacoraParam: Bitacora) => {
   eventoVigente.value = await getEventoBitacoraService(bitacoraParam.codigo);
   console.log(eventoVigente.value);
   handleChangeEstadoDocumental();
+};
+
+const createDownloadLink = (doc_archivo: any, doc_nombre_archivo: any) => {
+  const byteCharacters = atob(doc_archivo);
+  const byteNumbers = new Array(byteCharacters.length);
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+  const byteArray = new Uint8Array(byteNumbers);
+  const blob = new Blob([byteArray], { type: "application/pdf" });
+  const url = URL.createObjectURL(blob);
+
+  return url;
+};
+
+const deleteFile = async (index: any) => {
+  console.log(index, "indexx");
+  const documento: DocumentoBitacora = documentosBitacoraList.value[index];
+  try {
+    await deleteDocumentosByBitCodigo(documento.bitacora.codigo); // Asegúrate de que tu API soporte esto
+    documentosBitacoraList.value.splice(index, 1);
+  } catch (error) {
+    console.error("Error eliminando el archivo:", error);
+  }
 };
 </script>
 

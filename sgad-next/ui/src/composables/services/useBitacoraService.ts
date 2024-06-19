@@ -124,6 +124,16 @@ export const useBitacoraService = () => {
         }
     }
 
+    const deleteDocumentosByBitCodigo = async(bitCodigo: number)=>{
+        try {
+            await $fetch(`${apiUrl}/deleteDocumentos?bitCodigo=${bitCodigo}`,{
+                method: 'DELETE'
+            })
+        } catch (error) {
+            throw error;
+        }
+    }
+
     return {
         getBitacoras,
         getBitacorasBySede,
@@ -136,7 +146,8 @@ export const useBitacoraService = () => {
         deleteBitacoraByNumSumilla,
         getBitacorasByPerCodigoDestinatario,
         saveDocumentoBitacora,
-        getDocumentosByBitCodigo
+        getDocumentosByBitCodigo,
+        deleteDocumentosByBitCodigo
 
     }
 }

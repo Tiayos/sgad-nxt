@@ -56,18 +56,6 @@
             </template>
           </Column>
 
-          <Column header="Archivo" style="width: 10px" bodyStyle="text-align: center;">
-            <template #body="slotProps">
-              <span v-if="slotProps.data.bitacora.doc_archivo">
-                <a
-                  :href="getDownloadUrl(slotProps.data.bitacora.doc_archivo)"
-                  target="_blank"
-                  >{{ slotProps.data.bitacora.nombre_archivo }}</a
-                >
-              </span>
-            </template>
-          </Column>
-
           <Column header="Acciones" style="width: 5px" bodyStyle="text-align:center">
             <template #body="slotProps">
               <FButton
@@ -99,60 +87,97 @@
       ]"
     >
       <FModalSection>
-        <FResourceList
-          :resourceName="{ singular: 'evento', plural: 'eventos' }"
-          :items="eventosBitacorasAcciones"
-        >
-          <template #item="{ item }">
-            <FResourceItem id="item.codigo">
-              <template #media>
-                <FAvatar customer size="medium" />
-              </template>
+        <FVerticalStack gap="4">
+          <FResourceList
+            :resourceName="{ singular: 'evento', plural: 'eventos' }"
+            :items="eventosBitacorasAcciones"
+          >
+            <template #item="{ item }">
+              <FResourceItem id="item.codigo">
+                <template #media>
+                  <FAvatar customer size="medium" />
+                </template>
 
-              <FVerticalStack gap="1">
-                <FHorizontalStack gap="2">
-                  <FText fontWeight="bold" as="span">
-                    {{ item.per_codigo_responsable.per_nombres }}
-                  </FText>
-                  <FText fontWeight="bold" as="span">
-                    {{ item.per_codigo_responsable.per_apellidos }}
-                  </FText>
-                </FHorizontalStack>
+                <FVerticalStack gap="1">
+                  <FHorizontalStack gap="2">
+                    <FText fontWeight="bold" as="span">
+                      {{ item.per_codigo_responsable.per_nombres }}
+                    </FText>
+                    <FText fontWeight="bold" as="span">
+                      {{ item.per_codigo_responsable.per_apellidos }}
+                    </FText>
+                  </FHorizontalStack>
 
-                <FHorizontalStack gap="28">
-                  <FText fontWeight="semibold" as="span"> No. de ref: </FText>
-                  <FText fontWeight="semibold" as="span">
-                    {{ item.bitacora.sumilla.numero_sumilla }}
-                  </FText>
-                  <FText
-                    fontWeight="semibold"
-                    as="span"
-                    alignment="start"
-                    style="font-style: italic"
-                    class="texto-superior-derecha"
-                    variant="bodySm"
-                  >
-                    {{ item.fecha }}
-                  </FText>
-                </FHorizontalStack>
+                  <FHorizontalStack gap="28">
+                    <FText fontWeight="semibold" as="span"> No. de ref: </FText>
+                    <FText fontWeight="semibold" as="span">
+                      {{ item.bitacora.sumilla.numero_sumilla }}
+                    </FText>
+                    <FText
+                      fontWeight="semibold"
+                      as="span"
+                      alignment="start"
+                      style="font-style: italic"
+                      class="texto-superior-derecha"
+                      variant="bodySm"
+                    >
+                      {{ item.fecha }}
+                    </FText>
+                  </FHorizontalStack>
 
-                <FHorizontalStack gap="32">
-                  <FText fontWeight="semibold" as="span"> Asunto: </FText>
-                  <FText fontWeight="semibold" as="span">
-                    {{ item.bitacora.asunto }}
-                  </FText>
-                </FHorizontalStack>
+                  <FHorizontalStack gap="32">
+                    <FText fontWeight="semibold" as="span"> Asunto: </FText>
+                    <FText fontWeight="semibold" as="span">
+                      {{ item.bitacora.asunto }}
+                    </FText>
+                  </FHorizontalStack>
 
-                <FHorizontalStack gap="12">
-                  <FText fontWeight="semibold" as="span"> Estado documento: </FText>
-                  <FBadge :status="item.estado.codigo === 5 ? 'success' : 'default'">
-                    {{ item.estado.estado_descripcion }}
-                  </FBadge>
-                </FHorizontalStack>
-              </FVerticalStack>
-            </FResourceItem>
-          </template>
-        </FResourceList>
+                  <FHorizontalStack gap="12">
+                    <FText fontWeight="semibold" as="span"> Estado documento: </FText>
+                    <FBadge :status="item.estado.codigo === 5 ? 'success' : 'default'">
+                      {{ item.estado.estado_descripcion }}
+                    </FBadge>
+                  </FHorizontalStack>
+                </FVerticalStack>
+              </FResourceItem>
+            </template>
+          </FResourceList>
+
+          <div v-if="documentosBitacoraList.length > 0">
+            <FVerticalStack gap="4">
+              <FText as="h6" variant="bodyMd" font-weight="semibold"
+                >Documentos guardados:</FText
+              >
+            </FVerticalStack>
+            <ul>
+              <li
+                v-for="(documento, index) in documentosBitacoraList"
+                :key="documento.doc_nombre_archivo"
+              >
+                <a
+                  :href="
+                    createDownloadLink(
+                      documento.doc_archivo,
+                      documento.doc_nombre_archivo
+                    )
+                  "
+                  :download="documento.doc_nombre_archivo"
+                >
+                  {{ documento.doc_nombre_archivo }}
+                </a>
+                <FButton
+                  plain
+                  destructive
+                  size="micro"
+                  :icon="TrashCanSolid"
+                  @click="deleteFile(index)"
+                  style="margin-left: 2rem; margin-top: 1rem; align-items: end"
+                  >Eliminar</FButton
+                >
+              </li>
+            </ul>
+          </div>
+        </FVerticalStack>
       </FModalSection>
 
       <FCardSection>
@@ -224,6 +249,8 @@ const {
   userLogin,
   sendEmail,
   getEventoBitacoraService,
+  documentosBitacoraList,
+  getDocumentosByBitCodigo,
 } = useBitacorasDestinatariosComposable();
 const eventoSelected = ref<EventoBitacora>({} as EventoBitacora);
 const accionesModal = ref<boolean>(false);
@@ -291,6 +318,19 @@ const getDownloadUrl = (byteArray: number[] | string) => {
   return URL.createObjectURL(blob);
 };
 
+const createDownloadLink = (doc_archivo: any, doc_nombre_archivo: any) => {
+  const byteCharacters = atob(doc_archivo);
+  const byteNumbers = new Array(byteCharacters.length);
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+  const byteArray = new Uint8Array(byteNumbers);
+  const blob = new Blob([byteArray], { type: "application/pdf" });
+  const url = URL.createObjectURL(blob);
+
+  return url;
+};
+
 const handleChangeAcciones = () => {
   resetEstadoObj();
   resetPersonaObj();
@@ -298,6 +338,9 @@ const handleChangeAcciones = () => {
 };
 
 const prepareAcciones = async (eventoParam: EventoBitacora) => {
+  documentosBitacoraList.value = await getDocumentosByBitCodigo(
+    eventoParam.bitacora.codigo
+  );
   desabilitarGuardarCambios.value = false;
   eventoSelected.value = eventoParam;
   eventosBitacorasAcciones.value = await getAllEventosByBitCodigo(
