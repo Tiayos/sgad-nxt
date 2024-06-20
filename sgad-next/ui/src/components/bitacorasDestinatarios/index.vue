@@ -37,8 +37,9 @@
           <Column
             field="estado.estado_descripcion"
             header="Estado documento"
+            headerStyle="text-align: center"
             style="width: 10px"
-            bodyStyle="text-align: center;"
+            body-style="text-align: center"
           >
             <template #body="slotProps">
               <FBadge status="info" v-if="slotProps.data.estado.codigo === 5"
@@ -48,10 +49,10 @@
                 >Aprobado</FBadge
               >
               <FBadge status="critical" v-if="slotProps.data.estado.codigo === 3"
-                >No aprobado</FBadge
+                >Se solicita documentación fisica</FBadge
               >
               <FBadge status="attention" v-if="slotProps.data.estado.codigo === 7"
-                >Reasignado</FBadge
+                >Reasignado para trámite</FBadge
               >
             </template>
           </Column>
@@ -70,10 +71,12 @@
     </FFormLayout>
 
     <!-- MODAL ACCIONES -->
+
     <FModal
       large
       v-model="accionesModal"
-      title="Eventos"
+      title=""
+      title-hidden
       :primaryAction="{
         content: 'Confirmar cambios',
         onAction: onSubmitAcciones,
@@ -87,97 +90,107 @@
       ]"
     >
       <FModalSection>
-        <FVerticalStack gap="4">
-          <FResourceList
-            :resourceName="{ singular: 'evento', plural: 'eventos' }"
-            :items="eventosBitacorasAcciones"
-          >
-            <template #item="{ item }">
-              <FResourceItem id="item.codigo">
-                <template #media>
-                  <FAvatar customer size="medium" />
-                </template>
+        <FButton
+          @click="handleToggle"
+          :ariaExpanded="open"
+          ariaControls="basic-collapsible"
+          :icon="open ? PlusSolid : MinusSolid"
+          outline
+        >
+          <FText as="h6" variant="headingSm">
+            {{ open ? "Eventos" : "Eventos" }}
+          </FText>
+        </FButton>
+      </FModalSection>
 
-                <FVerticalStack gap="1">
-                  <FHorizontalStack gap="2">
-                    <FText fontWeight="bold" as="span">
-                      {{ item.per_codigo_responsable.per_nombres }}
-                    </FText>
-                    <FText fontWeight="bold" as="span">
-                      {{ item.per_codigo_responsable.per_apellidos }}
-                    </FText>
-                  </FHorizontalStack>
+      <FCollapsible
+        id="basic-collapsible"
+        :open="open"
+        :transition="transition"
+        expand-on-print
+      >
+        <FModalSection>
+          <FVerticalStack gap="4">
+            <FResourceList
+              :resourceName="{ singular: 'evento', plural: 'eventos' }"
+              :items="eventosBitacorasAcciones"
+            >
+              <template #item="{ item }">
+                <FResourceItem id="item.codigo">
+                  <template #media>
+                    <FAvatar customer size="medium" />
+                  </template>
 
-                  <FHorizontalStack gap="28">
-                    <FText fontWeight="semibold" as="span"> No. de ref: </FText>
-                    <FText fontWeight="semibold" as="span">
-                      {{ item.bitacora.sumilla.numero_sumilla }}
-                    </FText>
-                    <FText
-                      fontWeight="semibold"
-                      as="span"
-                      alignment="start"
-                      style="font-style: italic"
-                      class="texto-superior-derecha"
-                      variant="bodySm"
-                    >
-                      {{ item.fecha }}
-                    </FText>
-                  </FHorizontalStack>
+                  <FVerticalStack gap="1">
+                    <FHorizontalStack gap="2">
+                      <FText fontWeight="bold" as="span">
+                        {{ item.per_codigo_responsable.per_nombres }}
+                      </FText>
+                      <FText fontWeight="bold" as="span">
+                        {{ item.per_codigo_responsable.per_apellidos }}
+                      </FText>
+                    </FHorizontalStack>
 
-                  <FHorizontalStack gap="32">
-                    <FText fontWeight="semibold" as="span"> Asunto: </FText>
-                    <FText fontWeight="semibold" as="span">
-                      {{ item.bitacora.asunto }}
-                    </FText>
-                  </FHorizontalStack>
+                    <FHorizontalStack gap="28">
+                      <FText fontWeight="semibold" as="span"> No. de ref: </FText>
+                      <FText fontWeight="semibold" as="span">
+                        {{ item.bitacora.sumilla.numero_sumilla }}
+                      </FText>
+                      <FText
+                        fontWeight="semibold"
+                        as="span"
+                        alignment="start"
+                        style="font-style: italic"
+                        class="texto-superior-derecha"
+                        variant="bodySm"
+                      >
+                        {{ item.fecha }}
+                      </FText>
+                    </FHorizontalStack>
 
-                  <FHorizontalStack gap="12">
-                    <FText fontWeight="semibold" as="span"> Estado documento: </FText>
-                    <FBadge :status="item.estado.codigo === 5 ? 'success' : 'default'">
-                      {{ item.estado.estado_descripcion }}
-                    </FBadge>
-                  </FHorizontalStack>
-                </FVerticalStack>
-              </FResourceItem>
-            </template>
-          </FResourceList>
+                    <FHorizontalStack gap="32">
+                      <FText fontWeight="semibold" as="span"> Asunto: </FText>
+                      <FText fontWeight="semibold" as="span">
+                        {{ item.bitacora.asunto }}
+                      </FText>
+                    </FHorizontalStack>
 
-          <div v-if="documentosBitacoraList.length > 0">
-            <FVerticalStack gap="4">
-              <FText as="h6" variant="bodyMd" font-weight="semibold"
-                >Documentos guardados:</FText
+                    <FHorizontalStack gap="12">
+                      <FText fontWeight="semibold" as="span"> Estado documento: </FText>
+                      <FBadge :status="item.estado.codigo === 5 ? 'success' : 'default'">
+                        {{ item.estado.estado_descripcion }}
+                      </FBadge>
+                    </FHorizontalStack>
+                  </FVerticalStack>
+                </FResourceItem>
+              </template>
+            </FResourceList>
+          </FVerticalStack>
+        </FModalSection>
+      </FCollapsible>
+
+      <FModalSection>
+        <div v-if="documentosBitacoraList.length > 0">
+          <FVerticalStack gap="4">
+            <FText as="h6" variant="bodyMd" font-weight="semibold">Documentos:</FText>
+          </FVerticalStack>
+          <ul>
+            <li
+              v-for="documento in documentosBitacoraList"
+              :key="documento.doc_nombre_archivo"
+              style="margin-top: 1rem"
+            >
+              <a
+                :href="
+                  createDownloadLink(documento.doc_archivo, documento.doc_nombre_archivo)
+                "
+                :download="documento.doc_nombre_archivo"
               >
-            </FVerticalStack>
-            <ul>
-              <li
-                v-for="(documento, index) in documentosBitacoraList"
-                :key="documento.doc_nombre_archivo"
-              >
-                <a
-                  :href="
-                    createDownloadLink(
-                      documento.doc_archivo,
-                      documento.doc_nombre_archivo
-                    )
-                  "
-                  :download="documento.doc_nombre_archivo"
-                >
-                  {{ documento.doc_nombre_archivo }}
-                </a>
-                <FButton
-                  plain
-                  destructive
-                  size="micro"
-                  :icon="TrashCanSolid"
-                  @click="deleteFile(index)"
-                  style="margin-left: 2rem; margin-top: 1rem; align-items: end"
-                  >Eliminar</FButton
-                >
-              </li>
-            </ul>
-          </div>
-        </FVerticalStack>
+                {{ documento.doc_nombre_archivo }}
+              </a>
+            </li>
+          </ul>
+        </div>
       </FModalSection>
 
       <FCardSection>
@@ -234,7 +247,12 @@
 </template>
 <script lang="ts" setup>
 import { EventoBitacora } from "../../models/EventoBitacora.model";
-import { MagnifyingGlassSolid } from "@ups-dev/freya-icons";
+import {
+  MagnifyingGlassSolid,
+  TrashCanSolid,
+  PlusSolid,
+  MinusSolid,
+} from "@ups-dev/freya-icons";
 import { Estado } from "../../models/Estado.model";
 import { Persona } from "models/Sumilla.model";
 import AutoComplete from "primevue/autocomplete";
@@ -351,19 +369,15 @@ const prepareAcciones = async (eventoParam: EventoBitacora) => {
 
   const lastEvent: EventoBitacora =
     eventosBitacorasAcciones.value[eventosBitacorasAcciones.value.length - 1];
-  console.log(lastEvent);
   switch (lastEvent.estado.codigo) {
     case 3:
-    case 4:
       desabilitarGuardarCambios.value = true;
       break;
     case 7:
       desabilitarGuardarCambios.value =
         lastEvent.per_codigo_reasignado.codigo != userLogin.value.codigo ? true : false;
 
-    // console.log(element.per_codigo_reasignado);
     // if (element.per_codigo_reasignado != null) {
-    //   console.log(element.per_codigo_reasignado.codigo);
 
     //   desabilitarGuardarCambios.value =
     //     element.per_codigo_reasignado.codigo == userLogin.value.codigo ? true : false;
@@ -417,6 +431,13 @@ const onSubmitAcciones = handleSubmit(async (values) => {
 
 const enviarEmail = async (evento: EventoBitacora) => {
   await sendEmail(evento);
+};
+
+const open = ref(false);
+const handleToggle = () => (open.value = !open.value);
+const transition = {
+  duration: "var(--f-motion-duration-150)",
+  timingFunction: "var(--f-motion-ease-in-out)",
 };
 </script>
 <style lang="css">

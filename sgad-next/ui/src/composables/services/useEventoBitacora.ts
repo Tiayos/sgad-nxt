@@ -42,13 +42,19 @@ export const useEventoBitacora = () => {
         try {
             const estados = await $fetch<Estado[]>(`${apiUrl}/getAllEstados`);
             // Filtrar los estados por los códigos especificados
-            const filteredEstados = estados.filter(estado => [3, 4, 7].includes(estado.codigo));
+            const filteredEstados = estados.filter(estado => [3, 7].includes(estado.codigo));
             // Modificar la descripción del estado con código 7
             const modifiedEstados = filteredEstados.map(estado => {
                 if (estado.codigo === 7) {
                     return {
                         ...estado,
-                        estado_descripcion: 'Reasignar'
+                        estado_descripcion: 'Reasignar para trámite'
+                    };
+                }
+                if (estado.codigo === 3) {
+                    return {
+                        ...estado,
+                        estado_descripcion: 'Solicitar documentación fisica'
                     };
                 }
                 return estado;

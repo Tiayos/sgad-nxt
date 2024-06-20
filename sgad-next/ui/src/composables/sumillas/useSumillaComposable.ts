@@ -66,16 +66,14 @@ const {
   })
   const fechaEntrega = ref<string>("");
 
-const prepareEdit = async (sumillaParam: Sumilla) => {
-    action.value = persistAction.edit;
+const prepareEdit = async (sumillaParam: Sumilla, persistAct:persistAction) => {
+    action.value = persistAct;
     sumilla.value = { ...sumillaParam };
-    console.log(sumilla.value.numero_hojas, "sumilla.value.numero_hojas");
     numHojas.value =
       sumilla.value.numero_hojas != null ? sumilla.value.numero_hojas.toString() : "";
   
     bitacora.value = await getBitacoraByNumSumilla(sumilla.value.numero_sumilla);
     documentosBitacoraList.value = await getDocumentosByBitCodigo(bitacora.value.codigo);
-    console.log(documentosBitacoraList.value,' documentosBitacoraList');
 
     fechaEntrega.value =
       bitacora.value.fecha_entrega != null ? bitacora.value.fecha_entrega.toString() : "";

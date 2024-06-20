@@ -129,7 +129,18 @@
             <FButton
               size="medium"
               :icon="PencilSolid"
-              @click="prepareEdit(slotProps.data.sumilla)"
+              @click="prepareEdit(slotProps.data.sumilla, persistAction.view)"
+              >Ver</FButton
+            >
+          </template>
+        </Column>
+
+        <Column style="width: 10px">
+          <template #body="slotProps">
+            <FButton
+              size="medium"
+              :icon="PencilSolid"
+              @click="prepareEdit(slotProps.data.sumilla, persistAction.edit)"
               >Editar</FButton
             >
           </template>
@@ -147,6 +158,8 @@
         </Column>
       </DataTable>
     </FVerticalStack>
+
+    <!-- DELETE MODAL-->
 
     <FModal
       v-model="deleteModal"
@@ -189,6 +202,7 @@
       :primaryAction="{
         content: 'Guardar Sumilla',
         onAction: onSubmited,
+        disabled: action == persistAction.view,
       }"
       :secondaryActions="[
         {
@@ -261,8 +275,9 @@
             <FTextField
               type="number"
               v-model="numHojas"
-              id="numeroIdentificacion"
+              id="numHojas"
               :error="numHojasError"
+              :disabled="action == persistAction.view"
             />
           </FHorizontalStack>
         </FVerticalStack>
@@ -278,6 +293,7 @@
             v-model="bitacora.nombres_remitente"
             :error="v$?.nombres_remitente.$error"
             :label="v$?.nombres_remitente.$error ? 'Este campo es requerido' : ''"
+            :disabled="action == persistAction.view"
           />
           <FText id="remitenteApellidoLbl" as="h6" variant="bodyMd" fontWeight="semibold">
             Apellidos remitente:
@@ -287,6 +303,7 @@
             v-model="bitacora.apellidos_remitente"
             :error="v$?.apellidos_remitente.$error"
             :label="v$?.apellidos_remitente.$error ? 'Este campo es requerido' : ''"
+            :disabled="action == persistAction.view"
           />
 
           <FText id="mensajeroLbl" as="h6" variant="bodyMd" fontWeight="semibold">
@@ -305,6 +322,7 @@
             :suggestions="filteredItems"
             @Complete="searchItem"
             class="full-width-autocomplete"
+            :disabled="action == persistAction.view"
           />
           <span v-if="v$.mensajero.$error" style="color: #c5280c"
             >* El campo mensajero es requerido</span
@@ -313,12 +331,20 @@
           <FText id="numeroGuiaLbl" as="h6" variant="bodyMd" fontWeight="semibold">
             Número de guia:
           </FText>
-          <FTextField id="numeroGuia" v-model="bitacora.numero_guia" />
+          <FTextField
+            id="numeroGuia"
+            v-model="bitacora.numero_guia"
+            :disabled="action == persistAction.view"
+          />
 
           <FText id="observacionesLbl" as="h6" variant="bodyMd" fontWeight="semibold">
             Observaciones:
           </FText>
-          <FTextField id="observaciones" v-model="bitacora.observaciones" />
+          <FTextField
+            id="observaciones"
+            v-model="bitacora.observaciones"
+            :disabled="action == persistAction.view"
+          />
 
           <FCard sectioned style="box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.3)">
             <FCardSection>
@@ -332,14 +358,9 @@
                   Destinatario:
                 </FText>
                 <AutoComplete
-                  @mouseover="
-                    bitacora.destinatario != null
-                      ? (mostrarDestinatario = true)
-                      : (mostrarDestinatario = false)
-                  "
-                  @mouseleave="mostrarDestinatario = false"
                   v-model="bitacora.destinatario"
                   optionLabel="nombreCompleto"
+                  :disabled="action == persistAction.view"
                   :suggestions="filteredItems"
                   class="full-width-autocomplete"
                   @Complete="searchItem"
@@ -354,6 +375,7 @@
                   v-model="bitacora.asunto"
                   :error="v$?.asunto.$error"
                   :label="v$?.asunto.$error ? 'Este campo es requerido' : ''"
+                  :disabled="action == persistAction.view"
                 />
                 <FText
                   id="lugarDestinolbl"
@@ -368,6 +390,7 @@
                   v-model="bitacora.lugar_destino"
                   :error="v$?.lugar_destino.$error"
                   :label="v$?.lugar_destino.$error ? 'Este campo es requerido' : ''"
+                  :disabled="action == persistAction.view"
                 />
 
                 <FVerticalStack gap="4">
@@ -378,6 +401,7 @@
                     multiple
                     :chooseLabel="'Seleccionar archivos'"
                     :onSelect="handleFileSelect"
+                    :disabled="action == persistAction.view"
                   />
                   <div v-if="documentosBitacoraList.length > 0">
                     <h3>Documentos guardados:</h3>
@@ -404,6 +428,7 @@
                           :icon="TrashCanSolid"
                           @click="deleteFile(index)"
                           style="margin-left: 2rem; margin-top: 1rem; align-items: end"
+                          :disabled="action == persistAction.view"
                           >Eliminar</FButton
                         >
                         <FDivider :border-width="'4'" />
@@ -453,7 +478,12 @@
                 >
                   Fecha de entrega:
                 </FText>
-                <FTextField id="fechaEntrega" type="date" v-model="fechaEntrega" />
+                <FTextField
+                  id="fechaEntrega"
+                  type="date"
+                  v-model="fechaEntrega"
+                  :disabled="action == persistAction.view"
+                />
 
                 <FText
                   id="horaEntregaLbl"
@@ -472,6 +502,7 @@
                     iconDisplay="input"
                     timeOnly
                     @update:="changeHour"
+                    :disabled="action == persistAction.view"
                   >
                   </Calendar>
                 </div>
@@ -497,6 +528,7 @@
                 optionLabel="nombreCompleto"
                 :suggestions="filteredItems"
                 @Complete="searchItem"
+                :disabled="action == persistAction.view"
               />
 
               <FText id="personaRecibeLbl" as="h6" variant="bodyMd" fontWeight="semibold">
@@ -514,6 +546,7 @@
                 optionLabel="nombreCompleto"
                 :suggestions="filteredItems"
                 @Complete="searchItem"
+                :disabled="action == persistAction.view"
               />
             </FVerticalStack>
           </FCard>
@@ -1098,7 +1131,6 @@ const handleChangeEstadoDocumental = () => {
 
 const prepareEstadoDocumentoModal = async (bitacoraParam: Bitacora) => {
   eventoVigente.value = await getEventoBitacoraService(bitacoraParam.codigo);
-  console.log(eventoVigente.value);
   handleChangeEstadoDocumental();
 };
 
@@ -1116,7 +1148,6 @@ const createDownloadLink = (doc_archivo: any, doc_nombre_archivo: any) => {
 };
 
 const deleteFile = async (index: any) => {
-  console.log(index, "indexx");
   const documento: DocumentoBitacora = documentosBitacoraList.value[index];
   try {
     await deleteDocumentosByBitCodigo(documento.bitacora.codigo); // Asegúrate de que tu API soporte esto
