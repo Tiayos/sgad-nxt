@@ -311,12 +311,6 @@
           </FText>
 
           <AutoComplete
-            @mouseover="
-              bitacora.mensajero != null
-                ? (mostrarMensajero = true)
-                : (mostrarMensajero = false)
-            "
-            @mouseleave="mostrarMensajero = false"
             v-model="bitacora.mensajero"
             optionLabel="nombreCompleto"
             :suggestions="filteredItems"
@@ -517,12 +511,6 @@
               </FText>
 
               <AutoComplete
-                @mouseover="
-                  bitacora.usr_emisor != null
-                    ? (mostrarEmisor = true)
-                    : (mostrarEmisor = false)
-                "
-                @mouseleave="mostrarEmisor = false"
                 class="full-width-autocomplete"
                 v-model="bitacora.usr_emisor"
                 optionLabel="nombreCompleto"
@@ -535,12 +523,6 @@
                 Persona que recibe:
               </FText>
               <AutoComplete
-                @mouseover="
-                  bitacora.usr_receptor != null
-                    ? (mostrarUsrReceptor = true)
-                    : (mostrarUsrReceptor = false)
-                "
-                @mouseleave="mostrarUsrReceptor = false"
                 class="full-width-autocomplete"
                 v-model="bitacora.usr_receptor"
                 optionLabel="nombreCompleto"
@@ -772,7 +754,6 @@ const {
   findBitacoras,
   editBitacora,
   getEventoBitacoraService,
-  deleteBitacora,
   deleteDocumentosByBitCodigo,
   getDocumentosByBitCodigo,
   eventoVigente,
@@ -812,14 +793,11 @@ const fechaFinal = ref<string>("");
 const userTransferenciaDocumental = ref<number>();
 const toast = useToast();
 const { handleSubmit } = useForm();
-const mostrarMensajero = ref<boolean>(false);
 const filteredItems = ref<Persona[]>([]);
-const mostrarDestinatario = ref<boolean>(false);
-const mostrarEmisor = ref<boolean>(false);
-const mostrarUsrReceptor = ref<boolean>(false);
 const codigoSumillaDelete = ref<Number>(0);
 const bitacoraSelected = ref<Bitacora>({} as Bitacora);
 const disabledEnviarDocumento = ref<boolean>(true);
+const estadoDocumentoModal = ref<boolean>(false);
 
 const prepareCreate = async () => {
   sede.value = await getSedeByEmail(data.value?.user?.email!);
@@ -1051,39 +1029,6 @@ const confirmDelete = async () => {
   } catch (error) {}
 };
 
-// const uploadedDocuments = ref<Bitacora[]>([]);
-
-// const hol = async (bitacoraParam: Bitacora) => {
-//   const existingDocument = uploadedDocuments.value.find(
-//     (document) => document.doc_archivo === bitacoraParam.doc_archivo
-//   );
-
-//   if (existingDocument) {
-//     const index = uploadedDocuments.value.indexOf(existingDocument);
-//     uploadedDocuments.value.splice(index, 1); // Eliminar documento existente del arreglo
-//   }
-// };
-
-const getDownloadUrl = (byteArray: number[] | string) => {
-  let uint8Array;
-
-  if (typeof byteArray === "string") {
-    // Convierte la cadena base64 a un Uint8Array
-    const binaryString = window.atob(byteArray);
-    const len = binaryString.length;
-    uint8Array = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-      uint8Array[i] = binaryString.charCodeAt(i);
-    }
-  } else {
-    // Asume que ya es un Uint8Array
-    uint8Array = new Uint8Array(byteArray);
-  }
-
-  const blob = new Blob([uint8Array], { type: "application/pdf" });
-  return URL.createObjectURL(blob);
-};
-
 const prepareEnviarDocumento = async (sumillaDocumento: Sumilla) => {
   bitacora.value = await getBitacoraByNumSumilla(sumillaDocumento.numero_sumilla);
   documentosBitacoraList.value = await getDocumentosByBitCodigo(bitacora.value.codigo);
@@ -1113,17 +1058,6 @@ watch(
     }
   }
 );
-
-const activePopover = ref<string | null>(null);
-const togglePopoverActive = async (
-  popover: string,
-  active: boolean,
-  bitacoraParam: Bitacora
-) => {
-  activePopover.value = active ? popover : null;
-};
-
-const estadoDocumentoModal = ref<boolean>(false);
 
 const handleChangeEstadoDocumental = () => {
   estadoDocumentoModal.value = !estadoDocumentoModal.value;

@@ -1,5 +1,4 @@
 import { DocumentoBitacora } from "models/DocumentoBitacora.model";
-import { EventoBitacora } from "models/EventoBitacora.model";
 import { Persona } from "models/Sumilla.model";
 
 export const useBitacorasDestinatariosComposable = () =>{

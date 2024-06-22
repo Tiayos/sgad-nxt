@@ -260,14 +260,13 @@ import { useToast } from "primevue/usetoast";
 
 const {
   eventosBitacorasList,
+  userLogin,
+  documentosBitacoraList,
   getAllEventosByBitCodigo,
   getAllEstados,
   getUsers,
   saveEventoBitacora,
-  userLogin,
   sendEmail,
-  getEventoBitacoraService,
-  documentosBitacoraList,
   getDocumentosByBitCodigo,
 } = useBitacorasDestinatariosComposable();
 const eventoSelected = ref<EventoBitacora>({} as EventoBitacora);
@@ -316,26 +315,6 @@ const searchItem = (event: any) => {
   );
 };
 
-const getDownloadUrl = (byteArray: number[] | string) => {
-  let uint8Array;
-
-  if (typeof byteArray === "string") {
-    // Convierte la cadena base64 a un Uint8Array
-    const binaryString = window.atob(byteArray);
-    const len = binaryString.length;
-    uint8Array = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-      uint8Array[i] = binaryString.charCodeAt(i);
-    }
-  } else {
-    // Asume que ya es un Uint8Array
-    uint8Array = new Uint8Array(byteArray);
-  }
-
-  const blob = new Blob([uint8Array], { type: "application/pdf" });
-  return URL.createObjectURL(blob);
-};
-
 const createDownloadLink = (doc_archivo: any, doc_nombre_archivo: any) => {
   const byteCharacters = atob(doc_archivo);
   const byteNumbers = new Array(byteCharacters.length);
@@ -377,16 +356,8 @@ const prepareAcciones = async (eventoParam: EventoBitacora) => {
       desabilitarGuardarCambios.value =
         lastEvent.per_codigo_reasignado.codigo != userLogin.value.codigo ? true : false;
 
-    // if (element.per_codigo_reasignado != null) {
-
-    //   desabilitarGuardarCambios.value =
-    //     element.per_codigo_reasignado.codigo == userLogin.value.codigo ? true : false;
+      handleChangeAcciones();
   }
-  // eventosBitacorasAcciones.value.forEach((element) => {
-  //
-  //   }
-  // });
-  handleChangeAcciones();
 };
 
 const onSubmitAcciones = handleSubmit(async (values) => {
@@ -406,7 +377,7 @@ const onSubmitAcciones = handleSubmit(async (values) => {
         await saveEventoBitacora(eventoSelected.value);
         handleChangeAcciones();
         break;
-      case 3: // NO APROBADO
+      case 3: // NO APROBADO - SOLICITAR DOCUMENTACIÓN FÍSICA
         eventoSelected.value.estado.codigo = 3;
         eventoSelected.value.codigo = 0;
         eventoSelected.value.per_codigo_responsable.codigo = userLogin.value.codigo;
@@ -418,14 +389,12 @@ const onSubmitAcciones = handleSubmit(async (values) => {
         eventoSelected.value.per_codigo_reasignado = {} as Persona;
         eventoSelected.value.estado.codigo = 7;
         eventoSelected.value.codigo = 0;
-        // eventoSelected.value.per_codigo_responsable.codigo = userLogin.value.codigo;
         eventoSelected.value.per_codigo_responsable.codigo = userLogin.value.codigo;
         eventoSelected.value.per_codigo_reasignado.codigo = personaObj.value.codigo;
         await saveEventoBitacora(eventoSelected.value);
         handleChangeAcciones();
         break;
     }
-    // eventoSelected.value.estado.codigo =
   }
 });
 
