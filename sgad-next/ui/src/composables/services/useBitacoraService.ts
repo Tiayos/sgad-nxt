@@ -23,9 +23,9 @@ export const useBitacoraService = () => {
         }
     }
 
-    const getBitacorasByFechaAndEstado = async(fechaInicio:string, fechaFin:string): Promise<Bitacora[]> => {
+    const getBitacorasByFechaAndEstado = async(fechaInicio:string, fechaFin:string, resPerCodigo:number): Promise<Bitacora[]> => {
         try {
-            const resp = await $fetch<Bitacora[]>(`${apiUrl}/getBitacorasByFechasAndEstado?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`)
+            const resp = await $fetch<Bitacora[]>(`${apiUrl}/getBitacorasByFechasAndEstado?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}&resPerCodigo=${resPerCodigo}`)
             return resp;
         } catch (error) {
             throw new Error("Error al consultar las bitacoras");

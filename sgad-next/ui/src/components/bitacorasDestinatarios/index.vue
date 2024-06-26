@@ -254,9 +254,9 @@ import {
   MinusSolid,
 } from "@ups-dev/freya-icons";
 import { Estado } from "../../models/Estado.model";
-import { Persona } from "models/Sumilla.model";
 import AutoComplete from "primevue/autocomplete";
 import { useToast } from "primevue/usetoast";
+import { Persona } from "../../models/Sumilla.model";
 
 const {
   eventosBitacorasList,
@@ -348,14 +348,18 @@ const prepareAcciones = async (eventoParam: EventoBitacora) => {
 
   const lastEvent: EventoBitacora =
     eventosBitacorasAcciones.value[eventosBitacorasAcciones.value.length - 1];
+  estadoObj.value = lastEvent.estado.codigo;
   switch (lastEvent.estado.codigo) {
     case 3:
       desabilitarGuardarCambios.value = true;
+      handleChangeAcciones();
       break;
     case 7:
       desabilitarGuardarCambios.value =
         lastEvent.per_codigo_reasignado.codigo != userLogin.value.codigo ? true : false;
-
+      handleChangeAcciones();
+      break;
+    default:
       handleChangeAcciones();
   }
 };

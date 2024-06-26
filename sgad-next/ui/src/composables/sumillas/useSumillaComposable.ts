@@ -118,8 +118,8 @@ const findBitacoras = async() =>{
     bitacorasList.value = await getBitacorasBySede(sede.value.dee_codigo);
 }
 
-const findBitacorasByFechaTransferencia = async(fechaInicio:string, fechaFin:string) =>{
-    bitacorasListTransferenciaDocumental.value = await getBitacorasByFechaAndEstado(fechaInicio, fechaFin);
+const findBitacorasByFechaTransferencia = async(fechaInicio:string, fechaFin:string, resPerCodigo:number) =>{
+    bitacorasListTransferenciaDocumental.value = await getBitacorasByFechaAndEstado(fechaInicio, fechaFin, resPerCodigo);
     if(bitacorasListTransferenciaDocumental.value.length==0){
         mensajeTransferencia.value = 'No se encuentra ningún documento por enviar en las fechas seleccionadas'
     }

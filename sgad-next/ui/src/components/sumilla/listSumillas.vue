@@ -46,88 +46,18 @@ const toast = useToast();
 const fechaEntrega = ref<string>("");
 
 const {
-  sumilla,
   bitacora,
   sumillaEncontrada,
   //*Service
-  findSumillas,
-  deleteSumilla,
-  findBitacoras,
-  editBitacora,
-  deleteBitacoraByNumSumilla,
-  receptorPersonaList,
   getSumillaByNumeroSumilla,
-  getBitacoraByNumSumilla,
   filtersSumillaBitacora,
-  findBitacorasByFechaTransferencia,
   prepareEdit,
+  action,
 } = useSumillaComposable();
 
 //*Session storage
-const deleteModal = ref<boolean>(false);
-const codigoSumillaDelete = ref<Number>(0);
 const numeroSumilla = ref<string>("");
-const filteredItems = ref<Persona[]>([]);
-
 const selected = ref(0);
-
-const options = [
-  {
-    label: "SI",
-    value: "S",
-  },
-  {
-    label: "NO",
-    value: "N",
-  },
-];
-const {
-  value: numHojas,
-  errorMessage: numHojasError,
-  resetField: resetNumHojas,
-} = useField<string>("numHojas", {
-  required: true,
-});
-
-const searchItem = (event: any) => {
-  const query = event.query.toLowerCase();
-  filteredItems.value = receptorPersonaList.value.filter(
-    (item) =>
-      item.per_nombres.toLowerCase().includes(query) ||
-      item.per_apellidos.toLowerCase().includes(query)
-  );
-};
-
-const changeHour = () => {
-  const fecha = new Date(bitacora.value.hora_entrega);
-  const hora = fecha.getHours();
-  const minutos = fecha.getMinutes();
-  bitacora.value.hora_entrega = `${hora}:${minutos}`;
-};
-
-const confirmDelete = async () => {
-  await deleteBitacoraByNumSumilla(sumilla.value.codigo!);
-  await deleteSumilla(sumilla.value.codigo!);
-  await findSumillas();
-  await findBitacoras();
-  toast.add({
-    severity: "success",
-    summary: "Sumilla",
-    detail: `Se ha eliminado la sumilla correctamente`,
-    life: 5000,
-  });
-  changeDeleteModal();
-};
-
-const handleChangeDeleteModal = async (sum: Sumilla) => {
-  deleteModal.value = !deleteModal.value;
-  codigoSumillaDelete.value = sum.codigo!;
-  sumilla.value = sum;
-};
-
-const changeDeleteModal = () => {
-  deleteModal.value = !deleteModal.value;
-};
 
 interface TabDescriptor {
   id: string;
@@ -149,7 +79,7 @@ const findSumilla = async () => {
   sumillaEncontrada.value = await getSumillaByNumeroSumilla(numeroSumilla.value.trim());
   if (sumillaEncontrada.value) {
     selected.value = 0;
-    await prepareEdit(sumillaEncontrada.value!);
+    await prepareEdit(sumillaEncontrada.value!, action.value);
     filtersSumillaBitacora.value.global.value = sumillaEncontrada.value.numero_sumilla;
   }
 };
@@ -170,19 +100,6 @@ const toDate = (date: string) => {
 };
 
 // TRANSFERENCIA DOCUMENTAL
-
-const transferenciaModal = ref<boolean>(false);
-const fechaInicial = ref<string>("");
-const fechaFinal = ref<string>("");
-
-watch(
-  () => fechaFinal.value,
-  (newValue, oldValue) => {
-    if (fechaFinal.value != "") {
-      findBitacorasByFechaTransferencia(fechaInicial.value, fechaFinal.value);
-    }
-  }
-);
 
 // const handleChangeTransferencia = () => {
 //   transferenciaModal.value = !transferenciaModal.value;
@@ -216,49 +133,6 @@ watch(
 // };
 
 // ENVIO DEL DOCUMENTO
-
-const prepareEnviarDocumento = async (sumillaDocumento: Sumilla) => {
-  bitacora.value = await getBitacoraByNumSumilla(sumillaDocumento.numero_sumilla);
-
-  if (bitacora.value.doc_archivo != null) {
-    if (bitacora.value.estado_transferencia != "N") {
-      toast.add({
-        severity: "info",
-        summary: "Documento",
-        detail: `El documento se encuentra enviado`,
-        life: 3000,
-      });
-    } else {
-      handleChangeEnvioDocumento();
-    }
-  } else {
-    toast.add({
-      severity: "error",
-      summary: "Documento",
-      detail: `No está subido el documento digital`,
-      life: 3000,
-    });
-  }
-};
-
-const envioDocumentoDestinatarioModal = ref<boolean>(false);
-
-const handleChangeEnvioDocumento = () => {
-  envioDocumentoDestinatarioModal.value = !envioDocumentoDestinatarioModal.value;
-};
-
-const onSubmitEnviarDocumento = async () => {
-  // bitacora.value.estado_envio_destinatario = "E";
-  await editBitacora(bitacora.value, bitacora.value.codigo); // E- ENVIADO N- NO ENVIADO A- APROBADO R-RECHAZADO
-  toast.add({
-    severity: "success",
-    summary: "Documento",
-    detail: `El documento se envío correctamente `,
-    life: 3000,
-  });
-  await findBitacoras();
-  handleChangeEnvioDocumento();
-};
 </script>
 <style lang="css">
 .datatable-header-toolbar {

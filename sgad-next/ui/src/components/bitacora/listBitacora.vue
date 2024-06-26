@@ -1,11 +1,6 @@
 <template>
   <FCardSection>
     <FVerticalStack gap="8">
-      <FDivider></FDivider>
-
-      <FText id="buscarSumilla" as="h1" variant="headingMd" font-weight="semibold"
-        >BITÁCORAS</FText
-      >
       <DataTable
         v-model:selection="bitacoraSelected"
         selectionMode="single"
@@ -581,7 +576,7 @@
       v-model="transferenciaModal"
       title=""
       title-hidden
-      small
+      large
       :primaryAction="{
         content: 'Enviar Transferencia',
         onAction: onSubmitTransferencia,
@@ -917,14 +912,21 @@ watch(
   () => fechaFinal.value,
   (newValue, oldValue) => {
     if (fechaFinal.value != "") {
-      findBitacorasByFechaTransferencia(fechaInicial.value, fechaFinal.value);
+      findBitacorasByFechaTransferencia(
+        fechaInicial.value,
+        fechaFinal.value,
+        userLogin.value.codigo
+      );
     }
   }
 );
 
 const handleChangeDeleteModal = async (bitacoraParam: Bitacora) => {
   eventoBitacora.value = await getEventoBitacoraService(bitacoraParam.codigo);
-  if (eventoBitacora.value.estado.codigo != 2) {
+  if (
+    eventoBitacora.value.estado.codigo != 2 ||
+    bitacoraParam.estado_transferencia == "S"
+  ) {
     toast.add({
       severity: "error",
       summary: "Eliminar",
@@ -935,6 +937,7 @@ const handleChangeDeleteModal = async (bitacoraParam: Bitacora) => {
     deleteModal.value = !deleteModal.value;
     codigoSumillaDelete.value = bitacoraParam.sumilla.codigo!;
     sumilla.value = bitacoraParam.sumilla;
+    bitacora.value = bitacoraParam;
   }
 };
 
@@ -1015,6 +1018,7 @@ const changeDeleteModal = () => {
 
 const confirmDelete = async () => {
   try {
+    await deleteDocumentosByBitCodigo(bitacora.value.codigo);
     await deleteEventoBitacora(eventoBitacora.value.bitacora.codigo);
     await deleteBitacoraByNumSumilla(sumilla.value.codigo!);
     await deleteSumilla(sumilla.value.codigo!);
