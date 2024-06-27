@@ -47,7 +47,7 @@ export default defineNuxtConfig({
                 images: '/images'
             },
            
-        //* pruebas local
+        // * pruebas local
         //    SGAD_SUMILLA: '/sgad-nuxt/sumilla',
         //    SGAD_BITACORA: '/sgad-nuxt/bitacora',
         //    SGAD_PERSONA: '/sgad-nuxt/persona',
@@ -56,20 +56,20 @@ export default defineNuxtConfig({
         //    SGAD_EMAIL: '/sgad-nuxt/email',
 
         // //* pruebas servidor
-        // SGAD_SUMILLA: '',
-        // SGAD_BITACORA: '',
-        // SGAD_PERSONA: '',
-        // SGAD_TRANSFERENCIA: '',
-        // SGAD_EVENTO: '',
-        // SGAD_EMAIL: '',
+        SGAD_SUMILLA: '',
+        SGAD_BITACORA: '',
+        SGAD_PERSONA: '',
+        SGAD_TRANSFERENCIA: '',
+        SGAD_EVENTO: '',
+        SGAD_EMAIL: '',
 
         //* pruebas servidor enlaces directos
-        SGAD_SUMILLA: 'https://sgad-svc.ups.edu.ec/sumilla',
-        SGAD_BITACORA: 'https://sgad-svc.ups.edu.ec/bitacora',
-        SGAD_PERSONA: 'https://sgad-svc.ups.edu.ec/persona',
-        SGAD_TRANSFERENCIA: 'https://sgad-svc.ups.edu.ec/transferencia',
-        SGAD_EVENTO: 'https://sgad-svc.ups.edu.ec/eventoBitacora',
-        SGAD_EMAIL: 'https://sgad-svc.ups.edu.ec/email',
+        // SGAD_SUMILLA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/sumilla',
+        // SGAD_BITACORA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/bitacora',
+        // SGAD_PERSONA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/persona',
+        // SGAD_TRANSFERENCIA:'https://sgadsvc.ups.edu.ec/sgad/api/v1/transferencia',
+        // SGAD_EVENTO: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/eventoBitacora',
+        // SGAD_EMAIL: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/email',
 
 
         }
@@ -86,7 +86,7 @@ export default defineNuxtConfig({
             '@vee-validate/rules',
          ]
     },
-    //*comentar local
+    // *comentar local
     // nitro: {
     //     devProxy: {
     //         '/sgad-nuxt': {
