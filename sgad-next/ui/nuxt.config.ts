@@ -56,20 +56,20 @@ export default defineNuxtConfig({
         //    SGAD_EMAIL: '/sgad-nuxt/email',
 
         // //* pruebas servidor
-        SGAD_SUMILLA: '',
-        SGAD_BITACORA: '',
-        SGAD_PERSONA: '',
-        SGAD_TRANSFERENCIA: '',
-        SGAD_EVENTO: '',
-        SGAD_EMAIL: '',
+        // SGAD_SUMILLA: '',
+        // SGAD_BITACORA: '',
+        // SGAD_PERSONA: '',
+        // SGAD_TRANSFERENCIA: '',
+        // SGAD_EVENTO: '',
+        // SGAD_EMAIL: '',
 
         //* pruebas servidor enlaces directos
-        // SGAD_SUMILLA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/sumilla',
-        // SGAD_BITACORA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/bitacora',
-        // SGAD_PERSONA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/persona',
-        // SGAD_TRANSFERENCIA:'https://sgadsvc.ups.edu.ec/sgad/api/v1/transferencia',
-        // SGAD_EVENTO: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/eventoBitacora',
-        // SGAD_EMAIL: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/email',
+        SGAD_SUMILLA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/sumilla',
+        SGAD_BITACORA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/bitacora',
+        SGAD_PERSONA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/persona',
+        SGAD_TRANSFERENCIA:'https://sgadsvc.ups.edu.ec/sgad/api/v1/transferencia',
+        SGAD_EVENTO: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/eventoBitacora',
+        SGAD_EMAIL: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/email',
 
 
         }
