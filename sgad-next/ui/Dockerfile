@@ -2,7 +2,7 @@ FROM node:18.15.0-alpine3.17
  
 ADD .output /app/
  
-ENV NITRO_PORT 8080
+#ENV NITRO_PORT 8080
  
 ENV NUXT_PUBLIC_SGAD_SUMILLA=https://sgadsvc.ups.edu.ec/sgad/api/v1/sumilla
 ENV NUXT_PUBLIC_SGAD_BITACORA=https://sgadsvc.ups.edu.ec/sgad/api/v1/bitacora
@@ -22,11 +22,11 @@ ENV NUXT_PUBLIC_SGAD_EMAIL=https://sgadsvc.ups.edu.ec/sgad/api/v1/email
 ENV PORT=3000
 ENV KEYCLOAK_ISSUER=https://auth.ups.edu.ec/realms/dev
 ENV KEYCLOAK_ID=sgad-next-dev
-ENV KEYCLOAK_SECRET=Msq3VdU9zrYs41CML7EHlQ27n6dp7X4G
-ENV AUTH_ORIGIN=http://localhost:3000/
+ENV KEYCLOAK_SECRET=evVRjt1nt1CUldvfGEDOeEvx5kMXRZtq
+ENV AUTH_ORIGIN=http://localhost:3000
 ENV AUTH_SECRET=12345
-ENV NEXTAUTH_URL=http://localhost:3000/
+ENV NEXTAUTH_URL=http://localhost:3000
  
-EXPOSE 8080
+EXPOSE 3000
  
 CMD ["node", "/app/server/index.mjs"]

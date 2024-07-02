@@ -8,13 +8,13 @@ const handleError = () => clearError({ redirect: "/" });
   <Head>
     <Title>{{ error?.statusCode }}</Title>
   </Head>
-  <NuxtLayout name="error">
-    <h2>{{ error?.statusCode }}</h2>
-    <br />
-    <h3>{{ error?.statusMessage }}</h3>
-    <br />
-    <FButton @click="handleError">{{ $t("app.actions.go_home") }}</FButton>
-  </NuxtLayout>
+<!--  <NuxtLayout name="error">-->
+<!--    <h2>{{ error?.statusCode }}</h2>-->
+<!--    <br />-->
+<!--    <h3>{{ error?.statusMessage }}</h3>-->
+<!--    <br />-->
+<!--    <FButton @click="handleError">{{ $t("app.actions.go_home") }}</FButton>-->
+<!--  </NuxtLayout>-->
 </template>
 
 <style scoped>

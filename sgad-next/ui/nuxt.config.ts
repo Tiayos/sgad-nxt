@@ -2,7 +2,7 @@
 
 export default defineNuxtConfig({
     srcDir: 'src/',
-    
+
     app: {
         head: {
             title: 'SGAD-NEXT',
@@ -10,8 +10,8 @@ export default defineNuxtConfig({
                 lang: 'es'
             },
             meta: [
-                { charset: 'utf-8' },
-                { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+                {charset: 'utf-8'},
+                {name: 'viewport', content: 'width=device-width, initial-scale=1'},
             ]
         }
     },
@@ -22,54 +22,54 @@ export default defineNuxtConfig({
         '@sidebase/nuxt-auth'
     ],
 
-    veeValidate:{
+    veeValidate: {
         autoImports: true
     },
 
     auth: {
-        globalAppMiddleware: true,
-        baseURL: process.env.AUTH_ORIGIN, // Utilizar la variable de entorno para la URL base
-        provider: {
-          type: 'authjs',
-          defaultProvider: 'keycloak',
-          addDefaultCallbackUrl: process.env.NEXTAUTH_URL, // Utilizar la variable de entorno
-        //   addDefaultCallbackUrl: true,
+        globalAppMiddleware: {
+            isEnabled: true,
         },
-      },
+        baseURL: `${process.env.AUTH_ORIGIN}/api/auth`,
+        provider: {
+            type: 'authjs',
+            defaultProvider: 'keycloak',
+            addDefaultCallbackUrl: true,
+        },
+    },
 
-   
     pinia: {
         autoImports: ['defineStore', 'storeToRefs'],
     },
     runtimeConfig: {
         public: {
-            assets:{
+            assets: {
                 images: '/images'
             },
-           
-        // * pruebas local
-        //    SGAD_SUMILLA: '/sgad-nuxt/sumilla',
-        //    SGAD_BITACORA: '/sgad-nuxt/bitacora',
-        //    SGAD_PERSONA: '/sgad-nuxt/persona',
-        //    SGAD_TRANSFERENCIA: '/sgad-nuxt/transferencia',
-        //    SGAD_EVENTO: '/sgad-nuxt/eventoBitacora',
-        //    SGAD_EMAIL: '/sgad-nuxt/email',
 
-        // //* pruebas servidor
-        // SGAD_SUMILLA: '',
-        // SGAD_BITACORA: '',
-        // SGAD_PERSONA: '',
-        // SGAD_TRANSFERENCIA: '',
-        // SGAD_EVENTO: '',
-        // SGAD_EMAIL: '',
+            // * pruebas local
+            //    SGAD_SUMILLA: '/sgad-nuxt/sumilla',
+            //    SGAD_BITACORA: '/sgad-nuxt/bitacora',
+            //    SGAD_PERSONA: '/sgad-nuxt/persona',
+            //    SGAD_TRANSFERENCIA: '/sgad-nuxt/transferencia',
+            //    SGAD_EVENTO: '/sgad-nuxt/eventoBitacora',
+            //    SGAD_EMAIL: '/sgad-nuxt/email',
 
-        //* pruebas servidor enlaces directos
-        SGAD_SUMILLA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/sumilla',
-        SGAD_BITACORA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/bitacora',
-        SGAD_PERSONA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/persona',
-        SGAD_TRANSFERENCIA:'https://sgadsvc.ups.edu.ec/sgad/api/v1/transferencia',
-        SGAD_EVENTO: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/eventoBitacora',
-        SGAD_EMAIL: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/email',
+            // //* pruebas servidor
+            // SGAD_SUMILLA: '',
+            // SGAD_BITACORA: '',
+            // SGAD_PERSONA: '',
+            // SGAD_TRANSFERENCIA: '',
+            // SGAD_EVENTO: '',
+            // SGAD_EMAIL: '',
+
+            //* pruebas servidor enlaces directos
+            SGAD_SUMILLA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/sumilla',
+            SGAD_BITACORA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/bitacora',
+            SGAD_PERSONA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/persona',
+            SGAD_TRANSFERENCIA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/transferencia',
+            SGAD_EVENTO: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/eventoBitacora',
+            SGAD_EMAIL: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/email',
 
 
         }
@@ -78,13 +78,15 @@ export default defineNuxtConfig({
     css: [
         'primevue/resources/primevue.css',
         'primeicons/primeicons.css',
+        '@ups-dev/freya-primevue/dist/esm/style.css',
     ],
     build: {
-        transpile: [ 
-            'lodash', 
-            'primevue', 
+        transpile: [
+            // 'lodash',
+            'primevue',
             '@vee-validate/rules',
-         ]
+            'vue-demi',
+        ]
     },
     // *comentar local
     // nitro: {

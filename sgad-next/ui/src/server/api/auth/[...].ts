@@ -15,9 +15,10 @@ export default NuxtAuthHandler({
   providers: [
     //datos en el .env  
     KeycloakProvider.default ({
+      issuer: process.env.KEYCLOAK_ISSUER,
       clientId: process.env.KEYCLOAK_ID,
       clientSecret: process.env.KEYCLOAK_SECRET,
-      issuer: process.env.KEYCLOAK_ISSUER,
+      scope: 'openid email profile',
       //revisar cuando se actualice la libreria nuxt-auth
       // checks: ['none']
     })
@@ -28,7 +29,7 @@ export default NuxtAuthHandler({
     async jwt({ token, account }) {
       if (account) {
         token.id_token = account.id_token
-        token.access_token = account.access_token //*** 
+        token.access_token = account.access_token
         token.provider = account.provider
       }
       return token
@@ -37,14 +38,6 @@ export default NuxtAuthHandler({
       session.access_token = token.access_token
       return session
     },
-    //solucion temporal hasta que se corrijan error en nuxt-auth
-    //authConfig.globalAppMiddleware?.addDefaultCallbackUrl por authConfig.providers?.addDefaultCallbackUrl
-  //   async redirect({ url, baseUrl }) {
-  //     const redirectUrl = url.startsWith('/') ? new URL(baseUrl, url).toString() : url;
-  //     console.log(`[next-auth] Redirecting to "${redirectUrl}" (resolved from url "${url}" and baseUrl "${baseUrl}")`);
-  //    return redirectUrl;
-  // },
-
   },
   events: {
     async signOut({ token }) {

@@ -14,25 +14,26 @@
   "devDependencies": {
     "@nuxtjs/i18n": "8.0.0-beta.8",
     "@types/vue": "^2.0.0",
-    "nuxt": "^3.2.0",
+    "nuxt": "^3.6.0",
     "sass": "^1.58.0"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.4.7",
-    "@sidebase/nuxt-auth": "0.6.0-rc.0",
-    "@ups-dev/freya-nuxt": "^0.2.7",
+    "@sidebase/nuxt-auth": "~0.7.2",
+    "@ups-dev/freya-nuxt": "^0.2.14",
+    "@ups-dev/freya-primevue": "^0.0.2",
     "@vee-validate/i18n": "^4.8.6",
     "@vee-validate/nuxt": "^4.10.5",
     "@vee-validate/rules": "^4.7.4",
     "@vuelidate/core": "^2.0.3",
+    "@vuelidate/validators": "^2.0.4",
     "destr": "^2.0.1",
     "jsonwebtoken": "^9.0.1",
     "jwt-decode": "^3.1.2",
-    "next-auth": "^4.21.1",
+    "next-auth": "~4.22.5",
     "pinia": "^2.0.32",
     "primeflex": "^3.3.0",
     "primeicons": "^6.0.1",
-    "primevue": "^3.30.0",
     "vee-validate": "^4.8.6"
   }
 }
