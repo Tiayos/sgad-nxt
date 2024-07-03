@@ -1,10 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   srcDir: 'src/',
-
-  // devtools: { enabled: true },
-  // compatibilityDate: "2024-07-02",
-
   app: {
     head: {
       title: 'SGAD-NEXT',
@@ -25,6 +21,7 @@ export default defineNuxtConfig({
     '@sidebase/nuxt-auth'
   ],
 
+  //* localmente
   // auth: {
   //   globalAppMiddleware: {
   //     isEnabled: true,
@@ -33,8 +30,8 @@ export default defineNuxtConfig({
   //   provider: {
   //     type: 'authjs',
   //     defaultProvider: 'keycloak',
-  //       addDefaultCallbackUrl: process.env.NEXTAUTH_URL, // Utilizar la variable de entorno -- comentar en local
-  //     // addDefaultCallbackUrl: true,
+  //     // addDefaultCallbackUrl: process.env.NEXTAUTH_URL, // Utilizar la variable de entorno -- comentar en local
+  //     addDefaultCallbackUrl: true,
   //   },
   // },
 
@@ -47,7 +44,10 @@ export default defineNuxtConfig({
         addDefaultCallbackUrl: process.env.NEXTAUTH_URL, // Utilizar la variable de entorno -- comentar en local
       // addDefaultCallbackUrl: true,
     },
+
   },
+
+
 
   pinia: {
     autoImports: ['defineStore', 'storeToRefs'],
@@ -55,25 +55,10 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
+
       assets: {
         images: '/images'
       },
-
-      // * pruebas local
-      //    SGAD_SUMILLA: '/sgad-nuxt/sumilla',
-      //    SGAD_BITACORA: '/sgad-nuxt/bitacora',
-      //    SGAD_PERSONA: '/sgad-nuxt/persona',
-      //    SGAD_TRANSFERENCIA: '/sgad-nuxt/transferencia',
-      //    SGAD_EVENTO: '/sgad-nuxt/eventoBitacora',
-      //    SGAD_EMAIL: '/sgad-nuxt/email',
-
-      // //* pruebas servidor
-      // SGAD_SUMILLA: '',
-      // SGAD_BITACORA: '',
-      // SGAD_PERSONA: '',
-      // SGAD_TRANSFERENCIA: '',
-      // SGAD_EVENTO: '',
-      // SGAD_EMAIL: '',
 
       //* pruebas servidor enlaces directos
       SGAD_SUMILLA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/sumilla',

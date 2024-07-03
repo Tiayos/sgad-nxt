@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import type {Persona} from "~/models/Sumilla.model";
-import {useSessionStorage} from "~/utils/useSessionStorage";
-import {usePersonaService} from "~/composables/services/usePersonaService";
 const { data, signOut } = useAuth();
 const skipToContentRef = ref(null);
 const searchActive = ref(false);
@@ -11,13 +8,10 @@ const userMenuActive = ref(false);
 const mobileNavigationActive = ref(false);
 
 //*Session storage
-const { data: userLogin } = useSessionStorage<Persona>("userLogin");
 
 //*Services
-const { getUsrLogin } = usePersonaService();
 
 onMounted(async () => {
-  userLogin.value = await getUsrLogin(data.value?.user?.email!);
 });
 
 const handleSearchResultsDismiss = () => {
@@ -57,7 +51,8 @@ const logo = {
 
 const getInitials = (name: string) => {
   const parts = name.split(" ");
-  return [parts[0], parts[2]].map((p) => p.charAt(0)).join("");
+  // return [parts[0], parts[2]].map((p) => p.charAt(0)).join("");
+  return ''
 };
 </script>
 <template>

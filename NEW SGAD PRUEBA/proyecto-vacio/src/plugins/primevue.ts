@@ -1,13 +1,18 @@
-import {defineNuxtPlugin} from '#app'
+import { defineNuxtPlugin } from '#app'
 
-import Freya from '@ups-dev/freya-primevue';
 import PrimeVue from 'primevue/config'
+
+// Directives
 import Ripple from 'primevue/ripple'
 import Tooltip from 'primevue/tooltip'
 import StyleClass from 'primevue/styleclass'
 import BadgeDirective from 'primevue/badgedirective'
+
+// Services
 import ToastService from 'primevue/toastservice'
 import ConfirmationService from 'primevue/confirmationservice'
+
+// Components
 import Row from 'primevue/row'
 import Badge from 'primevue/badge'
 import Toast from 'primevue/toast'
@@ -32,16 +37,15 @@ import Splitter from 'primevue/splitter';
 import SplitterPanel from 'primevue/splitterpanel';
 import RadioButton from 'primevue/radiobutton'
 import DataView from 'primevue/dataview';
-import DataViewLayoutOptions from 'primevue/dataviewlayoutoptions'
+import DataViewLayoutOptions from 'primevue/dataviewlayoutoptions'   // optional
 import FileUpload from 'primevue/fileupload';
+
+
 import Card from 'primevue/card';
 
-export default defineNuxtPlugin(({vueApp: app}) => {
-    app.use(PrimeVue, {
-        ripple: false,
-        unstyled: true,
-        pt: Freya
-    })
+
+export default defineNuxtPlugin(({ vueApp: app }) => {
+    app.use(PrimeVue, { ripple: true })
 
     // Directives
     app.directive('ripple', Ripple)
