@@ -9,20 +9,25 @@ ADD .output /app/
 
 # Establecer variables de entorno
 ENV NITRO_PORT=8080
+
+# Desarrollo
+
 ENV PORT=443
 ENV KEYCLOAK_ISSUER=https://auth.ups.edu.ec/realms/dev
-ENV KEYCLOAK_ID=sgad-prod
+ENV KEYCLOAK_ID=sgadui-dev
 ENV KEYCLOAK_SECRET=yeQrR946XDMUZ5QYAo74mWkAHTFcgrW1
-ENV AUTH_ORIGIN=https://sgadui.ups.edu.ec
+ENV AUTH_ORIGIN=https://sgadui.ups.edu.ec/
 ENV AUTH_SECRET=12345
-ENV NEXTAUTH_URL=https://sgadui.ups.edu.ec
+ENV NEXTAUTH_URL=https://sgadui.ups.edu.ec/
 
-# Descomentar las siguientes líneas para desarrollo local
-# ENV PORT=3000
-# ENV KEYCLOAK_ID=sgad-next-dev
-# ENV KEYCLOAK_SECRET=evVRjt1nt1CUldvfGEDOeEvx5kMXRZtq
-# ENV AUTH_ORIGIN=http://localhost:3000
-# ENV NEXTAUTH_URL=http://localhost:3000
+#Produccion
+#ENV PORT=443
+#ENV KEYCLOAK_ISSUER=https://auth.ups.edu.ec/realms/dev
+#ENV KEYCLOAK_ID=sgad-produccion
+#ENV KEYCLOAK_SECRET=IoYr2A0YPLSQ0U11GAvMJ2MAxCSsK7Yx
+#ENV AUTH_ORIGIN=https://sgad.ups.edu.ec
+#ENV AUTH_SECRET=12345
+#ENV NEXTAUTH_URL=https://sgad.ups.edu.ec
 
 # Exponer el puerto necesario
 EXPOSE 8080

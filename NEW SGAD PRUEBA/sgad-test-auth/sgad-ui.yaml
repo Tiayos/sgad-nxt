@@ -40,7 +40,7 @@ spec:
     spec:
       containers:
         - name: sgadnxt
-          image: registry.gitlab.com/ups-dev/development/gitlab/packages/docker:dev-sgadui-1.2
+          image: registry.gitlab.com/ups-dev/development/gitlab/packages/docker:dev-sgaduivacio-1.1.36
           ports:
             - containerPort: 8080
       imagePullSecrets:

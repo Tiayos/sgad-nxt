@@ -1,6 +1,8 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   srcDir: 'src/',
+  ssr: false,
+
   app: {
     head: {
       title: 'SGAD-NEXT',
@@ -21,20 +23,6 @@ export default defineNuxtConfig({
     '@sidebase/nuxt-auth'
   ],
 
-  //* localmente
-  // auth: {
-  //   globalAppMiddleware: {
-  //     isEnabled: true,
-  //   },
-  //   baseURL: `${process.env.AUTH_ORIGIN}/api/auth`,
-  //   provider: {
-  //     type: 'authjs',
-  //     defaultProvider: 'keycloak',
-  //     // addDefaultCallbackUrl: process.env.NEXTAUTH_URL, // Utilizar la variable de entorno -- comentar en local
-  //     addDefaultCallbackUrl: true,
-  //   },
-  // },
-
   auth: {
     globalAppMiddleware: true,
     baseURL: process.env.AUTH_ORIGIN, // Utilizar la variable de entorno para la URL base -- comentar en local
@@ -44,10 +32,7 @@ export default defineNuxtConfig({
         addDefaultCallbackUrl: process.env.NEXTAUTH_URL, // Utilizar la variable de entorno -- comentar en local
       // addDefaultCallbackUrl: true,
     },
-
   },
-
-
 
   pinia: {
     autoImports: ['defineStore', 'storeToRefs'],
