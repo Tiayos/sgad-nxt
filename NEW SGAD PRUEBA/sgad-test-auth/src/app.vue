@@ -3,6 +3,7 @@ import { ref } from "vue";
 import type {Persona} from "~/models/Sumilla.model";
 import {useSessionStorage} from "~/utils/useSessionStorage";
 import {usePersonaService} from "~/composables/services/usePersonaService";
+import Footer from "~/components/navigation/Footer.vue";
 const { data, signOut } = useAuth();
 const skipToContentRef = ref(null);
 const searchActive = ref(false);
@@ -31,7 +32,7 @@ const toggleMobileNavigationActive = () =>
 const cerrarSesion = async () => {
   try {
     sessionStorage.clear();
-    signOut();
+    await signOut();
   } catch (error) {}
 };
 
@@ -98,13 +99,11 @@ const getInitials = (name: string) => {
       <FPage full-width>
         <LazyNuxtPage />
       </FPage>
+      <Footer></Footer>
     </FFrame>
     <Toast />
   </FAppProvider>
 </template>
 
 <style>
-.layout-sidebar {
-  background-color: #dddddd;
-}
 </style>

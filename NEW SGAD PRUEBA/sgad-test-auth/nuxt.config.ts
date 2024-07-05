@@ -1,7 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   srcDir: 'src/',
-  ssr: false,
 
   app: {
     head: {
@@ -25,12 +24,12 @@ export default defineNuxtConfig({
 
   auth: {
     globalAppMiddleware: true,
-    baseURL: process.env.AUTH_ORIGIN, // Utilizar la variable de entorno para la URL base -- comentar en local
+    // baseURL: process.env.AUTH_ORIGIN, // comentar en local
     provider: {
       type: 'authjs',
       defaultProvider: 'keycloak',
-        addDefaultCallbackUrl: process.env.NEXTAUTH_URL, // Utilizar la variable de entorno -- comentar en local
-      // addDefaultCallbackUrl: true,
+        // addDefaultCallbackUrl: process.env.NEXTAUTH_URL, //comentar en local
+      addDefaultCallbackUrl: true,
     },
   },
 

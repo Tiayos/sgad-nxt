@@ -33,7 +33,7 @@
     "primeflex": "^3.3.0",
     "primeicons": "^6.0.1",
     "vee-validate": "^4.8.6",
-    "yup": "~1.4.0"
-
+    "yup": "~1.4.0",
+    "primevue": "^3.30.0"
   }
 }

@@ -208,7 +208,6 @@
     >
       <FModalSection title-hidden style="text-align: center">
         <FVerticalStack gap="4">
-          <Image src="/logo.png" alt="Image" width="250" />
           <FText
               as="h5"
               variant="headingMd"
@@ -285,7 +284,8 @@
           </FText>
           <FTextField
               id="remitenteNombre"
-              v-model="bitacora.nombres_remitente"
+              v-model="nombres_remitente"
+              :error="nombres_remitenteError"
               :disabled="action == persistAction.view"
           />
           <FText id="remitenteApellidoLbl" as="h6" variant="bodyMd" fontWeight="semibold">
@@ -293,23 +293,31 @@
           </FText>
           <FTextField
               id="remitenteApellido"
-              v-model="bitacora.apellidos_remitente"
+              v-model="apellidos_remitente"
+              :error="apellidos_remitenteError"
               :disabled="action == persistAction.view"
           />
 
           <FText id="mensajeroLbl" as="h6" variant="bodyMd" fontWeight="semibold">
             Mensajero:
           </FText>
-
-          <AutoComplete
-              v-model="bitacora.mensajero"
-              optionLabel="nombreCompleto"
-              :suggestions="filteredItems"
-              @Complete="searchItem"
-              class="full-width-autocomplete"
-              :disabled="action == persistAction.view"
-          />
-
+          <FBox
+              background="bg"
+              padding="0"
+              borderWidth="1"
+              borderColor="border"
+              style="border-radius: 5px"
+              :style="[mensajeroError != null ? { 'border-color': '#FF6767' } : {}]"
+          >
+            <AutoComplete
+                v-model="mensajero"
+                optionLabel="nombreCompleto"
+                :suggestions="filteredItems"
+                @Complete="searchItem"
+                class="full-width-autocomplete"
+                :disabled="action == persistAction.view"
+            />
+          </FBox>
 
           <FText id="numeroGuiaLbl" as="h6" variant="bodyMd" fontWeight="semibold">
             Número de guia:
@@ -329,9 +337,8 @@
               :disabled="action == persistAction.view"
           />
 
-          <FCard sectioned style="box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.3)">
-            <FCardSection>
-              <FVerticalStack gap="4">
+          <FDivider border-width="5" border-color="border-inverse"/>
+           <FVerticalStack gap="4">
                 <FText
                     id="destinatarioLbl"
                     as="h6"
@@ -340,21 +347,31 @@
                 >
                   Destinatario:
                 </FText>
-                <AutoComplete
-                    v-model="bitacora.destinatario"
-                    optionLabel="nombreCompleto"
-                    :disabled="action == persistAction.view"
-                    :suggestions="filteredItems"
-                    class="full-width-autocomplete"
-                    @Complete="searchItem"
-                />
+                <FBox
+                    background="bg"
+                    padding="0"
+                    borderWidth="1"
+                    borderColor="border"
+                    style="border-radius: 5px"
+                    :style="[destinatarioError != null ? { 'border-color': '#FF6767' } : {}]"
+                >
+                  <AutoComplete
+                      v-model="destinatario"
+                      optionLabel="nombreCompleto"
+                      :disabled="action == persistAction.view"
+                      :suggestions="filteredItems"
+                      class="full-width-autocomplete"
+                      @Complete="searchItem"
+                  />
+                </FBox>
 
                 <FText id="asuntolbl" as="h6" variant="bodyMd" fontWeight="semibold">
                   Asunto:
                 </FText>
                 <FTextField
                     id="asunto"
-                    v-model="bitacora.asunto"
+                    v-model="asunto"
+                    :error="asuntoError"
                     :disabled="action == persistAction.view"
                 />
                 <FText
@@ -367,7 +384,8 @@
                 </FText>
                 <FTextField
                     id="lugarDestino"
-                    v-model="bitacora.lugar_destino"
+                    v-model="lugar_destino"
+                    :error="lugar_destinoError"
                     :disabled="action == persistAction.view"
                 />
 
@@ -377,6 +395,7 @@
                       name="file"
                       accept=".pdf"
                       multiple
+                      class="f"
                       :chooseLabel="'Seleccionar archivos'"
                       :onSelect="handleFileSelect"
                       :disabled="action == persistAction.view"
@@ -415,11 +434,9 @@
                   </div>
                 </FVerticalStack>
               </FVerticalStack>
-            </FCardSection>
-          </FCard>
 
-          <FCard sectioned style="box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.3)">
-            <FHorizontalStack gap="8" align="center">
+          <FDivider border-width="5" border-color="border-inverse" />
+            <FHorizontalStack gap="12">
               <FText
                   id="fechaRecepcionlbl"
                   as="h6"
@@ -428,26 +445,29 @@
               >
                 Fecha de recepción:
               </FText>
-              <FText id="fechaRecepcion" as="h6" variant="bodyMd" fontWeight="regular">
-                {{
-                  sumilla?.fecha_sumilla
-                      ? new Date(sumilla.fecha_sumilla).toLocaleDateString()
-                      : ""
-                }}
-              </FText>
-
-              <FText id="horaRecepcionLbl" as="h6" variant="bodyMd" fontWeight="semibold">
-                Hora de recepción:
-              </FText>
-              <FText id="horaRecepcion" as="h6" variant="bodyMd" fontWeight="regular">
+              <FText
+                  id="fechaRecepcion"
+                  as="h6"
+                  variant="bodyMd"
+                  fontWeight="regular"
+              >
+                {{ sumilla?.fecha_sumilla ? new Date(sumilla.fecha_sumilla).toLocaleDateString() : "" }} -
                 {{ sumilla?.hora_sumilla }}
               </FText>
             </FHorizontalStack>
-          </FCard>
 
-          <FCard sectioned style="box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.3)">
+          <FHorizontalStack gap="4">
+<!--            <FText id="horaRecepcionLbl" as="h6" variant="bodyMd" fontWeight="semibold">-->
+<!--              Hora de recepción:-->
+<!--            </FText>-->
+<!--            <FText id="horaRecepcion" as="h6" variant="bodyMd" fontWeight="regular">-->
+<!--              {{ sumilla?.hora_sumilla }}-->
+<!--            </FText>-->
+          </FHorizontalStack>
+
+
+
             <FVerticalStack gap="4">
-              <FHorizontalStack gap="16">
                 <FText
                     id="fechaRecepcionlbl"
                     as="h6"
@@ -473,18 +493,30 @@
                   Hora de entrega:
                 </FText>
 
-                <div class="flex-auto">
-                  <Calendar
-                      v-model="bitacora.hora_entrega"
-                      showIcon
-                      iconDisplay="input"
-                      timeOnly
-                      @update:="changeHour"
-                      :disabled="action == persistAction.view"
-                  >
-                  </Calendar>
-                </div>
-              </FHorizontalStack>
+<!--                  <Calendar-->
+<!--                      v-model="bitacora.hora_entrega"-->
+<!--                      timeOnly-->
+<!--                       iconDisplay="button"-->
+<!--                      @update:="changeHour"-->
+<!--                      :disabled="action == persistAction.view"-->
+<!--                  />-->
+
+<!--                <div class="flex-auto">-->
+<!--                  <Calendar v-model="bitacora.hora_entrega" showIcon iconDisplay="input" timeOnly inputId="templatedisplay">-->
+<!--                    <template #inputicon="{ clickCallback }">-->
+<!--                      <InputIcon class="pi pi-clock cursor-pointer" @click="clickCallback" />-->
+<!--                    </template>-->
+<!--                  </Calendar>-->
+<!--                </div>-->
+
+                <FTextField
+                    id="horaEntrega"
+                    type="time"
+                    v-model="bitacora.hora_entrega"
+                    :disabled="action == persistAction.view"
+                />
+
+
               <FText
                   id="personaEntregaLbl"
                   as="h6"
@@ -515,7 +547,6 @@
                   :disabled="action == persistAction.view"
               />
             </FVerticalStack>
-          </FCard>
         </FVerticalStack>
       </FModalSection>
     </FModal>
@@ -768,11 +799,29 @@ const {
   files,
   resetForm,
   documentosBitacoraList,
-    handleSubmit
+    handleSubmit,
+  useFieldError, useFormErrors,
+
+  nombres_remitente,
+  nombres_remitenteError,
+  resetnombres_remitente,
+  apellidos_remitente,
+  apellidos_remitenteError,
+  resetapellidos_remitente,
+  lugar_destino,
+  lugar_destinoError,
+  resetlugar_destino,
+  destinatario,
+  destinatarioError,
+  resetdestinatario,
+  mensajero,
+  mensajeroError,
+  resetmensajero,
+  asunto,
+  asuntoError,
+  resetasunto,
 } = useSumillaComposable();
 
-import { useField, useForm } from 'vee-validate';
-import * as yup from 'yup';
 
 const { data: userLogin } = useSessionStorage<Persona>("userLogin");
 const fechaSumillaView = ref();
@@ -796,9 +845,14 @@ const prepareCreate = async () => {
   files.value = [];
   documentosBitacoraList.value = [];
   resetNumHojas();
+  resetnombres_remitente();
+  resetapellidos_remitente();
+  resetasunto();
+  resetmensajero();
+  resetlugar_destino()
+  resetdestinatario();
   // v$.value.$reset();
-  resetNumHojas();
-  resetForm();
+  // resetForm();
   sumilla.value.responsable = userLogin.value;
   sumilla.value.fecha_sumilla = new Date();
   sumilla.value.hora_sumilla = new Date().getHours() + ":" + new Date().getMinutes();
@@ -821,7 +875,17 @@ const handleFileSelect = (event: any) => {
   files.value = event.files;
 };
 
+const completeObjectBitacora = () =>{
+  bitacora.value.nombres_remitente = nombres_remitente.value;
+  bitacora.value.apellidos_remitente = apellidos_remitente.value;
+  bitacora.value.mensajero = mensajero.value;
+  bitacora.value.destinatario = destinatario.value;
+  bitacora.value.asunto = asunto.value;
+  bitacora.value.lugar_destino = lugar_destino.value;
+}
+
 const onSubmited = handleSubmit(async (values) => {
+  console.log(values);
     if (action.value == persistAction.create) {
       sumilla.value.numero_hojas = parseInt(numHojas.value);
       sumilla.value.fecha_sumilla = new Date();
@@ -835,11 +899,13 @@ const onSubmited = handleSubmit(async (values) => {
     await findSumillas();
 
     if (action.value == persistAction.edit) {
+      completeObjectBitacora();
       await editBitacora(bitacora.value, bitacora.value.codigo);
       if (files.value.length > 0) {
         saveDocumentos();
       }
     } else {
+      completeObjectBitacora();
       bitacora.value.receptor_documento = sumilla.value?.responsable!;
       bitacora.value.fecha_recepcion = sumilla.value?.fecha_sumilla!;
       bitacora.value.hora_recepcion = sumilla.value?.hora_sumilla!;
@@ -1089,290 +1155,24 @@ const deleteFile = async (index: any) => {
 </script>
 
 <style lang="css">
+
+.calendar .p-datepicker-trigger .p-datepicker-icon {
+  background-image: url('path/to/your/custom/icon.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 1.5rem; /* Tamaño del icono */
+  height: 1.5rem;
+  margin-right: 0.5rem; /* Espacio entre el icono y el texto */
+}
+
+/* Ajuste de estilo para el calendario */
+.calendar .p-datepicker {
+  /* Estilos adicionales según sea necesario */
+}
 .p-autocomplete {
   height: 35px;
 }
 
-.p-calendar {
-  height: 33px;
-}
-
-.p-datatable .p-paginator-top {
-  border-width: 0 0 1px 0;
-  border-radius: 0;
-}
-.p-datatable .p-paginator-bottom {
-  border-width: 0 0 1px 0;
-  border-radius: 0;
-}
-.p-datatable .p-datatable-header {
-  background: #f8f9fa;
-  color: #343a40;
-  border: 1px solid #dee2e6;
-  border-width: 1px 0 1px 0;
-  padding: 1rem 1rem;
-  font-weight: 700;
-}
-.p-datatable .p-datatable-footer {
-  background: #f8f9fa;
-  color: #343a40;
-  border: 1px solid #dee2e6;
-  border-width: 0 0 1px 0;
-  padding: 1rem 1rem;
-  font-weight: 700;
-}
-.p-datatable .p-datatable-thead > tr > th {
-  text-align: left;
-  padding: 1rem 1rem;
-  border: 1px solid #dee2e6;
-  border-width: 0 0 1px 0;
-  font-weight: 700;
-  color: #343a40;
-  background: #f8f9fa;
-  transition: box-shadow 0.2s;
-}
-.p-datatable .p-datatable-tfoot > tr > td {
-  text-align: left;
-  padding: 1rem 1rem;
-  border: 1px solid #dee2e6;
-  border-width: 0 0 1px 0;
-  font-weight: 700;
-  color: #343a40;
-  background: #f8f9fa;
-}
-.p-datatable .p-sortable-column .p-sortable-column-icon {
-  color: #343a40;
-  margin-left: 0.5rem;
-}
-.p-datatable .p-sortable-column .p-sortable-column-badge {
-  border-radius: 50%;
-  height: 1.143rem;
-  min-width: 1.143rem;
-  line-height: 1.143rem;
-  color: #4338ca;
-  background: #eef2ff;
-  margin-left: 0.5rem;
-}
-.p-datatable .p-sortable-column:not(.p-highlight):hover {
-  background: #e9ecef;
-  color: #343a40;
-}
-.p-datatable .p-sortable-column:not(.p-highlight):hover .p-sortable-column-icon {
-  color: #343a40;
-}
-.p-datatable .p-sortable-column.p-highlight {
-  background: #eef2ff;
-  color: #4338ca;
-}
-.p-datatable .p-sortable-column.p-highlight .p-sortable-column-icon {
-  color: #4338ca;
-}
-.p-datatable .p-sortable-column.p-highlight:hover {
-  background: #eef2ff;
-  color: #4338ca;
-}
-.p-datatable .p-sortable-column.p-highlight:hover .p-sortable-column-icon {
-  color: #4338ca;
-}
-.p-datatable .p-sortable-column:focus {
-  box-shadow: inset 0 0 0 0.15rem #c7d2fe;
-  outline: 0 none;
-}
-.p-datatable .p-datatable-tbody > tr {
-  background: #ffffff;
-  color: #495057;
-  transition: box-shadow 0.2s;
-}
-.p-datatable .p-datatable-tbody > tr > td {
-  text-align: left;
-  border: 1px solid #dee2e6;
-  border-width: 0 0 1px 0;
-  padding: 1rem 1rem;
-}
-.p-datatable .p-datatable-tbody > tr > td .p-row-toggler,
-.p-datatable .p-datatable-tbody > tr > td .p-row-editor-init,
-.p-datatable .p-datatable-tbody > tr > td .p-row-editor-save,
-.p-datatable .p-datatable-tbody > tr > td .p-row-editor-cancel {
-  width: 2rem;
-  height: 2rem;
-  color: #6c757d;
-  border: 0 none;
-  background: transparent;
-  border-radius: 50%;
-  transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
-}
-.p-datatable .p-datatable-tbody > tr > td .p-row-toggler:enabled:hover,
-.p-datatable .p-datatable-tbody > tr > td .p-row-editor-init:enabled:hover,
-.p-datatable .p-datatable-tbody > tr > td .p-row-editor-save:enabled:hover,
-.p-datatable .p-datatable-tbody > tr > td .p-row-editor-cancel:enabled:hover {
-  color: #343a40;
-  border-color: transparent;
-  background: #e9ecef;
-}
-.p-datatable .p-datatable-tbody > tr > td .p-row-toggler:focus,
-.p-datatable .p-datatable-tbody > tr > td .p-row-editor-init:focus,
-.p-datatable .p-datatable-tbody > tr > td .p-row-editor-save:focus,
-.p-datatable .p-datatable-tbody > tr > td .p-row-editor-cancel:focus {
-  outline: 0 none;
-  outline-offset: 0;
-  box-shadow: 0 0 0 0.2rem #c7d2fe;
-}
-.p-datatable .p-datatable-tbody > tr > td .p-row-editor-save {
-  margin-right: 0.5rem;
-}
-.p-datatable .p-datatable-tbody > tr > td > .p-column-title {
-  font-weight: 700;
-}
-.p-datatable .p-datatable-tbody > tr:focus {
-  outline: 0.15rem solid #c7d2fe;
-  outline-offset: -0.15rem;
-}
-.p-datatable .p-datatable-tbody > tr.p-highlight {
-  background: #eef2ff;
-  color: #4338ca;
-}
-.p-datatable .p-datatable-tbody > tr.p-datatable-dragpoint-top > td {
-  box-shadow: inset 0 2px 0 0 #eef2ff;
-}
-.p-datatable .p-datatable-tbody > tr.p-datatable-dragpoint-bottom > td {
-  box-shadow: inset 0 -2px 0 0 #eef2ff;
-}
-.p-datatable.p-datatable-hoverable-rows .p-datatable-tbody > tr:not(.p-highlight):hover {
-  background: #e9ecef;
-  color: #495057;
-}
-.p-datatable .p-column-resizer-helper {
-  background: #6366f1;
-}
-.p-datatable .p-datatable-scrollable-header,
-.p-datatable .p-datatable-scrollable-footer {
-  background: #f8f9fa;
-}
-.p-datatable.p-datatable-scrollable
-> .p-datatable-wrapper
-> .p-datatable-table
-> .p-datatable-thead,
-.p-datatable.p-datatable-scrollable
-> .p-datatable-wrapper
-> .p-datatable-table
-> .p-datatable-tfoot,
-.p-datatable.p-datatable-scrollable
-> .p-datatable-wrapper
-> .p-virtualscroller
-> .p-datatable-table
-> .p-datatable-thead,
-.p-datatable.p-datatable-scrollable
-> .p-datatable-wrapper
-> .p-virtualscroller
-> .p-datatable-table
-> .p-datatable-tfoot {
-  background-color: #f8f9fa;
-}
-.p-datatable .p-datatable-loading-icon {
-  font-size: 2rem;
-}
-.p-datatable.p-datatable-gridlines .p-datatable-header {
-  border-width: 1px 1px 0 1px;
-}
-.p-datatable.p-datatable-gridlines .p-datatable-footer {
-  border-width: 0 1px 1px 1px;
-}
-.p-datatable.p-datatable-gridlines .p-paginator-top {
-  border-width: 0 1px 0 1px;
-}
-.p-datatable.p-datatable-gridlines .p-paginator-bottom {
-  border-width: 0 1px 1px 1px;
-}
-.p-datatable.p-datatable-gridlines .p-datatable-thead > tr > th {
-  border-width: 1px 1px 1px 1px;
-}
-.p-datatable.p-datatable-gridlines .p-datatable-tbody > tr > td {
-  border-width: 1px;
-}
-.p-datatable.p-datatable-gridlines .p-datatable-tfoot > tr > td {
-  border-width: 1px;
-}
-.p-datatable.p-datatable-gridlines.p-datatable-scrollable
-.p-datatable-thead
-> tr
-> th
-+ th {
-  border-left-width: 0;
-}
-.p-datatable.p-datatable-gridlines.p-datatable-scrollable
-.p-datatable-tbody
-> tr
-> td
-+ td {
-  border-left-width: 0;
-}
-.p-datatable.p-datatable-gridlines.p-datatable-scrollable
-.p-datatable-tbody
-> tr
-+ tr
-> td,
-.p-datatable.p-datatable-gridlines.p-datatable-scrollable
-.p-datatable-tbody
-> tr:first-child
-> td {
-  border-top-width: 0;
-}
-.p-datatable.p-datatable-gridlines.p-datatable-scrollable
-.p-datatable-tfoot
-> tr
-> td
-+ td {
-  border-left-width: 0;
-}
-.p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
-  background: #fcfcfc;
-}
-.p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even).p-highlight {
-  background: #eef2ff;
-  color: #4338ca;
-}
-.p-datatable.p-datatable-striped
-.p-datatable-tbody
-> tr:nth-child(even).p-highlight
-.p-row-toggler {
-  color: #4338ca;
-}
-.p-datatable.p-datatable-striped
-.p-datatable-tbody
-> tr:nth-child(even).p-highlight
-.p-row-toggler:hover {
-  color: #4338ca;
-}
-.p-datatable.p-datatable-sm .p-datatable-header {
-  padding: 0.5rem 0.5rem;
-}
-.p-datatable.p-datatable-sm .p-datatable-thead > tr > th {
-  padding: 0.5rem 0.5rem;
-}
-.p-datatable.p-datatable-sm .p-datatable-tbody > tr > td {
-  padding: 0.5rem 0.5rem;
-}
-.p-datatable.p-datatable-sm .p-datatable-tfoot > tr > td {
-  padding: 0.5rem 0.5rem;
-}
-.p-datatable.p-datatable-sm .p-datatable-footer {
-  padding: 0.5rem 0.5rem;
-}
-.p-datatable.p-datatable-lg .p-datatable-header {
-  padding: 1.25rem 1.25rem;
-}
-.p-datatable.p-datatable-lg .p-datatable-thead > tr > th {
-  padding: 1.25rem 1.25rem;
-}
-.p-datatable.p-datatable-lg .p-datatable-tbody > tr > td {
-  padding: 1.25rem 1.25rem;
-}
-.p-datatable.p-datatable-lg .p-datatable-tfoot > tr > td {
-  padding: 1.25rem 1.25rem;
-}
-.p-datatable.p-datatable-lg .p-datatable-footer {
-  padding: 1.25rem 1.25rem;
-}
 /* Asegurarse de que solo el nombre del archivo se muestra y se ajusta a una sola columna */
 .p-fileupload .p-fileupload-file {
   display: flex;

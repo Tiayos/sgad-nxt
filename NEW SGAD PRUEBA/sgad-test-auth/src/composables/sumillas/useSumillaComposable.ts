@@ -10,8 +10,8 @@ import type {SedeProjection} from "~/models/projection/SedeProjection.model";
 import type {EventoBitacora} from "~/models/EventoBitacora.model";
 import type {DocumentoBitacora} from "~/models/DocumentoBitacora.model";
 import {useSumillaService} from "~/composables/services/useSumillaService";
-import { useField, useForm } from 'vee-validate';
-import { required } from "@vee-validate/rules";
+import { useField, useForm, useFieldError, useFormErrors } from 'vee-validate';
+import {required, toTypedSchema} from "@vee-validate/rules";
 import * as yup from 'yup';
 // import useVuelidate from "@vuelidate/core";
 
@@ -48,18 +48,69 @@ export const useSumillaComposable = () =>{
     const documentObj = ref<DocumentoBitacora>({} as DocumentoBitacora);
     const files = ref<File[]>([]); // Definir files como un ref que es un arreglo de File
     const documentosBitacoraList = ref<DocumentoBitacora[]>([]);
-
     const { handleSubmit, resetForm } = useForm({
         validationSchema: yup.object({
             numHojas: yup.string().required(),
             nombres_remitente: yup.string().required(),
             apellidos_remitente: yup.string().required(),
+            mensajero: yup.object().required(),
             lugar_destino: yup.string().required(),
-            destinatario: yup.string().required(),
+            destinatario: yup.object().required(),
             asunto: yup.string().required(),
-            mensajero: yup.string().required(),
         }),
     });
+
+    const {
+        value: numHojas,
+        errorMessage: numHojasError,
+        resetField: resetNumHojas,
+    } = useField<string>("numHojas", {
+        required: true,
+    })
+    const {
+        value: nombres_remitente,
+        errorMessage: nombres_remitenteError,
+        resetField: resetnombres_remitente,
+    } = useField<string>("nombres_remitente", {
+        required: true,
+    })
+    const {
+        value: apellidos_remitente,
+        errorMessage: apellidos_remitenteError,
+        resetField: resetapellidos_remitente,
+    } = useField<string>("apellidos_remitente", {
+        required: true,
+    })
+    const {
+        value: mensajero,
+        errorMessage: mensajeroError,
+        resetField: resetmensajero,
+    } = useField<Persona>("mensajero", {
+        required: true,
+    })
+    const {
+        value: lugar_destino,
+        errorMessage: lugar_destinoError,
+        resetField: resetlugar_destino,
+    } = useField<string>("lugar_destino", {
+        required: true,
+    })
+
+    const {
+        value: destinatario,
+        errorMessage: destinatarioError,
+        resetField: resetdestinatario,
+    } = useField<Persona>("destinatario", {
+        required: true,
+    })
+    const {
+        value: asunto,
+        errorMessage: asuntoError,
+        resetField: resetasunto,
+    } = useField<string>("asunto", {
+        required: true,
+    })
+
     // const v$ = useVuelidate(validateBitacora, bitacora);
     enum persistAction {
         create,
@@ -69,13 +120,6 @@ export const useSumillaComposable = () =>{
     const action = ref();
     const createModal = ref<boolean>(false);
 
-    const {
-        value: numHojas,
-        errorMessage: numHojasError,
-        resetField: resetNumHojas,
-    } = useField<string>("numHojas", {
-        required: true,
-    })
     const fechaEntrega = ref<string>("");
 
     const prepareEdit = async (sumillaParam: Sumilla, persistAct:persistAction) => {
@@ -87,15 +131,24 @@ export const useSumillaComposable = () =>{
         bitacora.value = await getBitacoraByNumSumilla(sumilla.value.numero_sumilla);
         documentosBitacoraList.value = await getDocumentosByBitCodigo(bitacora.value.codigo);
 
+        nombres_remitente.value = bitacora.value.nombres_remitente;
+        apellidos_remitente.value = bitacora.value.apellidos_remitente;
+        mensajero.value = bitacora.value.mensajero;
+        lugar_destino.value = bitacora.value.lugar_destino;
+        destinatario.value = bitacora.value.destinatario;
+        asunto.value = bitacora.value.asunto;
+
         fechaEntrega.value =
             bitacora.value.fecha_entrega != null ? bitacora.value.fecha_entrega.toString() : "";
 
         bitacora.value.mensajero.nombreCompleto = bitacora.value.mensajero.per_apellidos
             .concat(" ")
             .concat(bitacora.value.mensajero.per_nombres);
+        mensajero.value.nombreCompleto = bitacora.value.mensajero.nombreCompleto;
         bitacora.value.destinatario.nombreCompleto = bitacora.value.destinatario.per_apellidos
             .concat(" ")
             .concat(bitacora.value.destinatario.per_nombres);
+        destinatario.value.nombreCompleto = bitacora.value.destinatario.nombreCompleto;
 
         if (bitacora.value.usr_emisor != null) {
             bitacora.value.usr_emisor.nombreCompleto = bitacora.value.usr_emisor.per_apellidos
@@ -198,6 +251,25 @@ export const useSumillaComposable = () =>{
         files,
         documentosBitacoraList,
         resetForm,
-        handleSubmit
+        handleSubmit,
+        useFieldError, useFormErrors,
+        nombres_remitente,
+        nombres_remitenteError,
+        resetnombres_remitente,
+        apellidos_remitente,
+        apellidos_remitenteError,
+        resetapellidos_remitente,
+        lugar_destino,
+        lugar_destinoError,
+        resetlugar_destino,
+        destinatario,
+        destinatarioError,
+        resetdestinatario,
+        mensajero,
+        mensajeroError,
+        resetmensajero,
+        asunto,
+        asuntoError,
+        resetasunto,
     }
 }

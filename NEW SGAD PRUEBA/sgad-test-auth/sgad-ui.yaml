@@ -1,6 +1,5 @@
----
-kind: Secret
 apiVersion: v1
+kind: Secret
 metadata:
   name: gitlab-pull-secret
 type: kubernetes.io/dockerconfigjson
@@ -10,39 +9,56 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: sgadnxt
+  name: sgadnxtui
   labels:
-    app: sgadnxt
+    app: sgadnxtui
 spec:
   ports:
     - port: 8080
       targetPort: 8080
       protocol: TCP
   selector:
-    app: sgadnxt
+    app: sgadnxtui
   type: ClusterIP
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sgadnxt
+  name: sgadnxtui
   labels:
-    app: sgadnxt
+    app: sgadnxtui
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sgadnxt
+      app: sgadnxtui
   template:
     metadata:
       labels:
-        app: sgadnxt
+        app: sgadnxtui
     spec:
       containers:
-        - name: sgadnxt
-          image: registry.gitlab.com/ups-dev/development/gitlab/packages/docker:dev-sgaduivacio-1.1.36
+        - name: sgadnxtui
+          image: registry.gitlab.com/ups-dev/development/gitlab/packages/docker:sgadui-nxt-dev-1.0.3
           ports:
             - containerPort: 8080
+          env:
+            - name: NITRO_PORT
+              value: "8080"
+            - name: PORT
+              value: "443"
+            - name: KEYCLOAK_ISSUER
+              value: "https://auth.ups.edu.ec/realms/dev"
+            - name: KEYCLOAK_ID
+              value: "dev-sgadui"
+            - name: KEYCLOAK_SECRET
+              value: "fH4mALTkm3kJqjIRM99fPykjTsH5BDKY"
+            - name: AUTH_ORIGIN
+              value: "https://sgadui.ups.edu.ec/"
+            - name: AUTH_SECRET
+              value: "12345"
+            - name: NEXTAUTH_URL
+              value: "https://sgadui.ups.edu.ec/"
       imagePullSecrets:
         - name: gitlab-pull-secret
       nodeSelector:

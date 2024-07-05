@@ -35,11 +35,12 @@ import DataView from 'primevue/dataview';
 import DataViewLayoutOptions from 'primevue/dataviewlayoutoptions'
 import FileUpload from 'primevue/fileupload';
 import Card from 'primevue/card';
+import Calendar from 'primevue/calendar';
+import InputIcon from 'primevue/inputicon';
 
 export default defineNuxtPlugin(({vueApp: app}) => {
     app.use(PrimeVue, {
         ripple: false,
-        unstyled: true,
         pt: Freya
     })
 
@@ -52,7 +53,6 @@ export default defineNuxtPlugin(({vueApp: app}) => {
     // Services
     app.use(ToastService)
     app.use(ConfirmationService)
-
     // Components
     app.component('Row', Row)
     app.component('Badge', Badge)
@@ -81,6 +81,7 @@ export default defineNuxtPlugin(({vueApp: app}) => {
     app.component('DataView', DataView)
     app.component('DatDataViewLayoutOptionsaView', DataViewLayoutOptions)
     app.component('FileUpload', FileUpload)
-
+    app.component('Calendar', Calendar)
+    app.component('InputIcon', InputIcon)
 
 })
