@@ -23,7 +23,7 @@ export const useSumillaComposable = () =>{
 
     //*services
     const {getSumillas, getSumillasBySede, saveSumilla, deleteSumilla, getSumillaByNumeroSumilla, editSumilla, getSedeByEmail } = useSumillaService();
-    const {getUsers, getUsrLogin, getUsersAmbitosGestionDocumental} = usePersonaService();
+    const {getUsers, getUsersByFilterName, getUsrLogin, getUsersAmbitosGestionDocumental} = usePersonaService();
     const {getBitacoras, getBitacorasBySede, getBitacorasByFechaAndEstado,
         saveBitacora, deleteBitacora, editBitacora, editEstadoEnvioBitacora,
         getBitacoraByNumSumilla, deleteBitacoraByNumSumilla, saveDocumentoBitacora,
@@ -174,9 +174,13 @@ export const useSumillaComposable = () =>{
     onMounted(async() => {
         await findSumillas();
         await findBitacoras();
-        receptorPersonaList.value = await getUsers();
+        getPersonasByFilterName();
         usersGestionDocumentalList.value = await getUsersAmbitosGestionDocumental();
     })
+
+    const getPersonasByFilterName = async(name:string = 'abe') =>{
+       return receptorPersonaList.value = await getUsersByFilterName(name);
+    }
 
     const findBitacoras = async() =>{
         sede.value = await getSedeByEmail(data.value?.user?.email!);
@@ -271,5 +275,6 @@ export const useSumillaComposable = () =>{
         asunto,
         asuntoError,
         resetasunto,
+        getPersonasByFilterName
     }
 }

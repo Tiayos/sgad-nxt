@@ -38,7 +38,7 @@
                     size="medium"
                     secondary
                     :icon="MessageDotsRegular"
-                    :disabled="bitacoraSelected.codigo == null || disabledEnviarDocumento"
+                    :disabled="bitacoraSelected == null || disabledEnviarDocumento"
                     @click="prepareEnviarDocumento(bitacoraSelected.sumilla)"
                 >Enviar Documento
                 </FButton>
@@ -729,9 +729,11 @@
       </FCard>
     </FModal>
   </FCardSection>
+  <FToast v-model="mostrarMsgError" :content=mensajeToast error :duration="5000" />
+  <FToast v-model="mostrarMsgCorrecto" :content=mensajeToast  :duration="5000" />
+
 </template>
 <script setup lang="ts">
-import { useToast } from "primevue/usetoast";
 import Calendar from "primevue/calendar";
 import AutoComplete from "primevue/autocomplete";
 
@@ -820,6 +822,7 @@ const {
   asunto,
   asuntoError,
   resetasunto,
+  getPersonasByFilterName
 } = useSumillaComposable();
 
 
@@ -829,12 +832,16 @@ const transferenciaModal = ref<boolean>(false);
 const fechaInicial = ref<string>("");
 const fechaFinal = ref<string>("");
 const userTransferenciaDocumental = ref<number>();
-const toast = useToast();
 const filteredItems = ref<Persona[]>([]);
 const codigoSumillaDelete = ref<Number>(0);
-const bitacoraSelected = ref<Bitacora>({} as Bitacora);
+const bitacoraSelected = ref<Bitacora>({} as Bitacora );
 const disabledEnviarDocumento = ref<boolean>(true);
 const estadoDocumentoModal = ref<boolean>(false);
+
+const mostrarMsgCorrecto = ref<boolean>(false);
+const mostrarMsgError = ref<boolean>(false);
+const mensajeToast = ref<string>('');
+
 
 const prepareCreate = async () => {
   sede.value = await getSedeByEmail(data.value?.user?.email!);
@@ -919,13 +926,8 @@ const onSubmited = handleSubmit(async (values) => {
     await findBitacoras();
     createModal.value = !createModal.value;
     resetNumHojas();
-
-    toast.add({
-      severity: "success",
-      summary: "Sumilla",
-      detail: `Se ha guardado la sumilla correctamente`,
-      life: 5000,
-    });
+    mostrarMsgCorrecto.value = true;
+    mensajeToast.value = "La sumilla se guardó correctamente";
 });
 
 const saveDocumentos = async () => {
@@ -978,19 +980,14 @@ watch(
       }
     }
 );
-
 const handleChangeDeleteModal = async (bitacoraParam: Bitacora) => {
   eventoBitacora.value = await getEventoBitacoraService(bitacoraParam.codigo);
   if (
       eventoBitacora.value.estado.codigo != 2 ||
       bitacoraParam.estado_transferencia == "S"
   ) {
-    toast.add({
-      severity: "error",
-      summary: "Eliminar",
-      detail: `No se puede eliminar la bitácora`,
-      life: 3000,
-    });
+    mostrarMsgError.value = true;
+    mensajeToast.value = "No se puede eliminar, el documento fue enviado al destinatario";
   } else {
     deleteModal.value = !deleteModal.value;
     codigoSumillaDelete.value = bitacoraParam.sumilla.codigo!;
@@ -999,8 +996,9 @@ const handleChangeDeleteModal = async (bitacoraParam: Bitacora) => {
   }
 };
 
-const searchItem = (event: any) => {
+const searchItem = async(event: any) => {
   const query = event.query.toLowerCase();
+  receptorPersonaList.value = await getPersonasByFilterName(query);
   filteredItems.value = receptorPersonaList.value.filter(
       (item) =>
           item.per_nombres.toLowerCase().includes(query) ||
@@ -1023,12 +1021,8 @@ const onSubmitTransferencia = async () => {
       userLogin.value.codigo
   );
   handleChangeTransferencia();
-  toast.add({
-    severity: "success",
-    summary: "Transferencia",
-    detail: `Se ha realizado la transferencia correctamente`,
-    life: 3000,
-  });
+  mostrarMsgCorrecto.value = true;
+  mensajeToast.value = "La transferencia se realizó correctamente";
   await findBitacoras();
 };
 
@@ -1049,13 +1043,8 @@ const onSubmitEnviarDocumento = async () => {
   eventoBitacora.value.per_codigo_responsable.codigo =
       bitacora.value.receptor_documento.codigo;
   await saveEventoBitacora(eventoBitacora.value);
-
-  toast.add({
-    severity: "success",
-    summary: "Documento",
-    detail: `El documento se envío correctamente `,
-    life: 3000,
-  });
+  mostrarMsgCorrecto.value = true;
+  mensajeToast.value = "El documento se envío correctamente";
   await findBitacoras();
   handleChangeEnvioDocumento();
 };
@@ -1081,12 +1070,8 @@ const confirmDelete = async () => {
     await deleteBitacoraByNumSumilla(sumilla.value.codigo!);
     await deleteSumilla(sumilla.value.codigo!);
     await findBitacoras();
-    toast.add({
-      severity: "success",
-      summary: "Bitácora",
-      detail: `Se ha eliminado la Bitácora correctamente`,
-      life: 5000,
-    });
+    mostrarMsgCorrecto.value = true;
+    mensajeToast.value = "Se ha eliminado la Bitácora correctamente";
     changeDeleteModal();
   } catch (error) {}
 };
@@ -1098,25 +1083,23 @@ const prepareEnviarDocumento = async (sumillaDocumento: Sumilla) => {
   if (documentosBitacoraList.value.length > 0) {
     handleChangeEnvioDocumento();
   } else {
-    toast.add({
-      severity: "error",
-      summary: "Documento",
-      detail: `No está subido el documento digital`,
-      life: 3000,
-    });
+    mostrarMsgError.value = true;
+    mensajeToast.value = 'No está subido el documento digital';
   }
 };
 
 watch(
     () => bitacoraSelected.value,
     async (newValue, oldValue) => {
-      const evento: EventoBitacora = await getEventoBitacoraService(
-          bitacoraSelected.value.codigo
-      );
-      if (evento.estado.codigo != 2) {
-        disabledEnviarDocumento.value = true;
-      } else {
-        disabledEnviarDocumento.value = false;
+      if(bitacoraSelected.value != null){
+        const evento: EventoBitacora = await getEventoBitacoraService(
+            bitacoraSelected.value.codigo
+        );
+        if (evento.estado.codigo != 2) {
+          disabledEnviarDocumento.value = true;
+        } else {
+          disabledEnviarDocumento.value = false;
+        }
       }
     }
 );
@@ -1157,7 +1140,7 @@ const deleteFile = async (index: any) => {
 <style lang="css">
 
 .calendar .p-datepicker-trigger .p-datepicker-icon {
-  background-image: url('path/to/your/custom/icon.svg');
+  background-image: url('/calendar.png');
   background-size: contain;
   background-repeat: no-repeat;
   width: 1.5rem; /* Tamaño del icono */

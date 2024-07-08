@@ -6,7 +6,6 @@ import {useSendEmailService} from "~/composables/services/useSendEmailService";
 import {useEventoBitacora} from "~/composables/services/useEventoBitacora";
 import type {Persona} from "~/models/Sumilla.model";
 
-
 export const useBitacorasDestinatariosComposable = () =>{
 //* store
     const useStore = useArchivosStore();

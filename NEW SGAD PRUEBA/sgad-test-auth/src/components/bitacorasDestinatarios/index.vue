@@ -4,7 +4,7 @@
       <FLayoutSection>
         <DataTable
             :value="eventosBitacorasList"
-            :showGridlines="true"
+            show-gridlines
             :stripedRows="true"
             tableStyle="min-width: 50rem"
             :paginator="true"
@@ -193,7 +193,7 @@
         </div>
       </FModalSection>
 
-      <FCardSection>
+      <FCardSection v-show="!desabilitarGuardarCambios">
         <FCardSubsection>
           <FFormLayout>
             <FFormLayoutGroup>
@@ -243,6 +243,8 @@
         </FCardSubsection>
       </FCardSection>
     </FModal>
+    <FToast v-model="mostrarMsgError" :content=mensajeToast error :duration="5000" />
+    <FToast v-model="mostrarMsgCorrecto" :content=mensajeToast  :duration="5000" />
   </FCard>
 </template>
 <script lang="ts" setup>
@@ -253,11 +255,13 @@ import {
   MinusSolid,
 } from "@ups-dev/freya-icons";
 import AutoComplete from "primevue/autocomplete";
-import { useToast } from "primevue/usetoast";
 import {useBitacorasDestinatariosComposable} from "~/composables/bitacoras/useBitacorasDestinatariosComposable";
 import type {Estado} from "~/models/Estado.model";
 import type {Persona} from "~/models/Sumilla.model";
 import type {EventoBitacora} from "~/models/EventoBitacora.model";
+import { useField, useForm} from 'vee-validate';
+import {required, toTypedSchema} from "@vee-validate/rules";
+import * as yup from 'yup';
 
 const {
   eventosBitacorasList,
@@ -274,17 +278,38 @@ const eventoSelected = ref<EventoBitacora>({} as EventoBitacora);
 const accionesModal = ref<boolean>(false);
 const eventosBitacorasAcciones = ref<EventoBitacora[]>([]);
 const estadosList = ref<Estado[]>([]);
-const { handleSubmit } = useForm();
-const isRequired = computed(() => estadoObj.value == 7);
-const toast = useToast();
 const desabilitarGuardarCambios = ref<boolean>();
+const mostrarMsgCorrecto = ref<boolean>(false);
+const mostrarMsgError = ref<boolean>(false);
+const mensajeToast = ref<string>('');
+
+const estadoObjectYup = () =>{
+  if(estadoObj.value == 7){
+    return true;
+  }
+  return false;
+}
+
+const { handleSubmit, resetForm } = useForm({
+  validationSchema: yup.object({
+    estadoObj: yup.number().required(),
+    personaObj: yup
+        .object()
+        .nullable()
+        .when('estadoObj', {
+          is: (val:number) => val === 7,
+          then: (schema) => schema.required('Persona es requerida cuando estado es 7'),
+          otherwise: (schema) => schema.nullable(),
+        }),
+  }),
+});
 
 const {
   value: estadoObj,
   errorMessage: estadoObjError,
   resetField: resetEstadoObj,
 } = useField<number>("estadoObj", {
-  required: true,
+  // required: true,
 });
 
 const {
@@ -292,7 +317,7 @@ const {
   errorMessage: personaObjError,
   resetField: resetPersonaObj,
 } = useField<Persona>("personaObj", {
-  required: isRequired.value,
+  // required: isRequired.value,
 });
 
 watch(
@@ -367,12 +392,8 @@ const prepareAcciones = async (eventoParam: EventoBitacora) => {
 
 const onSubmitAcciones = handleSubmit(async (values) => {
   if (personaObj.value == null && estadoObj.value === 7) {
-    toast.add({
-      severity: "error",
-      summary: "Destinatario",
-      detail: `Seleccione un destinatario`,
-      life: 3000,
-    });
+    mostrarMsgError.value = true;
+    mensajeToast.value = 'Seleccione un destinatario'
   } else {
     switch (estadoObj.value) {
       case 4: // APROBADO
@@ -380,6 +401,8 @@ const onSubmitAcciones = handleSubmit(async (values) => {
         eventoSelected.value.codigo = 0;
         eventoSelected.value.per_codigo_responsable.codigo = userLogin.value.codigo;
         await saveEventoBitacora(eventoSelected.value);
+        mostrarMsgCorrecto.value = true;
+        mensajeToast.value = 'Se aprobó el documento';
         handleChangeAcciones();
         break;
       case 3: // NO APROBADO - SOLICITAR DOCUMENTACIÓN FÍSICA
@@ -389,6 +412,8 @@ const onSubmitAcciones = handleSubmit(async (values) => {
         await saveEventoBitacora(eventoSelected.value);
         enviarEmail(eventoSelected.value);
         handleChangeAcciones();
+        mostrarMsgCorrecto.value = true;
+        mensajeToast.value = 'Se solicitó documentación física';
         break;
       case 7:
         eventoSelected.value.per_codigo_reasignado = {} as Persona;
@@ -397,6 +422,8 @@ const onSubmitAcciones = handleSubmit(async (values) => {
         eventoSelected.value.per_codigo_responsable.codigo = userLogin.value.codigo;
         eventoSelected.value.per_codigo_reasignado.codigo = personaObj.value.codigo;
         await saveEventoBitacora(eventoSelected.value);
+        mostrarMsgCorrecto.value = true;
+        mensajeToast.value = 'Se reasignó el documento correctamente';
         handleChangeAcciones();
         break;
     }
@@ -415,23 +442,6 @@ const transition = {
 };
 </script>
 <style lang="css">
-.p-autocomplete {
-  height: 35px;
-}
-
-.full-width-autocomplete .p-autocomplete {
-  width: 100%;
-}
-
-.full-width-autocomplete .p-autocomplete-input {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* Asegúrate de que el contenedor del AutoComplete ocupe el ancho completo */
-.full-width-autocomplete {
-  width: 100%;
-}
 
 .texto-superior-derecha {
   position: absolute;

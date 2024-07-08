@@ -22,6 +22,15 @@ export const usePersonaService = () => {
         }
     }
 
+    const getUsersByFilterName = async(name:string): Promise<Persona[]> => {
+        try {
+            const resp = await $fetch<Persona[]>(`${apiUrl}/getFilterName?name=${name}`)
+            return resp.map(a=>({...a, nombreCompleto: `${a.per_nombres} ${a.per_apellidos}`}))
+        } catch (error) {
+            throw new Error("Error al consultar las sumillas");
+        }
+    }
+
     const getUsersAmbitosGestionDocumental = async(): Promise<Persona[]> => {
         try {
             const resp = await $fetch<Persona[]>(`${apiUrl}/findPersonasGestionDocumental`)
@@ -34,6 +43,7 @@ export const usePersonaService = () => {
     return {
         getUsrLogin,
         getUsers,
+        getUsersByFilterName,
         getUsersAmbitosGestionDocumental
     }
 }

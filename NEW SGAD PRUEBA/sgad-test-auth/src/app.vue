@@ -101,7 +101,6 @@ const getInitials = (name: string) => {
       </FPage>
       <Footer></Footer>
     </FFrame>
-    <Toast />
   </FAppProvider>
 </template>
 
