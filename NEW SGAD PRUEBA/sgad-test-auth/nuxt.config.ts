@@ -51,7 +51,8 @@ export default defineNuxtConfig({
       // SGAD_TRANSFERENCIA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/transferencia',
       // SGAD_EVENTO: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/eventoBitacora',
       // SGAD_EMAIL: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/email',
-
+      // SGAD_BITACORA_EXTERNO: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/bitacoraExternos',
+      // SGAD_DOCUMENTOS_EXTERNOS: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/documentosExternos',
 
       // * pruebas local
          SGAD_SUMILLA: '/sgad-nuxt/sumilla',
@@ -60,6 +61,8 @@ export default defineNuxtConfig({
          SGAD_TRANSFERENCIA: '/sgad-nuxt/transferencia',
          SGAD_EVENTO: '/sgad-nuxt/eventoBitacora',
          SGAD_EMAIL: '/sgad-nuxt/email',
+         SGAD_BITACORA_EXTERNO: '/sgad-nuxt/bitacoraExternos',
+         SGAD_DOCUMENTOS_EXTERNOS: '/sgad-nuxt/documentosExternos',
 
     }
   },
@@ -70,7 +73,7 @@ export default defineNuxtConfig({
     '@ups-dev/freya-primevue/dist/esm/style.css',
   ],
 
-  // *comentar local
+  // // *comentar local
   nitro: {
       devProxy: {
           '/sgad-nuxt': {
