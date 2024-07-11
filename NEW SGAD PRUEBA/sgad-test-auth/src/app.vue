@@ -75,6 +75,7 @@ const getInitials = (name: string) => {
             :searchResultsVisible="searchActive"
             @searchResultsDismiss="handleSearchResultsDismiss"
             @navigation-toggle="toggleMobileNavigationActive"
+
         >
           <template #userMenu>
             <FTopBarUserMenu
@@ -97,7 +98,7 @@ const getInitials = (name: string) => {
       </template> -->
 
       <FPage full-width>
-        <LazyNuxtPage />
+        <LazyNuxtPage v-if="$route.path !== '/documentosUPS'"/>
       </FPage>
       <Footer></Footer>
     </FFrame>

@@ -1,9 +1,12 @@
 import type {BitacoraExternos} from "~/models/BitacoraExternos.model";
 import {useField, useForm} from 'vee-validate';
 import * as yup from "yup";
-import { required } from '@vee-validate/rules'; // Importa la regla required de VeeValidate
+import { required } from '@vee-validate/rules';
+import {usePersonaService} from "~/composables/services/usePersonaService"; // Importa la regla required de VeeValidate
 
 export const useBitacoraExternaComposable = () => {
+    //*Service
+    const {getUsrLogin} = usePersonaService();
 
     const bitacoraExterna = ref<BitacoraExternos>({} as BitacoraExternos)
 
@@ -14,9 +17,7 @@ export const useBitacoraExternaComposable = () => {
             asunto: yup.string().required(),
             correo_remitente: yup.string().required(),
             correo_destinatario: yup.string().required(),
-            // mensajero: yup.object().required(),
-            // lugar_destino: yup.string().required(),
-            // destinatario: yup.object().required(),
+            captchaValue: yup.boolean().required()
         }),
     });
 
@@ -55,6 +56,17 @@ export const useBitacoraExternaComposable = () => {
     } = useField<string>("correo_destinatario", {
         required: true,
     })
+    const {
+        value: captchaValue,
+        errorMessage: captchaValueError,
+    } = useField<boolean>("captchaValue", {
+        required: true,
+    })
+
+    onMounted(() => {
+        captchaValue.value = false
+    })
+
     return {
         bitacoraExterna,
         nombreRemitente,
@@ -72,6 +84,10 @@ export const useBitacoraExternaComposable = () => {
         asunto,
         asuntoError,
         resetAsunto,
+        captchaValue,
+        captchaValueError,
         handleSubmit,
+        ///----Service
+        getUsrLogin,
     }
 }

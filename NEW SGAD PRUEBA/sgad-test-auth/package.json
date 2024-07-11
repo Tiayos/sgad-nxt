@@ -32,8 +32,10 @@
     "pinia": "^2.0.32",
     "primeflex": "^3.3.0",
     "primeicons": "^6.0.1",
+    "primevue": "^3.22.1",
     "vee-validate": "^4.8.6",
-    "yup": "~1.4.0",
-    "primevue": "^3.22.1"
+    "vue-cookies": "1.8.1",
+    "vue3-recaptcha-v2": "^2.0.2",
+    "yup": "~1.4.0"
   }
 }

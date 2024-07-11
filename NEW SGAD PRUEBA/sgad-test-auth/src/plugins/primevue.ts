@@ -37,11 +37,18 @@ import FileUpload from 'primevue/fileupload';
 import Card from 'primevue/card';
 import Calendar from 'primevue/calendar';
 import InputIcon from 'primevue/inputicon';
+import { install } from "vue3-recaptcha-v2";
+import VueCookies from "vue-cookies";
 
 export default defineNuxtPlugin(({vueApp: app}) => {
     app.use(PrimeVue, {
         ripple: false,
-        pt: Freya
+        pt: Freya,
+    });
+
+    app.use(install, {
+        sitekey: "6LcN-h8UAAAAAIg9fdv0v5FFQEPOfkdzfyWCkLof",
+        cnDomains: false, // Optional, If you use in China, set this value true
     })
 
     // Directives
@@ -53,6 +60,7 @@ export default defineNuxtPlugin(({vueApp: app}) => {
     // Services
     app.use(ToastService)
     app.use(ConfirmationService)
+    app.use(VueCookies)
     // Components
     app.component('Row', Row)
     app.component('Badge', Badge)

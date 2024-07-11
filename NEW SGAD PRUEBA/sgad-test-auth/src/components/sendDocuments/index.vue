@@ -37,10 +37,21 @@
             v-model="correoDestinatario"
             :error="correoDestinatarioError"
         />
+
+        <RecaptchaV2
+            @widget-id="handleWidgetId"
+            @error-callback="handleErrorCalback"
+            @expired-callback="handleExpiredCallback"
+            @load-callback="handleLoadCallback"
+        />
+
       </FVerticalStack>
     </FCard>
-    <FPageActions :primaryAction="{content: 'Enviar documento', icon: PlusSolid, onAction:() => handleChangeSubmitModal()}"
-                  :secondaryActions="[{content: 'Limpiar'}]"/>
+    <FPageActions :primaryAction="{content: 'Enviar documento',
+    icon: PlusSolid,
+    disabled: captchaValue==false,
+    onAction:() => onSubmit(),
+    }" :secondaryActions="[{content: 'Limpiar'}]"/>
 
     <FModal
         v-model="submitModal"
@@ -49,7 +60,7 @@
         large
         :primaryAction="{
         content: 'Enviar documento',
-        onAction: onSubmit,
+        onAction: handleChangeSubmitModal,
       }"
         :secondaryActions="[
         {
@@ -59,17 +70,17 @@
       ]"
     >
 
-      
-
     </FModal>
-
   </FPage>
+
 </template>
 <script lang="ts" setup>
 import {
   PlusSolid
 } from "@ups-dev/freya-icons";
 import {useBitacoraExternaComposable} from "~/composables/documentosExternos/bitacoraExternaComposable";
+import { RecaptchaV2 } from "vue3-recaptcha-v2";
+import type {Persona} from "~/models/Sumilla.model";
 
 const {
   bitacoraExterna,
@@ -89,17 +100,47 @@ const {
   asunto,
   asuntoError,
   resetAsunto,
+  captchaValue,
+  captchaValueError,
+  ///--------------------Service
+  getUsrLogin,
 } = useBitacoraExternaComposable()
 const submitModal = ref<boolean>(false);
+const { data: userLogin } = useSessionStorage<Persona>("userLogin");
+const { data } = useAuth();
+
+const handleWidgetId = (widgetId: number) => {
+  console.log("Widget ID: ", widgetId);
+};
+const handleErrorCalback = () => {
+  console.log("Error callback");
+};
+const handleExpiredCallback = () => {
+  console.log("Expired callback");
+  captchaValue.value = false;
+};
+const handleLoadCallback = (response: string) => {
+  // console.log("Load callback", response);
+  captchaValue.value = response.length>0 ? true : false;
+};
 
 const handleChangeSubmitModal = () =>{
   submitModal.value = !submitModal.value;
 }
 
-const onSubmit = handleSubmit( (values:any) => {
+const onSubmit = handleSubmit( async(values:any) => {
+  userLogin.value = await getUsrLogin(data.value?.user?.email!);
+  bitacoraExterna.value.nombres_remitente = nombreRemitente.value;
+  bitacoraExterna.value.apellidos_remitente = apellidoRemitente.value;
+  bitacoraExterna.value.asunto = asunto.value;
+  bitacoraExterna.value.correo_remitente = correoRemitente.value;
+  bitacoraExterna.value.correo_destinatario = correoDestinatario.value;
+  // bitacoraExterna.value.adicionado = userLogin.value.
+
   console.log('funciona');
 });
 
+auth:false;
 
 </script>
 <style lang="css">

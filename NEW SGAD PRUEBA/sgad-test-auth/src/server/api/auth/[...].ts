@@ -22,6 +22,7 @@ export default NuxtAuthHandler({
             // checks: ['none']
         })
     ],
+
     //quitar cuando se vaya a subir a produccion
     debug: true,
     callbacks: {

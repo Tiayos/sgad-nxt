@@ -19,8 +19,9 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@ups-dev/freya-nuxt',
     '@vee-validate/nuxt',
-    '@sidebase/nuxt-auth'
+    '@sidebase/nuxt-auth',
   ],
+
 
   auth: {
     globalAppMiddleware: true,
@@ -39,7 +40,6 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-
       assets: {
         images: '/images'
       },
