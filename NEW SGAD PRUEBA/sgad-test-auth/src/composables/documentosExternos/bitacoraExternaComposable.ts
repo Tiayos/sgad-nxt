@@ -2,11 +2,15 @@ import type {BitacoraExternos} from "~/models/BitacoraExternos.model";
 import {useField, useForm} from 'vee-validate';
 import * as yup from "yup";
 import { required } from '@vee-validate/rules';
-import {usePersonaService} from "~/composables/services/usePersonaService"; // Importa la regla required de VeeValidate
+import {usePersonaService} from "~/composables/services/usePersonaService";
+import {useBitacoraExternaService} from "~/composables/services/useBitacoraExternos";
+import {useSendEmailService} from "~/composables/services/useSendEmailService"; // Importa la regla required de VeeValidate
 
 export const useBitacoraExternaComposable = () => {
     //*Service
     const {getUsrLogin} = usePersonaService();
+    const {saveBitacoraExterna, editBitacoraExterna, getBitacorasById} = useBitacoraExternaService();
+    const {sendEmailUsuarioExterno} = useSendEmailService();
 
     const bitacoraExterna = ref<BitacoraExternos>({} as BitacoraExternos)
 
@@ -17,7 +21,8 @@ export const useBitacoraExternaComposable = () => {
             asunto: yup.string().required(),
             correo_remitente: yup.string().required(),
             correo_destinatario: yup.string().required(),
-            captchaValue: yup.boolean().required()
+            captchaValue: yup.boolean().required(),
+            files: yup.array().required()
         }),
     });
 
@@ -62,6 +67,13 @@ export const useBitacoraExternaComposable = () => {
     } = useField<boolean>("captchaValue", {
         required: true,
     })
+    const {
+        value: files,
+        errorMessage: filesError,
+        resetField: resetFiles
+    } = useField<File[]>("files", {
+        required: true,
+    })
 
     onMounted(() => {
         captchaValue.value = false
@@ -86,8 +98,15 @@ export const useBitacoraExternaComposable = () => {
         resetAsunto,
         captchaValue,
         captchaValueError,
+        files,
+        filesError,
+        resetFiles,
         handleSubmit,
         ///----Service
         getUsrLogin,
+        saveBitacoraExterna,
+        editBitacoraExterna,
+        getBitacorasById,
+        sendEmailUsuarioExterno
     }
 }

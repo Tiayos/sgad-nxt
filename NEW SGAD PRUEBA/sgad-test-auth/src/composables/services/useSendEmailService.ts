@@ -1,4 +1,5 @@
 import type {EventoBitacora} from "~/models/EventoBitacora.model";
+import type {BitacoraExternos} from "~/models/BitacoraExternos.model";
 
 export const useSendEmailService = () => {
     const config = useRuntimeConfig()
@@ -16,7 +17,20 @@ export const useSendEmailService = () => {
          }
     }
 
+    const sendEmailUsuarioExterno = async(bitacoraExterno:BitacoraExternos) => {
+        try {
+            return await $fetch(`${apiUrl}/sendCodigoUsuarioExterno`,
+                {
+                    method: 'POST',
+                    body:   bitacoraExterno,
+                })
+        } catch (error:any) {
+            return {} as BitacoraExternos;
+        }
+    }
+
     return {
-        sendEmail
+        sendEmail,
+        sendEmailUsuarioExterno
     }
 }
