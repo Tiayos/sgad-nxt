@@ -1,7 +1,8 @@
-import { Bitacora } from 'models/Bitacora.model';
-import { EventoBitacora } from 'models/EventoBitacora.model';
+
 import { createPinia, defineStore } from 'pinia';
 import { FilterMatchMode } from "primevue/api";
+import type { Bitacora } from '~/models/Bitacora.model';
+import type { EventoBitacora } from '~/models/EventoBitacora.model';
 
 export const useArchivosStore = defineStore('useArchivosStore', () => {
     const disabledMenu = ref<boolean>(true);

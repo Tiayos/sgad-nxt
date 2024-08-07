@@ -1,5 +1,6 @@
-import { Estado } from "models/Estado.model"
-import { EventoBitacora } from "models/EventoBitacora.model"
+import type { Estado } from "~/models/Estado.model"
+import type { EventoBitacora } from "~/models/EventoBitacora.model"
+
 
 export const useEventoBitacora = () => {
     const config = useRuntimeConfig()

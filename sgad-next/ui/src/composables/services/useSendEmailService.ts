@@ -1,4 +1,4 @@
-import { EventoBitacora } from "models/EventoBitacora.model"
+import type { EventoBitacora } from "~/models/EventoBitacora.model"
 
 export const useSendEmailService = () => {
     const config = useRuntimeConfig()

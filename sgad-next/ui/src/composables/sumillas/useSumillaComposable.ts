@@ -1,10 +1,10 @@
-import { Persona, Sumilla } from "models/Sumilla.model";
 import { required, is_not } from "@vee-validate/rules";
-import { Bitacora } from "models/Bitacora.model";
-import { useVuelidate, ValidationRuleWithParams  } from '@vuelidate/core';
-import { SedeProjection } from "models/projection/SedeProjection.model";
-import { EventoBitacora } from "models/EventoBitacora.model";
-import { DocumentoBitacora } from "models/DocumentoBitacora.model";
+import { useVuelidate  } from '@vuelidate/core';
+import type { Bitacora } from "~/models/Bitacora.model";
+import type { DocumentoBitacora } from "~/models/DocumentoBitacora.model";
+import type { EventoBitacora } from "~/models/EventoBitacora.model";
+import type { SedeProjection } from "~/models/projection/SedeProjection.model";
+import type { Persona, Sumilla } from "~/models/Sumilla.model";
 
 export const useSumillaComposable = () =>{
 //*Session storage

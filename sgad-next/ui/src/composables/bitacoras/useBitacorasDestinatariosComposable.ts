@@ -1,5 +1,6 @@
-import { DocumentoBitacora } from "models/DocumentoBitacora.model";
-import { Persona } from "models/Sumilla.model";
+import type { DocumentoBitacora } from "~/models/DocumentoBitacora.model";
+import type { Persona } from "~/models/Sumilla.model";
+
 
 export const useBitacorasDestinatariosComposable = () =>{
 //* store

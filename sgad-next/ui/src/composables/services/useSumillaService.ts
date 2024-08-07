@@ -1,6 +1,7 @@
-import { Sumilla } from "models/Sumilla.model"
-import { SedeProjection } from "models/projection/SedeProjection.model";
+
 import { useToast } from "primevue/usetoast";
+import type { SedeProjection } from "~/models/projection/SedeProjection.model";
+import type { Sumilla } from "~/models/Sumilla.model";
 
 export const useSumillaService = () => {
     const config = useRuntimeConfig()

@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { Persona } from "models/Sumilla.model";
-import { ref } from "vue";
+import type { Persona } from "./models/Sumilla.model";
 const { data, signOut } = useAuth();
 const skipToContentRef = ref(null);
 const searchActive = ref(false);

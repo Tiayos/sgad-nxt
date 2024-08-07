@@ -711,13 +711,12 @@
   </FCardSection>
 </template>
 <script setup lang="ts">
-import { Persona, Sumilla } from "models/Sumilla.model";
-import { Bitacora } from "../../models/Bitacora.model";
+import type { Bitacora } from "../../models/Bitacora.model";
 import { useToast } from "primevue/usetoast";
 import Calendar from "primevue/calendar";
 import AutoComplete from "primevue/autocomplete";
-import { EventoBitacora } from "../../models/EventoBitacora.model";
-import { Estado } from "../../models/Estado.model";
+import type { EventoBitacora } from "../../models/EventoBitacora.model";
+import type { Estado } from "../../models/Estado.model";
 
 import {
   PlusSolid,
@@ -730,8 +729,8 @@ import {
   MessageDotsRegular,
   FileSolid,
 } from "@ups-dev/freya-icons";
-import { BitacoraListBitacora } from "../../../.nuxt/components";
-import { DocumentoBitacora } from "../../models/DocumentoBitacora.model";
+import type { DocumentoBitacora } from "../../models/DocumentoBitacora.model";
+import type { Persona, Sumilla } from "../../models/Sumilla.model";
 
 const {
   usersGestionDocumentalList,
@@ -910,7 +909,7 @@ const saveDocumentos = async () => {
 
 watch(
   () => fechaFinal.value,
-  (newValue, oldValue) => {
+  () => {
     if (fechaFinal.value != "") {
       findBitacorasByFechaTransferencia(
         fechaInicial.value,
@@ -944,7 +943,7 @@ const handleChangeDeleteModal = async (bitacoraParam: Bitacora) => {
 const searchItem = (event: any) => {
   const query = event.query.toLowerCase();
   filteredItems.value = receptorPersonaList.value.filter(
-    (item) =>
+    (item: any) =>
       item.per_nombres.toLowerCase().includes(query) ||
       item.per_apellidos.toLowerCase().includes(query)
   );
@@ -1051,7 +1050,7 @@ const prepareEnviarDocumento = async (sumillaDocumento: Sumilla) => {
 
 watch(
   () => bitacoraSelected.value,
-  async (newValue, oldValue) => {
+  async () => {
     const evento: EventoBitacora = await getEventoBitacoraService(
       bitacoraSelected.value.codigo
     );

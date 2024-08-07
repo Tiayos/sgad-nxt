@@ -39,7 +39,7 @@ import {
   MessageDotsRegular,
 } from "@ups-dev/freya-icons";
 import Image from "primevue/image";
-import { Persona, Sumilla } from "../../models/Sumilla.model";
+import type { Persona, Sumilla } from "../../models/Sumilla.model";
 import { useToast } from "primevue/usetoast";
 
 const toast = useToast();
@@ -86,7 +86,7 @@ const findSumilla = async () => {
 
 watch(
   () => fechaEntrega.value,
-  (newValue, oldValue) => {
+  () => {
     bitacora.value.fecha_entrega = toDate(fechaEntrega.value);
   }
 );

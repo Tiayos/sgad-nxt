@@ -246,17 +246,17 @@
   </FCard>
 </template>
 <script lang="ts" setup>
-import { EventoBitacora } from "../../models/EventoBitacora.model";
+import type { EventoBitacora } from "../../models/EventoBitacora.model";
 import {
   MagnifyingGlassSolid,
   TrashCanSolid,
   PlusSolid,
   MinusSolid,
 } from "@ups-dev/freya-icons";
-import { Estado } from "../../models/Estado.model";
+import type { Estado } from "../../models/Estado.model";
 import AutoComplete from "primevue/autocomplete";
 import { useToast } from "primevue/usetoast";
-import { Persona } from "../../models/Sumilla.model";
+import type { Persona } from "../../models/Sumilla.model";
 
 const {
   eventosBitacorasList,
@@ -296,7 +296,7 @@ const {
 
 watch(
   () => estadoObj.value,
-  (newValue, oldValue) => {
+  () => {
     if (estadoObj.value != 7) {
       resetPersonaObj();
     }
@@ -309,7 +309,7 @@ const receptorPersonaList = ref<Persona[]>([]);
 const searchItem = (event: any) => {
   const query = event.query.toLowerCase();
   filteredItems.value = receptorPersonaList.value.filter(
-    (item) =>
+    (item: any) =>
       item.per_nombres.toLowerCase().includes(query) ||
       item.per_apellidos.toLowerCase().includes(query)
   );

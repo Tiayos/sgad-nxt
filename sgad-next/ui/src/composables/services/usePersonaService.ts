@@ -1,4 +1,4 @@
-import { Persona } from "models/Sumilla.model"
+import type { Persona } from "~/models/Sumilla.model"
 
 export const usePersonaService = () => {
     const config = useRuntimeConfig()

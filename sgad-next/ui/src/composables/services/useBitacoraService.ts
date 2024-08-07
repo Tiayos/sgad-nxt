@@ -1,5 +1,6 @@
-import { Bitacora } from "models/Bitacora.model"
-import { DocumentoBitacora } from "models/DocumentoBitacora.model"
+import type { Bitacora } from "~/models/Bitacora.model"
+import type { DocumentoBitacora } from "~/models/DocumentoBitacora.model"
+
 
 export const useBitacoraService = () => {
     const config = useRuntimeConfig()
