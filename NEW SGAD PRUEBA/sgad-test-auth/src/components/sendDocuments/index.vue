@@ -19,7 +19,15 @@
             v-model="apellidoRemitente"
             :error="apellidoRemitenteError"
         />
-        <FText id="asuntoLbl" as="h6" variant="bodyMd">Asunto:</FText>
+
+        <FText id="nombreOrganizacionLbl" as="h6" variant="bodyMd">Nombre de la organización:</FText>
+        <FTextField
+            id="nombreOrganizacionTxt"
+            v-model="nombreOrganizacion"
+            :error="nombreOrganizacionError"
+        />
+
+        <FText id="asuntoLbl" as="h6" variant="bodyMd">Asunto del trámite:</FText>
         <FTextField
             id="asuntoTxt"
             v-model="asunto"
@@ -31,13 +39,32 @@
             v-model="correoRemitente"
             :error="correoRemitenteError"
         />
-        <FText id="correoDestinatarioLbl" as="h6" variant="bodyMd">Correo del destinatario:</FText>
+
+        <FText id="sedeLbl" as="h6" variant="bodyMd">Sede:</FText>
+        <Dropdown
+                v-model="sede"
+                :options="sedeList"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Seleccione"
+                :style="[sedeError != null ? { 'border-color': '#FF6767' } : {}]"
+            />
+
+        <FText id="apellidosDestinatarioLbl" as="h6" variant="bodyMd">Nombres destinatario:</FText>
         <FTextField
-            id="correoDestinatarioTxt"
-            v-model="correoDestinatario"
-            :error="correoDestinatarioError"
+            id="nombreDestinatarioTxt"
+            v-model="nombreDestinatario"
+            rules="required"
+            :error="nombreDestinatarioError"
         />
-        <FText id="correoDestinatarioLbl" as="h6" variant="bodyMd" font-weight="semibold">Subir Documentos:</FText>
+        <FText id="apellidosDestinatarioLbl" as="h6" variant="bodyMd">Apellidos destinario:</FText>
+        <FTextField
+            id="apellidosRemitenteTxt"
+            v-model="apellidoDestinatario"
+            :error="apellidoDestinatarioError"
+        />
+
+        <FText id="subirDocumentoLbl" as="h6" variant="bodyMd" font-weight="semibold">Subir Documentos:</FText>
         <FVerticalStack gap="4">
         </FVerticalStack>
         <FileUpload
@@ -50,29 +77,6 @@
             :onSelect="handleFileSelect"
             :key="uploadKey"
         >
-<!--          <template #content>-->
-<!--            <div class="p-fileupload-content">-->
-<!--              <ul class="p-fileupload-files">-->
-<!--                <FVerticalStack gap="4">-->
-<!--                <li v-for="(file, index) in files" :key="file.name">-->
-<!--                    <FFormLayout>-->
-<!--                      <FFormLayoutGroup condensed>-->
-<!--                        <FText class="pi pi-file p-fileupload-filename" as="h1" variant="bodyLg" font-weight="regular">{{ file.name }}</FText>-->
-<!--                          <FButton-->
-<!--                              class="p-fileupload-delete-button"-->
-<!--                              @click="removeFile(index)"-->
-<!--                              :icon="TrashCanSolid"-->
-<!--                          >-->
-<!--                          </FButton>-->
-<!--                      </FFormLayoutGroup>-->
-<!--                    </FFormLayout>-->
-<!--                </li>-->
-
-<!--                </FVerticalStack>-->
-
-<!--              </ul>-->
-<!--            </div>-->
-<!--          </template>-->
         </FileUpload>
         <RecaptchaV2
             @widget-id="handleWidgetId"
@@ -123,6 +127,8 @@ import type {BitacoraExternos} from "~/models/BitacoraExternos.model";
 
 const {
   bitacoraExterna,
+  bitacora,
+  sumilla,
   handleSubmit,
   nombreRemitente,
   nombreRemitenteError,
@@ -133,12 +139,22 @@ const {
   correoRemitente,
   correoRemitenteError,
   resetCorreoRemitente,
-  correoDestinatario,
-  correoDestinatarioError,
-  resetCorreoDestinatario,
   asunto,
   asuntoError,
   resetAsunto,
+  nombreOrganizacion,
+  nombreOrganizacionError,
+  resetNombreOrganizacion,
+  nombreDestinatario,
+  nombreDestinatarioError,
+  resetNombreDestinatario,
+  apellidoDestinatario,
+  apellidoDestinatarioError,
+  resetApellidoDestinatario,
+  sede,
+  sedeError,
+  resetSede,
+  sedeList,
   captchaValue,
   captchaValueError,
   files,
@@ -149,7 +165,9 @@ const {
   saveBitacoraExterna,
   editBitacoraExterna,
   getBitacorasById,
-  sendEmailUsuarioExterno
+  sendEmailUsuarioExterno,
+  saveSumilla,
+  saveSumillaExterna
 } = useBitacoraExternaComposable()
 const submitModal = ref<boolean>(false);
 const { data: userLogin } = useSessionStorage<Persona>("userLogin");
@@ -166,9 +184,12 @@ const limpiar = () =>{
   bitacoraExterna.value = {} as BitacoraExternos;
   resetNombreRemitente();
   resetApellidoRemitente();
-  resetCorreoRemitente();
-  resetCorreoDestinatario();
+  resetNombreOrganizacion();
   resetAsunto();
+  resetCorreoRemitente();
+  resetNombreDestinatario();
+  resetApellidoDestinatario();
+  resetSede();
   uploadKey.value +=1;
   resetFiles();
 }
@@ -196,23 +217,43 @@ const handleChangeSubmitModal = () =>{
 }
 
 const onSubmit = handleSubmit( async(values:any) => {
+  console.log('object');
   try {
-    bitacoraExterna.value.nombres_remitente = nombreRemitente.value;
-    bitacoraExterna.value.apellidos_remitente = apellidoRemitente.value;
-    bitacoraExterna.value.asunto = asunto.value;
-    bitacoraExterna.value.correo_remitente = correoRemitente.value;
-    bitacoraExterna.value.correo_destinatario = correoDestinatario.value;
-    bitacoraExterna.value.adicionado = bitacoraExterna.value.correo_remitente;
+    // sumilla.value.codigo = 0;
+    sumilla.value.responsable = {} as Persona;
+    sumilla.value.numero_hojas = files.value.length;
+    sumilla.value.fecha_sumilla = new Date();
+    sumilla.value.hora_sumilla = new Date().getHours() + ":" + new Date().getMinutes();
+    sumilla.value.sum_sede = sede.value
 
-    await saveBitacoraExterna(bitacoraExterna.value);
+    switch (sede.value) {
+      case 2:
+      const user2 = ref<Persona>({} as Persona);
+      user2.value = await getUsrLogin('larias@ups.edu.ec')
+      sumilla.value.responsable = user2.value
+        break;
+      case 3:
+      const user3 = ref<Persona>({} as Persona);
+      user3.value = await getUsrLogin('amacias@ups.edu.ec');
+      sumilla.value.responsable = user3.value
+        break;
+      case 4:
+      const user4 = ref<Persona>({} as Persona);
+      user4.value = await getUsrLogin('megas@ups.edu.ec');
+      sumilla.value.responsable = user4.value
+        break;
+    }
+
+    await saveSumillaExterna(sumilla.value);
     mostrarMsgCorrecto.value = true;
     mensajeToast.value = 'Se envió correctamente el documento';
 
     //* Send Email
-    await sendEmailUsuarioExterno(bitacoraExterna.value)
+    //await sendEmailUsuarioExterno(bitacoraExterna.value)
     limpiar();
 
   }catch (e) {
+    console.log(e);
   }
 
 });

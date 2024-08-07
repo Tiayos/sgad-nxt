@@ -891,7 +891,7 @@ const completeObjectBitacora = () =>{
   bitacora.value.lugar_destino = lugar_destino.value;
 }
 
-const onSubmited = handleSubmit(async (values) => {
+const onSubmited = handleSubmit(async (values:any) => {
   console.log(values);
     if (action.value == persistAction.create) {
       sumilla.value.numero_hojas = parseInt(numHojas.value);
@@ -970,7 +970,7 @@ const saveDocumentos = async () => {
 
 watch(
     () => fechaFinal.value,
-    (newValue, oldValue) => {
+    () => {
       if (fechaFinal.value != "") {
         findBitacorasByFechaTransferencia(
             fechaInicial.value,
@@ -1000,7 +1000,7 @@ const searchItem = async(event: any) => {
   const query = event.query.toLowerCase();
   receptorPersonaList.value = await getPersonasByFilterName(query);
   filteredItems.value = receptorPersonaList.value.filter(
-      (item) =>
+      (item:any) =>
           item.per_nombres.toLowerCase().includes(query) ||
           item.per_apellidos.toLowerCase().includes(query)
   );
@@ -1090,7 +1090,7 @@ const prepareEnviarDocumento = async (sumillaDocumento: Sumilla) => {
 
 watch(
     () => bitacoraSelected.value,
-    async (newValue, oldValue) => {
+    async () => {
       if(bitacoraSelected.value != null){
         const evento: EventoBitacora = await getEventoBitacoraService(
             bitacoraSelected.value.codigo

@@ -58,6 +58,18 @@ export const useSumillaService = () => {
         }
     }
 
+    const saveSumillaExterna = async(sumilla:Sumilla): Promise<Sumilla>=>{
+        try {
+           return await $fetch<Sumilla>(`${apiUrl}/saveSumillaExt`,
+            {
+                method: 'POST',
+                body:   sumilla,
+            })
+        } catch (error:any) {
+            return {} as Sumilla;
+        }
+    }
+
     const editSumilla = async(sumilla:Sumilla, codigo:number)=>{
         try {
             await $fetch(`${apiUrl}?codigo=${codigo}`,
@@ -89,6 +101,7 @@ export const useSumillaService = () => {
         saveSumilla,
         editSumilla,
         deleteSumilla,
-        getSedeByEmail
+        getSedeByEmail,
+        saveSumillaExterna
     }
 }

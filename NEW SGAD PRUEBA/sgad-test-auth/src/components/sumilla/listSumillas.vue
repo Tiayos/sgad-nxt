@@ -86,7 +86,7 @@ const findSumilla = async () => {
 
 watch(
     () => fechaEntrega.value,
-    (newValue, oldValue) => {
+    () => {
       bitacora.value.fecha_entrega = toDate(fechaEntrega.value);
     }
 );

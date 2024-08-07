@@ -298,8 +298,8 @@ const { handleSubmit, resetForm } = useForm({
         .nullable()
         .when('estadoObj', {
           is: (val:number) => val === 7,
-          then: (schema) => schema.required('Persona es requerida cuando estado es 7'),
-          otherwise: (schema) => schema.nullable(),
+          then: (schema:any) => schema.required('Persona es requerida cuando estado es 7'),
+          otherwise: (schema:any) => schema.nullable(),
         }),
   }),
 });
@@ -322,7 +322,7 @@ const {
 
 watch(
     () => estadoObj.value,
-    (newValue, oldValue) => {
+    () => {
       if (estadoObj.value != 7) {
         resetPersonaObj();
       }
@@ -335,7 +335,7 @@ const receptorPersonaList = ref<Persona[]>([]);
 const searchItem = (event: any) => {
   const query = event.query.toLowerCase();
   filteredItems.value = receptorPersonaList.value.filter(
-      (item) =>
+      (item:any) =>
           item.per_nombres.toLowerCase().includes(query) ||
           item.per_apellidos.toLowerCase().includes(query)
   );
@@ -390,7 +390,7 @@ const prepareAcciones = async (eventoParam: EventoBitacora) => {
   }
 };
 
-const onSubmitAcciones = handleSubmit(async (values) => {
+const onSubmitAcciones = handleSubmit(async (values:any) => {
   if (personaObj.value == null && estadoObj.value === 7) {
     mostrarMsgError.value = true;
     mensajeToast.value = 'Seleccione un destinatario'
