@@ -67,9 +67,7 @@
         <Column header="Nombre del responsable" style="width: 5px">
           <template #body="slotProps">
             {{
-              slotProps.data.sumilla.responsable.per_nombres +
-              "  " +
-              slotProps.data.sumilla.responsable.per_apellidos
+              (slotProps.data.sumilla.responsable.per_nombres || '') + " " + (slotProps.data.sumilla.responsable.per_apellidos || '')
             }}
           </template>
         </Column>
@@ -83,9 +81,7 @@
         <Column header="Destinatario" style="width: 5px">
           <template #body="slotProps">
             {{
-              slotProps.data.destinatario.per_nombres +
-              " " +
-              slotProps.data.destinatario.per_apellidos
+              (slotProps.data.sumilla.responsable.per_nombres || '') + " " + (slotProps.data.sumilla.responsable.per_apellidos || '')
             }}
           </template>
         </Column>
@@ -1092,11 +1088,13 @@ watch(
     () => bitacoraSelected.value,
     async () => {
       if(bitacoraSelected.value != null){
+        console.log('AQUI SI NO?');
         const evento: EventoBitacora = await getEventoBitacoraService(
             bitacoraSelected.value.codigo
         );
-        if (evento.estado.codigo != 2) {
+        if (evento.estado.codigo != 2 && bitacoraSelected.value.destinatario != null) {
           disabledEnviarDocumento.value = true;
+          console.log('entro?');
         } else {
           disabledEnviarDocumento.value = false;
         }

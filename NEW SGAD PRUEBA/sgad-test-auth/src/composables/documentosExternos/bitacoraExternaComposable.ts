@@ -8,17 +8,22 @@ import {useSendEmailService} from "~/composables/services/useSendEmailService"; 
 import type { Bitacora } from "~/models/Bitacora.model";
 import type { Sumilla } from "~/models/Sumilla.model";
 import { useSumillaService } from "../services/useSumillaService";
+import type { DocumentoBitacora } from "~/models/DocumentoBitacora.model";
+import { useBitacoraService } from "../services/useBitacoraService";
 
 export const useBitacoraExternaComposable = () => {
     //*Service
     const {getUsrLogin} = usePersonaService();
     const {saveBitacoraExterna, editBitacoraExterna, getBitacorasById} = useBitacoraExternaService();
+    const {saveDocumentoBitacora, saveBitacora} = useBitacoraService();
     const {sendEmailUsuarioExterno} = useSendEmailService();
     const {saveSumilla,saveSumillaExterna} = useSumillaService();
 
     const bitacoraExterna = ref<BitacoraExternos>({} as BitacoraExternos);
     const bitacora = ref<Bitacora>({} as Bitacora);
     const sumilla = ref<Sumilla>({} as Sumilla);
+    const documentObj = ref<DocumentoBitacora>({} as DocumentoBitacora);
+
     const sedeList = ref(
     [   { label: 'CUENCA', value: 2 },
         { label: 'GUAYAQUIL', value: 4 },
@@ -156,6 +161,7 @@ export const useBitacoraExternaComposable = () => {
         filesError,
         resetFiles,
         handleSubmit,
+        documentObj,
         ///----Service
         getUsrLogin,
         saveBitacoraExterna,
@@ -163,6 +169,8 @@ export const useBitacoraExternaComposable = () => {
         getBitacorasById,
         sendEmailUsuarioExterno,
         saveSumilla,
-        saveSumillaExterna
+        saveSumillaExterna,
+        saveDocumentoBitacora,
+        saveBitacora
     }
 }

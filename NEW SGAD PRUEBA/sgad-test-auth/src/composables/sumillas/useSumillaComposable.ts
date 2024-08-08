@@ -141,14 +141,19 @@ export const useSumillaComposable = () =>{
         fechaEntrega.value =
             bitacora.value.fecha_entrega != null ? bitacora.value.fecha_entrega.toString() : "";
 
-        bitacora.value.mensajero.nombreCompleto = bitacora.value.mensajero.per_apellidos
+        if(bitacora.value.mensajero != null ){
+            bitacora.value.mensajero.nombreCompleto = bitacora.value.mensajero.per_apellidos
             .concat(" ")
             .concat(bitacora.value.mensajero.per_nombres);
         mensajero.value.nombreCompleto = bitacora.value.mensajero.nombreCompleto;
-        bitacora.value.destinatario.nombreCompleto = bitacora.value.destinatario.per_apellidos
+        }
+
+        if(bitacora.value.destinatario != null ){
+            bitacora.value.destinatario.nombreCompleto = bitacora.value.destinatario.per_apellidos
             .concat(" ")
             .concat(bitacora.value.destinatario.per_nombres);
         destinatario.value.nombreCompleto = bitacora.value.destinatario.nombreCompleto;
+        }
 
         if (bitacora.value.usr_emisor != null) {
             bitacora.value.usr_emisor.nombreCompleto = bitacora.value.usr_emisor.per_apellidos
