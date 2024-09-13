@@ -30,8 +30,60 @@ export const useSendEmailService = () => {
         }
     }
 
+    const sendEmailReasignado = async(bitacoraExterno:BitacoraExternos, sede:number) => {
+        try {
+            return await $fetch(`${apiUrl}/sendEmailReasignado?sede=${sede}`,
+                {
+                    method: 'POST',
+                    body:   bitacoraExterno
+                })
+        } catch (error:any) {
+            return {} as BitacoraExternos;
+        }
+    }
+
+    const sendEmailDestinatario = async(bitacoraExterno:BitacoraExternos) => {
+        try {
+            return await $fetch(`${apiUrl}/sendEmailDestinatario`,
+                {
+                    method: 'POST',
+                    body:   bitacoraExterno
+                })
+        } catch (error:any) {
+            return {} as BitacoraExternos;
+        }
+    }
+
+    const sendEmailSolDocumentacionFisica = async(bitacoraExterno:BitacoraExternos) => {
+        try {
+            return await $fetch(`${apiUrl}/sendEmailDocumentacionFisica`,
+                {
+                    method: 'POST',
+                    body:   bitacoraExterno
+                })
+        } catch (error:any) {
+            return {} as BitacoraExternos;
+        }
+    }
+
+    const sendEmailRespuestaElectronicaRemitente = async(bitacoraExterno:BitacoraExternos) => {
+        try {
+            return await $fetch(`${apiUrl}/sendEmailRemitenteRespuesta`,
+                {
+                    method: 'POST',
+                    body:   bitacoraExterno
+                })
+        } catch (error:any) {
+            return {} as BitacoraExternos;
+        }
+    }
+
     return {
         sendEmail,
-        sendEmailUsuarioExterno
+        sendEmailUsuarioExterno,
+        sendEmailReasignado,
+        sendEmailDestinatario,
+        sendEmailSolDocumentacionFisica,
+        sendEmailRespuestaElectronicaRemitente
     }
 }

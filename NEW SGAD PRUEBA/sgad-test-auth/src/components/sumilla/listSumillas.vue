@@ -3,8 +3,8 @@
     <FTabs :tabs="tabs" v-model:selected="selected" fitted>
       <FFormLayout v-if="selected == 0">
         <FLayoutSection> </FLayoutSection>
-
         <BitacoraListBitacora></BitacoraListBitacora>
+        
       </FFormLayout>
 
       <FFormLayout v-if="selected == 1">

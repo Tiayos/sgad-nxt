@@ -12,12 +12,14 @@ export const useArchivosStore = defineStore('useArchivosStore', () => {
     const filtersSumillaBitacora = ref({
         global: { value: "", matchMode: FilterMatchMode.CONTAINS },
     });
+
     return {
         eventosBitacorasList,
         eventoBitacora,
         disabledMenu,
         bitacorasList,
-        filtersSumillaBitacora
+        filtersSumillaBitacora,
+        
     }
 
 })

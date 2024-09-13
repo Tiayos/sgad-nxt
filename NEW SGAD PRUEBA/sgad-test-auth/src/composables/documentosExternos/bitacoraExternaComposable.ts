@@ -10,19 +10,23 @@ import type { Sumilla } from "~/models/Sumilla.model";
 import { useSumillaService } from "../services/useSumillaService";
 import type { DocumentoBitacora } from "~/models/DocumentoBitacora.model";
 import { useBitacoraService } from "../services/useBitacoraService";
+import type { DocumentosExternos } from "~/models/DocumentosExternos.model";
+import { useDocumentosExternosService } from "../services/useDocumentosExternos";
 
 export const useBitacoraExternaComposable = () => {
     //*Service
     const {getUsrLogin} = usePersonaService();
-    const {saveBitacoraExterna, editBitacoraExterna, getBitacorasById} = useBitacoraExternaService();
+    const {saveBitacoraExterna, editBitacoraExterna, getBitacorasById, getAllBitacorasExternosBySede, getBitacorasElectronicasBySumilla} = useBitacoraExternaService();
     const {saveDocumentoBitacora, saveBitacora} = useBitacoraService();
+    const {saveDocumentoExterno, getAllDocumentosExternos, getDocumentoElectronicoByCodigoAleatorio} = useDocumentosExternosService();
     const {sendEmailUsuarioExterno} = useSendEmailService();
-    const {saveSumilla,saveSumillaExterna} = useSumillaService();
+    const {saveSumilla,saveSumillaExterna, getSedeByEmail} = useSumillaService();
 
     const bitacoraExterna = ref<BitacoraExternos>({} as BitacoraExternos);
     const bitacora = ref<Bitacora>({} as Bitacora);
     const sumilla = ref<Sumilla>({} as Sumilla);
-    const documentObj = ref<DocumentoBitacora>({} as DocumentoBitacora);
+    const documentObj = ref<DocumentosExternos>({} as DocumentosExternos);
+    const { data } = useAuth();
 
     const sedeList = ref(
     [   { label: 'CUENCA', value: 2 },
@@ -30,17 +34,14 @@ export const useBitacoraExternaComposable = () => {
         { label: 'QUITO', value: 3 }
     ]);
 
-
-
     const { handleSubmit, resetForm } = useForm({
         validationSchema: yup.object({
             nombres_remitente: yup.string().required(),
             apellidos_remitente: yup.string().required(),
             nombre_organizacion: yup.string().required(),
             asunto: yup.string().required(),
-            correo_remitente: yup.string().required(),
+            correo_remitente: yup.string().required().email("El correo no es válido"),
             nombre_destinatario: yup.string().required(),
-            apellido_destinatario: yup.string().required(),
             captchaValue: yup.boolean().required(),
             files: yup.array().required(),
             sede: yup.number().required()
@@ -93,19 +94,12 @@ export const useBitacoraExternaComposable = () => {
     })
 
     const {
-        value: apellidoDestinatario,
-        errorMessage: apellidoDestinatarioError,
-        resetField: resetApellidoDestinatario,
-    } = useField<string>("apellido_destinatario", {
-        required: true,
-    })
-
-    const {
         value: correoRemitente,
         errorMessage: correoRemitenteError,
         resetField: resetCorreoRemitente,
     } = useField<string>("correo_remitente", {
         required: true,
+
     })
    
     const {
@@ -148,9 +142,6 @@ export const useBitacoraExternaComposable = () => {
         nombreDestinatario,
         nombreDestinatarioError,
         resetNombreDestinatario,
-        apellidoDestinatario,
-        apellidoDestinatarioError,
-        resetApellidoDestinatario,
         sede,
         sedeError,
         resetSede,
@@ -171,6 +162,13 @@ export const useBitacoraExternaComposable = () => {
         saveSumilla,
         saveSumillaExterna,
         saveDocumentoBitacora,
-        saveBitacora
+        saveBitacora,
+        saveDocumentoExterno,
+        getAllDocumentosExternos,
+        getAllBitacorasExternosBySede,
+        data,
+        getSedeByEmail,
+        getDocumentoElectronicoByCodigoAleatorio,
+        getBitacorasElectronicasBySumilla
     }
 }

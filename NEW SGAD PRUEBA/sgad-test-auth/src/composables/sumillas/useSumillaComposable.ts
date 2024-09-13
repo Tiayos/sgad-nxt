@@ -280,6 +280,6 @@ export const useSumillaComposable = () =>{
         asunto,
         asuntoError,
         resetasunto,
-        getPersonasByFilterName
+        getPersonasByFilterName,
     }
 }

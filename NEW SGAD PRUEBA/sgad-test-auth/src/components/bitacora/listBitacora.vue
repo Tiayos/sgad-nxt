@@ -1,6 +1,7 @@
 <template>
   <FCardSection>
     <FVerticalStack gap="8">
+      <FText as="h5" variant="headingLg" color="subdued" font-weight="regular">Documentación física</FText>
       <DataTable
           v-model:selection="bitacoraSelected"
           selectionMode="single"
@@ -16,6 +17,7 @@
           <div
               class="datatable-header-toolbar flex flex-wrap align-items-center justify-content-between gap-2"
           >
+          
             <FHorizontalStack gap="4" align="space-between">
               <FHorizontalStack gap="2">
                 <FButton
@@ -148,6 +150,9 @@
           </template>
         </Column>
       </DataTable>
+
+      <BitacoraDocumentosExternosListDocumentosExternos></BitacoraDocumentosExternosListDocumentosExternos>
+      
     </FVerticalStack>
 
     <!-- DELETE MODAL-->
@@ -452,17 +457,6 @@
               </FText>
             </FHorizontalStack>
 
-          <FHorizontalStack gap="4">
-<!--            <FText id="horaRecepcionLbl" as="h6" variant="bodyMd" fontWeight="semibold">-->
-<!--              Hora de recepción:-->
-<!--            </FText>-->
-<!--            <FText id="horaRecepcion" as="h6" variant="bodyMd" fontWeight="regular">-->
-<!--              {{ sumilla?.hora_sumilla }}-->
-<!--            </FText>-->
-          </FHorizontalStack>
-
-
-
             <FVerticalStack gap="4">
                 <FText
                     id="fechaRecepcionlbl"
@@ -488,22 +482,6 @@
                 >
                   Hora de entrega:
                 </FText>
-
-<!--                  <Calendar-->
-<!--                      v-model="bitacora.hora_entrega"-->
-<!--                      timeOnly-->
-<!--                       iconDisplay="button"-->
-<!--                      @update:="changeHour"-->
-<!--                      :disabled="action == persistAction.view"-->
-<!--                  />-->
-
-<!--                <div class="flex-auto">-->
-<!--                  <Calendar v-model="bitacora.hora_entrega" showIcon iconDisplay="input" timeOnly inputId="templatedisplay">-->
-<!--                    <template #inputicon="{ clickCallback }">-->
-<!--                      <InputIcon class="pi pi-clock cursor-pointer" @click="clickCallback" />-->
-<!--                    </template>-->
-<!--                  </Calendar>-->
-<!--                </div>-->
 
                 <FTextField
                     id="horaEntrega"
@@ -795,11 +773,8 @@ const {
   documentObj,
   saveDocumentoBitacora,
   files,
-  resetForm,
   documentosBitacoraList,
-    handleSubmit,
-  useFieldError, useFormErrors,
-
+  handleSubmit,
   nombres_remitente,
   nombres_remitenteError,
   resetnombres_remitente,
@@ -818,7 +793,7 @@ const {
   asunto,
   asuntoError,
   resetasunto,
-  getPersonasByFilterName
+  getPersonasByFilterName,
 } = useSumillaComposable();
 
 

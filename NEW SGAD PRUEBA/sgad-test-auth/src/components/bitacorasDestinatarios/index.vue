@@ -1,6 +1,8 @@
 <template>
   <FCard sectioned>
-    <FFormLayout>
+    <FTabs :tabs="tabs" v-model:selected="selected" fitted>
+
+      <FFormLayout v-if="selected==0">
       <FLayoutSection>
         <DataTable
             :value="eventosBitacorasList"
@@ -68,9 +70,67 @@
           </Column>
         </DataTable>
       </FLayoutSection>
-    </FFormLayout>
+      </FFormLayout>
 
-    <!-- MODAL ACCIONES -->
+      <FFormLayout v-if="selected==1">
+      <FLayoutSection>
+        <DataTable
+          :value="bitacorasExternasList"
+          :showGridlines="true"
+          :stripedRows="true"
+          tableStyle="min-width: 50rem"
+          :paginator="true"
+          :rows="10">
+        <Column field="sumilla.numero_sumilla" header="No. de sumilla" style="width: 5px"></Column>
+        <Column header="Nombre del responsable" style="width: 5px">
+            <template #body="slotProps">
+              {{
+                (slotProps.data.sumilla.responsable.per_nombres || '') + " " + (slotProps.data.sumilla.responsable.per_apellidos || '')
+              }}
+            </template>
+        </Column>
+        <Column header="Remitente" style="width: 5px">
+            <template #body="slotProps">
+              {{
+                (slotProps.data.nombres_remitente || '') + " " + (slotProps.data.apellidos_remitente || '')
+              }}
+            </template>
+        </Column>
+        <!-- <Column field="nombre_completo_destinatario" header="Destinatario" style="width: 5px"></Column> -->
+        <!-- <Column field="correo_remitente" header="Correo remitente" style="width: 5px"></Column> -->
+        <Column header="Estado" style="width: 5px" header-style="text-align: center;" bodyStyle="text-align: center;">
+          <template #body="slotProps">
+            <FBadge v-if="slotProps.data.estado == 1" status="critical">En trámite</FBadge>
+            <FBadge v-if="slotProps.data.estado == 5" status="info">Documentación física</FBadge>
+            <FBadge v-if="slotProps.data.estado == 6" status="success">Enviado la respuesta al remitente</FBadge>
+        </template>
+        </Column> 
+        <Column header="Ver documentos" headerStyle="text-align:center;" style="width: 5px" bodyStyle="text-align:center" >
+                <template #body="slotProps">
+                  <FButton
+                      size="medium"
+                      :icon="CaretDownSolid "
+                      @click="prepareVerDocumentos(slotProps.data)"
+                  />
+                </template>
+        </Column>
+
+        <Column header="Acciones" headerStyle="text-align:center;" style="width: 5px" bodyStyle="text-align:center" >
+                <template #body="slotProps">
+                  <FButton
+                      size="medium"
+                      :icon="MagnifyingGlassSolid"
+                      @click="prepareAccionesDocumentosElectronicos(slotProps.data)"
+                      :disabled="slotProps.data.estado == 5  || slotProps.data.estado == 6"
+                  />
+                </template>
+        </Column>
+      </DataTable>
+      </FLayoutSection>
+      </FFormLayout>
+    </FTabs>
+
+    <!-- Documentos fisicos -->
 
     <FModal
         large
@@ -243,6 +303,118 @@
         </FCardSubsection>
       </FCardSection>
     </FModal>
+
+<!-- Documentos electronicos -->
+    <FModal
+        v-model="accionesDocumentosElectronicosModal"
+        title=""
+        title-hidden
+        :primaryAction="{
+        content: 'Confirmar',
+        onAction: onSubmitRespuesta,
+        disabled: (selectedTramite==0) || (selectedTramite ==2 && filesRespuesta.length == 0) ,
+      }"
+        :secondaryActions="[
+        {
+          content: 'Cancelar',
+          onAction: handleChangeDocumentos,
+        },
+      ]"
+    >
+      <FCardSection>
+        <FVerticalStack gap="4">
+          <FText id="tramiteLbl" as="h6" variant="bodyMd" color="subdued" fontWeight="regular">
+            Contestación del trámite:
+          </FText>
+
+          <Dropdown
+                v-model="selectedTramite"
+                :options="tramiteAccionList"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Seleccione"
+          />
+
+          <FText id="tramiteLbl" as="h6" variant="bodyMd" color="success" fontWeight="semibold" v-if="selectedTramite == 1">
+            Se enviará una notificacion al remitente informando la entrega de la documentación física
+          </FText>
+
+          <FVerticalStack gap="4" v-if="selectedTramite == 2">
+            <FileUpload
+              ref="fileUpload"
+              name="file"
+              accept=".pdf"
+              multiple
+              :auto="false"
+              customUpload
+              :onSelect="handleFileSelectRespuesta"
+            />
+          </FVerticalStack>
+
+        </FVerticalStack>
+      </FCardSection>
+    </FModal>
+
+<!-- modal para ver documentos -->
+
+    <FModal
+        v-model="modalVerDocumentos"
+        title=""
+        title-hidden
+        :secondaryActions="[
+        {
+          content: 'Cerrar',
+          onAction: handleChangeVerDocumentos,
+        },
+      ]"
+    >
+    <FCardSection>
+      <FText id="docRecibidosLbl" as="h2" variant="bodyLg" font-weight="regular" color="subdued">Documentos recibidos:</FText>
+  <FVerticalStack gap="4">
+    <div v-if="documentosExternosRecibidos.length > 0">
+      <ul>
+        <li
+          v-for="(documento, index) in documentosExternosRecibidos"
+          :key="documento.doe_nombre_archivo"      
+          >
+          <a
+            :href="createDownloadLink(documento.doe_archivo, documento.doe_nombre_archivo)"
+            :download="documento.doe_nombre_archivo"
+          >
+            <i class="pi pi-file" style="margin-right: 8px;"></i>
+            {{ documento.doe_nombre_archivo }}
+          </a>
+        </li>
+      </ul>
+    </div>
+    <FDivider :border-width="'4'" />
+
+    <FVerticalStack gap="1" >
+    <FText id="docRecibidosLbl" as="h2" variant="bodyLg" font-weight="regular" color="subdued">Documentos enviados:</FText>
+
+    <div v-if="documentosExternosRespuesta.length > 0">
+      <ul>
+        <li
+          v-for="(documento, index) in documentosExternosRespuesta"
+          :key="documento.doe_nombre_archivo"      
+          >
+          <a
+            :href="createDownloadLink(documento.doe_archivo, documento.doe_nombre_archivo)"
+            :download="documento.doe_nombre_archivo"
+          >
+            <i class="pi pi-file" style="margin-right: 8px;"></i>
+            {{ documento.doe_nombre_archivo }}
+          </a>
+        </li>
+      </ul>
+    </div>
+    <FDivider :border-width="'4'" />
+  </FVerticalStack>
+  </FVerticalStack>
+  
+</FCardSection>
+    </FModal>
+
     <FToast v-model="mostrarMsgError" :content=mensajeToast error :duration="5000" />
     <FToast v-model="mostrarMsgCorrecto" :content=mensajeToast  :duration="5000" />
   </FCard>
@@ -253,6 +425,10 @@ import {
   TrashCanSolid,
   PlusSolid,
   MinusSolid,
+  HouseSolid,
+  LayerGroupSolid,
+  UserSolid,
+  CaretDownSolid
 } from "@ups-dev/freya-icons";
 import AutoComplete from "primevue/autocomplete";
 import {useBitacorasDestinatariosComposable} from "~/composables/bitacoras/useBitacorasDestinatariosComposable";
@@ -262,6 +438,8 @@ import type {EventoBitacora} from "~/models/EventoBitacora.model";
 import { useField, useForm} from 'vee-validate';
 import {required, toTypedSchema} from "@vee-validate/rules";
 import * as yup from 'yup';
+import type { BitacoraExternos } from "~/models/BitacoraExternos.model";
+import type { DocumentosExternos } from '../../models/DocumentosExternos.model';
 
 const {
   eventosBitacorasList,
@@ -273,6 +451,16 @@ const {
   saveEventoBitacora,
   sendEmail,
   getDocumentosByBitCodigo,
+  bitacorasExternasList,
+  findBitacorasElectronicas,
+  getDocumentoExternoByBidCodigo,
+  saveDocumentoExterno,
+  getDocumentoExternoByBidCodigoRecibidos,
+  getDocumentoExternoByBidCodigoRespuesta,
+  editBitacoraExterna,
+  editBitacoraElectronica,
+  sendEmailSolDocumentacionFisica,
+  sendEmailRespuestaElectronicaRemitente
 } = useBitacorasDestinatariosComposable();
 const eventoSelected = ref<EventoBitacora>({} as EventoBitacora);
 const accionesModal = ref<boolean>(false);
@@ -282,12 +470,63 @@ const desabilitarGuardarCambios = ref<boolean>();
 const mostrarMsgCorrecto = ref<boolean>(false);
 const mostrarMsgError = ref<boolean>(false);
 const mensajeToast = ref<string>('');
+const selected = ref(0);
+const accionesDocumentosElectronicosModal = ref<boolean>(false);
+const documentosExternosRecibidos = ref<DocumentosExternos[]>([]);
+const documentosExternosRespuesta = ref<DocumentosExternos[]>([]);
+const modalVerDocumentos = ref<boolean>(false);
+const filesRespuesta = ref<File[]>([]); // Definir files como un ref que es un arreglo de File
+const bitacoraExternaSelected = ref<BitacoraExternos>({} as BitacoraExternos);
+const documentoExternoObj = ref<DocumentosExternos>({} as DocumentosExternos);
+  const { data } = useAuth();
 
-const estadoObjectYup = () =>{
-  if(estadoObj.value == 7){
-    return true;
-  }
-  return false;
+const tramiteAccionList = ref(
+    [   { label: 'RESPUESTA FÍSICA', value: 1 },
+        { label: 'RESPUESTA ELECTRÓNICA', value: 2 },
+    ]);
+const selectedTramite = ref<number>(0);
+
+interface TabDescriptor {
+  id: string;
+  content: string;
+}
+
+const handleFileSelectRespuesta = (event: any) => {
+  console.log(event);
+  filesRespuesta.value = event.files;
+};
+
+const tabs: TabDescriptor[] = [
+  {
+    id: "crear-sumilla",
+    content: "Documentos Físicos",
+  },
+  {
+    id: "buscar-sumilla",
+    content: "Documentos electrónicos",
+  },
+];
+
+const handleChangeDocumentos = ()=>{
+  accionesDocumentosElectronicosModal.value = !accionesDocumentosElectronicosModal.value;
+}
+
+const prepareAccionesDocumentosElectronicos = (bitacoraExterna:BitacoraExternos) => {
+  selectedTramite.value = 0;
+  filesRespuesta.value = [];
+  bitacoraExternaSelected.value = bitacoraExterna;
+  handleChangeDocumentos();
+}
+
+const handleChangeVerDocumentos = () =>{
+  modalVerDocumentos.value = !modalVerDocumentos.value;
+}
+
+const prepareVerDocumentos = async (bitacoraExterna:BitacoraExternos) =>{
+  filesRespuesta.value = [];
+  documentosExternosRecibidos.value = await getDocumentoExternoByBidCodigoRecibidos(bitacoraExterna.codigo);
+  documentosExternosRespuesta.value = await getDocumentoExternoByBidCodigoRespuesta(bitacoraExterna.codigo)
+  handleChangeVerDocumentos();
 }
 
 const { handleSubmit, resetForm } = useForm({
@@ -390,10 +629,67 @@ const prepareAcciones = async (eventoParam: EventoBitacora) => {
   }
 };
 
+const onSubmitRespuesta = async() =>{
+  switch (selectedTramite.value) {
+    case 1:   //RESPUESTA FISICO
+      bitacoraExternaSelected.value.estado = 5; // estado => se solicita físico
+      await editBitacoraElectronica(bitacoraExternaSelected.value);
+      await sendEmailSolDocumentacionFisica(bitacoraExternaSelected.value);  
+      handleChangeDocumentos(); 
+      break;
+    case 2:   //RESPUESTA ELECTRÓNICA
+      bitacoraExternaSelected.value.estado = 6; // estado => se dió una respuesta al remitente
+      await editBitacoraElectronica(bitacoraExternaSelected.value);   
+      await saveDocumentos();
+      await sendEmailRespuestaElectronicaRemitente(bitacoraExternaSelected.value);
+      handleChangeDocumentos(); 
+      break;
+  }
+}
+
+const saveDocumentos = async () => {
+  if (filesRespuesta.value.length > 0) {
+    try {
+      // Procesar cada archivo
+      for (const file of filesRespuesta.value) {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          try {
+            const result = e.target!.result as ArrayBuffer;
+            const byteArray = new Uint8Array(result);
+
+            // Convertir Uint8Array a byte[]
+            const byteArrayJava = Array.from(byteArray);
+            // documentoExternoObj.value = await getDocumentoExternoByBidCodigo(bitacoraExternaSelected.value.codigo);
+            console.log(file,'<<<');
+            documentoExternoObj.value.documentos_externos = bitacoraExternaSelected.value;
+            documentoExternoObj.value.doe_archivo = byteArrayJava;
+            documentoExternoObj.value.doe_nombre_archivo = file.name;
+            documentoExternoObj.value.estado_documento_electronico = 'R';
+            documentoExternoObj.value.adicionado = data.value?.user?.email!;
+            await saveDocumentoExterno(documentoExternoObj.value);
+            // await saveDocumentoBitacora(documentObj.value);
+          } catch (error) {
+            console.error("Error processing file:", error);
+            // Puedes manejar el error aquí si es necesario
+          }
+        };
+        reader.onerror = (error) => {
+          console.error("Error reading file:", error);
+        };
+        reader.readAsArrayBuffer(file);
+      }
+    } catch (error) {
+      console.error("Error processing files:", error);
+      // Puedes agregar más lógica de manejo de errores aquí si es necesario
+    }
+  }
+};
+
 const onSubmitAcciones = handleSubmit(async (values:any) => {
   if (personaObj.value == null && estadoObj.value === 7) {
     mostrarMsgError.value = true;
-    mensajeToast.value = 'Seleccione un destinatario'
+    mensajeToast.value = 'Seleccione un destinatario';
   } else {
     switch (estadoObj.value) {
       case 4: // APROBADO
@@ -448,5 +744,18 @@ const transition = {
   top: 0;
   right: 0;
   margin: 10px; /* margen opcional para separarlo un poco de los bordes */
+}
+
+.f .p-fileupload-buttonbar {
+  display: none;
+}
+
+.p-fileupload .p-fileupload-buttonbar {
+  display: none;
+}
+
+.hidden {
+  list-style-type: none;
+  display: none;
 }
 </style>
