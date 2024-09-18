@@ -29,7 +29,7 @@ export default defineNuxtConfig({
     provider: {
       type: 'authjs',
       defaultProvider: 'keycloak',
-        // addDefaultCallbackUrl: process.env.NEXTAUTH_URL, //comentar en local
+      // addDefaultCallbackUrl: process.env.NEXTAUTH_URL, //comentar en local
       addDefaultCallbackUrl: true,
     },
   },

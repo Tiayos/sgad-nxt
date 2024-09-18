@@ -106,6 +106,7 @@ const getInitials = (name: string) => {
       <FPage full-width >
         <LazyNuxtPage />
       </FPage>
+      
       <Footer></Footer>
     </FFrame>
   </FAppProvider>
