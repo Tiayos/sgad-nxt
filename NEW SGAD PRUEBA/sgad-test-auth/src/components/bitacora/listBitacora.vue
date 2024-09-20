@@ -83,7 +83,7 @@
         <Column header="Destinatario" style="width: 5px">
           <template #body="slotProps">
             {{
-              (slotProps.data.sumilla.responsable.per_nombres || '') + " " + (slotProps.data.sumilla.responsable.per_apellidos || '')
+              (slotProps.data.destinatario.per_nombres || '') + " " + (slotProps.data.destinatario.per_apellidos || '')
             }}
           </template>
         </Column>

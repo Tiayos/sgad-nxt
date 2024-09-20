@@ -64,6 +64,13 @@ export default defineNuxtConfig({
          SGAD_BITACORA_EXTERNO: '/sgad-nuxt/bitacoraExternos',
          SGAD_DOCUMENTOS_EXTERNOS: '/sgad-nuxt/documentosExternos',
 
+         PORT:3000,
+         KEYCLOAK_ISSUER:'https://auth.ups.edu.ec/realms/dev',
+         KEYCLOAK_ID:'sgad-next-dev',
+         KEYCLOAK_SECRET:'evVRjt1nt1CUldvfGEDOeEvx5kMXRZtq',
+         AUTH_ORIGIN:'http://localhost:3000/',
+         AUTH_SECRET:12345,
+         NEXTAUTH_URL:'http://localhost:3000/',
     }
   },
 

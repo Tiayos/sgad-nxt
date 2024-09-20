@@ -30,12 +30,14 @@ export default NuxtAuthHandler({
             if (account) {
                 token.id_token = account.id_token
                 token.access_token = account.access_token //***
+                token.refresh_token = account.refresh_token; // Store refresh token here
                 token.provider = account.provider
             }
             return token
         },
         async session({session,token}){
             session.access_token = token.access_token
+            session.refresh_token = token.refresh_token; // Make refresh token available in the session
             return session
         },
         //solucion temporal hasta que se corrijan error en nuxt-auth

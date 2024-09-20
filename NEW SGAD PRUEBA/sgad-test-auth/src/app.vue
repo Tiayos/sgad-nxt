@@ -4,7 +4,8 @@ import type {Persona} from "~/models/Sumilla.model";
 import {useSessionStorage} from "~/utils/useSessionStorage";
 import {usePersonaService} from "~/composables/services/usePersonaService";
 import Footer from "~/components/navigation/Footer.vue";
-const { data, signOut } = useAuth();
+
+const { data, signOut  } = useAuth();
 const skipToContentRef = ref(null);
 const searchActive = ref(false);
 const searchValue = ref("");
@@ -94,19 +95,9 @@ const getInitials = (name: string) => {
           </template>
         </FTopBar>
       </template>
-
-      <!-- <template #navigation v-if="$route.path != '/bitacora'">
-        <FNavigation :location="$route.path"> -->
-      <!-- <FNavigationSection v-if="activeLinkAsesor" :items="itemAsesor" />
-          <FNavigationSection v-if="activeLinkAdmin" :items="itemsRolAdmin" />
-          <FNavigationSection v-if="activeLinkSec" :items="itemsSec" /> -->
-      <!-- </FNavigation>
-      </template> -->
-
       <FPage full-width >
         <LazyNuxtPage />
       </FPage>
-      
       <Footer></Footer>
     </FFrame>
   </FAppProvider>
