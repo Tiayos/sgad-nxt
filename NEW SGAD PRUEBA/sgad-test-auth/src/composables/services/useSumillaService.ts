@@ -8,11 +8,15 @@ export const useSumillaService = () => {
     const apiUrl = `${config.public.SGAD_SUMILLA}`;
     const toast = useToast();
     const { data } = useAuth();
-    const archivosStore = useArchivosStore();
+
+    const tokens = reactive({
+        accessToken: data?.value?.access_token,
+        refreshToken: data?.value?.refresh_token,
+    });
 
     const refreshAccessToken = async () => {
         try {
-            const refreshToken = archivosStore.refreshToken; // Obtén el refresh token desde el store
+            const refreshToken = tokens.refreshToken; // Usa el token desde el objeto reactivo
             if (!refreshToken) {
                 throw new Error("No refresh token available");
             }
@@ -32,8 +36,9 @@ export const useSumillaService = () => {
             });
     
             if (resp.access_token) {
-                // Actualiza los tokens en el store
-                archivosStore.setTokens(resp.access_token, resp.refresh_token);
+                tokens.accessToken = resp.access_token; // Actualiza el token en el objeto reactivo
+                tokens.refreshToken = resp.refresh_token; // Actualiza el refresh token también
+    
                 console.log("Token refreshed successfully");
             } else {
                 throw new Error("Failed to refresh the token");
@@ -46,33 +51,32 @@ export const useSumillaService = () => {
     
     // Check if the token has expired
     const isTokenExpired = (token: string) => {
-        const tokenPayload = JSON.parse(atob(token.split(".")[1]));
-        const expirationTime = tokenPayload.exp * 1000;
-        return Date.now() > expirationTime;
+        try {
+            const tokenPayload = JSON.parse(atob(token.split(".")[1]));
+            const expirationTime = tokenPayload.exp * 1000; // Convertir a milisegundos
+            return Date.now() > expirationTime;
+        } catch (error) {
+            console.error("Error parsing token payload", error);
+            return true; // Si no se puede leer el token, lo tratamos como expirado
+        }
     };
-    
-    // Get headers with access token, refresh if needed
+        
     const getHeaders = async () => {
-        let token = data?.value?.access_token;
-    
-        if (!token) {
+        if (!tokens.accessToken) {
             throw new Error("No access token available");
         }
     
-        // Refresh the token if it's expired
-        if (isTokenExpired(token)) {
+        if (isTokenExpired(tokens.accessToken)) {
             console.log("Token expired, refreshing...");
             await refreshAccessToken();
-            token = data?.value?.access_token; // Update with new token
         }
     
         return {
             headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${tokens.accessToken}`,
             },
         };
-    }
-
+    };
     // Fetch all sumillas
     const getSumillas = async (): Promise<Sumilla[]> => {
         try {
