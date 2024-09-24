@@ -79,6 +79,7 @@
               name="file"
               accept=".pdf"
               multiple
+              :maxFileSize="10485760"
               class="custom-file-upload"
               :chooseLabel="'Seleccionar archivos'"
               :onSelect="handleFileSelect"

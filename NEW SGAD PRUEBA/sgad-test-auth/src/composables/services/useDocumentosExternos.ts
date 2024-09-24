@@ -4,7 +4,7 @@ export const useDocumentosExternosService = () => {
     const config = useRuntimeConfig()
     const apiUrl = `${config.public.SGAD_DOCUMENTOS_EXTERNOS}`
     let isRefreshing = false;
-    const { data } = useAuth();
+    const { data, signOut } = useAuth();
 
     const tokens = reactive({
         accessToken: data?.value?.access_token,
@@ -35,12 +35,14 @@ export const useDocumentosExternosService = () => {
             if (resp.access_token) {
                 tokens.accessToken = resp.access_token; // Actualiza el token en el objeto reactivo
                 tokens.refreshToken = resp.refresh_token; // Actualiza el refresh token también
-    
+                signOut();
+
                 console.log(tokens.accessToken, "Token refreshed successfully");
             } else {
                 throw new Error("Failed to refresh the token");
             }
         } catch (error) {
+            signOut();
             console.error("Token refresh failed", error);
             throw error;
         }

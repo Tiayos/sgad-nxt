@@ -241,7 +241,7 @@
                 as="h5"
                 variant="bodyMd"
                 :font-weight="'regular'"
-                v-if="action == persistAction.edit"
+                v-if="action == persistAction.edit || action == persistAction.view"
             >
               {{ sumilla.fecha_sumilla }}
             </FText>
@@ -397,6 +397,7 @@
                       accept=".pdf"
                       multiple
                       class="f"
+                      :maxFileSize="10485760"
                       :chooseLabel="'Seleccionar archivos'"
                       :onSelect="handleFileSelect"
                       :disabled="action == persistAction.view"
@@ -452,8 +453,9 @@
                   variant="bodyMd"
                   fontWeight="regular"
               >
-                {{ sumilla?.fecha_sumilla ? new Date(sumilla.fecha_sumilla).toLocaleDateString() : "" }} -
-                {{ sumilla?.hora_sumilla }}
+              {{ (action == persistAction.view) ? sumilla?.fecha_sumilla : ""  }}
+              {{ (action == persistAction.create) ? new Date(sumilla?.fecha_sumilla).toLocaleDateString() : '' }}
+              {{ sumilla?.hora_sumilla }}
               </FText>
             </FHorizontalStack>
 

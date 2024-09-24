@@ -39,9 +39,11 @@ export const useEventoBitacora = () => {
     
                 console.log(tokens.accessToken, "Token refreshed successfully");
             } else {
+                signOut();
                 throw new Error("Failed to refresh the token");
             }
         } catch (error) {
+            signOut();
             console.error("Token refresh failed", error);
             throw error;
         }

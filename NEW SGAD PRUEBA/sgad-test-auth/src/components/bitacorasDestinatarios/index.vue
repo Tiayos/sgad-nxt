@@ -345,6 +345,7 @@
               name="file"
               accept=".pdf"
               multiple
+              :maxFileSize="10485760"
               :auto="false"
               customUpload
               :onSelect="handleFileSelectRespuesta"
