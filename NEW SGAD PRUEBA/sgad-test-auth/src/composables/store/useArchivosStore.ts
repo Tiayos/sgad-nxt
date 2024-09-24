@@ -13,7 +13,6 @@ export const useArchivosStore = defineStore('useArchivosStore', () => {
         global: { value: "", matchMode: FilterMatchMode.CONTAINS },
     });
 
-
     return {
         eventosBitacorasList,
         eventoBitacora,

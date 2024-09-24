@@ -1,13 +1,13 @@
 import { useToast } from "primevue/usetoast";
 import type { Sumilla } from "~/models/Sumilla.model";
 import type { SedeProjection } from "~/models/projection/SedeProjection.model";
-import {useArchivosStore} from "~/composables/store/useArchivosStore";
 
 export const useSumillaService = () => {
     const config = useRuntimeConfig();
     const apiUrl = `${config.public.SGAD_SUMILLA}`;
     const toast = useToast();
     const { data } = useAuth();
+    let isRefreshing = false;
 
     const tokens = reactive({
         accessToken: data?.value?.access_token,
@@ -39,7 +39,7 @@ export const useSumillaService = () => {
                 tokens.accessToken = resp.access_token; // Actualiza el token en el objeto reactivo
                 tokens.refreshToken = resp.refresh_token; // Actualiza el refresh token también
     
-                console.log("Token refreshed successfully");
+                console.log(tokens.accessToken, "Token refreshed successfully");
             } else {
                 throw new Error("Failed to refresh the token");
             }
@@ -60,15 +60,41 @@ export const useSumillaService = () => {
             return true; // Si no se puede leer el token, lo tratamos como expirado
         }
     };
-        
-    const getHeaders = async () => {
+    
+    let refreshSubscribers: Array<(newToken: string) => void> = [];
+    
+    const onAccessTokenRefreshed = (newToken: string) => {
+        refreshSubscribers.forEach((callback) => callback(newToken));
+        refreshSubscribers = [];
+    };
+    
+    const addRefreshSubscriber = (callback: (newToken: string) => void) => {
+        refreshSubscribers.push(callback);
+    };
+    
+    const getHeaders = async (): Promise<{ headers: Record<string, string> }> => {
+    
         if (!tokens.accessToken) {
             throw new Error("No access token available");
         }
     
         if (isTokenExpired(tokens.accessToken)) {
-            console.log("Token expired, refreshing...");
-            await refreshAccessToken();
+            if (!isRefreshing) {
+                isRefreshing = true;
+                await refreshAccessToken();
+                isRefreshing = false;
+                onAccessTokenRefreshed(tokens.accessToken);
+            } else {
+                return new Promise((resolve) => {
+                    addRefreshSubscriber((newToken: string) => {
+                        resolve({
+                            headers: {
+                                Authorization: `Bearer ${newToken}`,
+                            },
+                        });
+                    });
+                });
+            }
         }
     
         return {
