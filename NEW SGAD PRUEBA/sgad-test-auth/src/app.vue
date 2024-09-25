@@ -4,6 +4,7 @@ import type {Persona} from "~/models/Sumilla.model";
 import {useSessionStorage} from "~/utils/useSessionStorage";
 import {usePersonaService} from "~/composables/services/usePersonaService";
 import Footer from "~/components/navigation/Footer.vue";
+import { useArchivosStore } from "./composables/store/useArchivosStore";
 
 const { data, signOut  } = useAuth();
 const skipToContentRef = ref(null);
@@ -12,6 +13,7 @@ const searchValue = ref("");
 const userMenuActive = ref(false);
 const mobileNavigationActive = ref(false);
 const router = useRouter(); //* redirecciones
+const store = useArchivosStore();
 
 const validarRuta = ref<string>(router.currentRoute.value.fullPath);
 
@@ -96,7 +98,8 @@ const getInitials = (name: string) => {
         </FTopBar>
       </template>
       <FPage full-width >
-        <LazyNuxtPage />
+        <LazyNuxtPage v-if="store.error == 0" />
+        <ErrorsError v-if="store.error == 403"></ErrorsError>
       </FPage>
       <Footer></Footer>
     </FFrame>

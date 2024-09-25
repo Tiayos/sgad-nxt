@@ -15,7 +15,7 @@ export const useSumillaService = () => {
             const resp = await $fetch<Sumilla[]>(`${apiUrl}`, await authService.getHeaders());
             return resp;
         } catch (error) {
-            throw new Error("Error fetching sumillas");
+            throw new Error("Error fetching all sumillas");
         }
     };
 
@@ -24,8 +24,8 @@ export const useSumillaService = () => {
         try {
             const resp = await $fetch<Sumilla[]>(`${apiUrl}/findSumillasBySede?sede=${sede}`, await authService.getHeaders());
             return resp;
-        } catch (error) {
-            throw new Error("Error fetching sumillas by sede");
+        } catch (error:any) {
+            throw new Error("Error fetching sumillas by sede", error);
         }
     };
 

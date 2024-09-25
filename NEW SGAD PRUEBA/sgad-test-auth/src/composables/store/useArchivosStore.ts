@@ -8,6 +8,7 @@ export const useArchivosStore = defineStore('useArchivosStore', () => {
     const bitacorasList = ref<Bitacora[]>([]);
     const eventosBitacorasList = ref<EventoBitacora[]>([]);
     const eventoBitacora = ref<EventoBitacora>({} as EventoBitacora);
+    const error = ref<number>(0);
 
     const filtersSumillaBitacora = ref({
         global: { value: "", matchMode: FilterMatchMode.CONTAINS },
@@ -19,6 +20,7 @@ export const useArchivosStore = defineStore('useArchivosStore', () => {
         disabledMenu,
         bitacorasList,
         filtersSumillaBitacora,
+        error
     };
 
 })
