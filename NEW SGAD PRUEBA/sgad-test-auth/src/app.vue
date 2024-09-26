@@ -27,7 +27,7 @@ onMounted(async () => {
   if(!validarRuta.value.includes("documentosUPS")){
     userLogin.value = await getUsrLogin(data.value?.user?.email!);
   }
-});
+});   
 
 const handleSearchResultsDismiss = () => {
   searchActive.value = false;
@@ -97,9 +97,8 @@ const getInitials = (name: string) => {
           </template>
         </FTopBar>
       </template>
-      <FPage full-width >
-        <LazyNuxtPage v-if="store.error == 0" />
-        <ErrorsError v-if="store.error == 403"></ErrorsError>
+      <FPage full-width  >
+        <LazyNuxtPage />
       </FPage>
       <Footer></Footer>
     </FFrame>

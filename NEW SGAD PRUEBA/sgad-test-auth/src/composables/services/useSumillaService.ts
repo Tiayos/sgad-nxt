@@ -2,12 +2,30 @@ import { useToast } from "primevue/usetoast";
 import type { Sumilla } from "~/models/Sumilla.model";
 import type { SedeProjection } from "~/models/projection/SedeProjection.model";
 import { useAuthService } from "./useAuthService";
+import { useArchivosStore } from "../store/useArchivosStore";
 
 export const useSumillaService = () => {
     const config = useRuntimeConfig();
     const apiUrl = `${config.public.SGAD_SUMILLA}`;
     const toast = useToast();
     const authService = useAuthService();
+    const store = useArchivosStore();
+
+        // Fetch all sumillas
+        const getAuth = async (): Promise<string> => {
+            const {data, error} = await useLazyFetch<string>(`${apiUrl}/validateUser?sede`, await authService.getHeaders());
+            if (error.value){
+                store.error = error.value.statusCode!;
+                throw createError({
+                    ...error.value,
+                    statusMessage: `Could not fetch data from ...... ${error.value.statusCode}`,
+                });                
+            }
+            if(data.value){
+                return data.value!;
+            }
+            return '';
+        };
 
     // Fetch all sumillas
     const getSumillas = async (): Promise<Sumilla[]> => {
@@ -19,14 +37,16 @@ export const useSumillaService = () => {
         }
     };
 
-    // Fetch sumillas by sede
-    const getSumillasBySede = async (sede: number): Promise<Sumilla[]> => {
-        try {
-            const resp = await $fetch<Sumilla[]>(`${apiUrl}/findSumillasBySede?sede=${sede}`, await authService.getHeaders());
-            return resp;
-        } catch (error:any) {
-            throw new Error("Error fetching sumillas by sede", error);
-        }
+     const getSumillasBySede = async (sede: number): Promise<Sumilla[]> => {
+            const {data, error} = await useLazyFetch<Sumilla[]>(`${apiUrl}/findSumillasBySede?sede=${sede}`, await authService.getHeaders());
+            if (error.value){
+                store.error = error.value.statusCode!;
+                throw createError({
+                    ...error.value,
+                    statusMessage: `Could not fetch data from ...... ${error.value.statusCode}`,
+                });
+            }
+            return data.value ? data.value : [];
     };
 
     // Fetch sede by email
@@ -112,5 +132,6 @@ export const useSumillaService = () => {
         deleteSumilla,
         getSedeByEmail,
         saveSumillaExterna,
+        getAuth
     };
 };

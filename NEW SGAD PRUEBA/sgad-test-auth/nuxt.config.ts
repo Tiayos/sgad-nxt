@@ -1,7 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   srcDir: 'src/',
-
   app: {
     head: {
       title: 'SGAD-NEXT',
@@ -13,6 +12,10 @@ export default defineNuxtConfig({
         {name: 'viewport', content: 'width=device-width, initial-scale=1'},
       ]
     }
+  },
+
+  router: {
+    middleware: ['auth.global.ts']
   },
 
   modules: [
