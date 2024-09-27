@@ -348,7 +348,6 @@ const prepareView = (bitacoraExt: BitacoraExternos) => {
 }
 
 const onSubmitEnviarDocumento = handleSubmit(async (values:any) => {
-  console.log(values);
   switch (values.accion) {
     case 1: // enviar destinatario
     try {
