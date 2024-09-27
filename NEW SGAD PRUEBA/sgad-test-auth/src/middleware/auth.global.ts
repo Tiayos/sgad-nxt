@@ -18,6 +18,12 @@ export default defineNuxtRouteMiddleware(async(to, from) => {
             }
 
           const appRoles = decodedToken?.resource_access?.['sgad-next-dev']?.roles || [];
+          if(appRoles.length == 1){ // es invitado
+            if((to.path == '/sumilla' || to.path == '/bitacora' || to.path == '/') ){
+              return abortNavigation();
+          }
+          }
+
           if (appRoles.includes("recepcionist")) {
             console.log("El usuario tiene el rol recepcionist");
           } else {

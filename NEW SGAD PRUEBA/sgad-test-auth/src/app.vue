@@ -90,9 +90,8 @@ const getInitials = (name: string) => {
                 :actions="userMenuActions"
                 :name="data?.user?.name ?? ''"
                 :detail="data?.user?.email ?? ''"
-                :initials="getInitials(data?.user?.name ?? '')"
+                :initials="($route.path !== '/documentosUPS' ? getInitials(data?.user?.name ?? '') : 'User') "
                 v-model:open="userMenuActive"
-                v-if="$route.path !== '/documentosUPS'"
             />
           </template>
         </FTopBar>
