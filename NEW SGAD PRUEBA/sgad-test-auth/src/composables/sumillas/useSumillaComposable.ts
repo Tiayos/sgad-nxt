@@ -13,6 +13,7 @@ import {useSumillaService} from "~/composables/services/useSumillaService";
 import { useField, useForm, useFieldError, useFormErrors } from 'vee-validate';
 import {required, toTypedSchema} from "@vee-validate/rules";
 import * as yup from 'yup';
+import { useSendEmailService } from "../services/useSendEmailService";
 // import useVuelidate from "@vuelidate/core";
 
 export const useSumillaComposable = () =>{
@@ -30,6 +31,7 @@ export const useSumillaComposable = () =>{
         getDocumentosByBitCodigo, deleteDocumentosByBitCodigo} = useBitacoraService();
     const {saveTransferencia} = useTransferenciaDocumentalService();
     const {getEventoBitacoraService, saveEventoBitacora, deleteEventoBitacora} = useEventoBitacora();
+    const {sendEmailDocFisicaBitacora} = useSendEmailService();
 
 
     //*New Sumilla
@@ -281,5 +283,6 @@ export const useSumillaComposable = () =>{
         asuntoError,
         resetasunto,
         getPersonasByFilterName,
+        sendEmailDocFisicaBitacora
     }
 }

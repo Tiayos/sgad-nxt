@@ -18,7 +18,7 @@ export const useBitacoraExternaComposable = () => {
     const {getUsrLogin} = usePersonaService();
     const {saveBitacoraExterna, editBitacoraExterna, getBitacorasById, getAllBitacorasExternosBySede, getBitacorasElectronicasBySumilla} = useBitacoraExternaService();
     const {saveDocumentoBitacora, saveBitacora} = useBitacoraService();
-    const {saveDocumentoExterno, getAllDocumentosExternos, getDocumentoElectronicoByCodigoAleatorio} = useDocumentosExternosService();
+    const {saveDocumentoExterno, getAllDocumentosExternos, getDocumentoElectronicoByCodigoAleatorio, getDocumentoExternoByBidCodigoRecibidos} = useDocumentosExternosService();
     const {sendEmailUsuarioExterno} = useSendEmailService();
     const {saveSumilla,saveSumillaExterna, getSedeByEmail} = useSumillaService();
 
@@ -169,6 +169,7 @@ export const useBitacoraExternaComposable = () => {
         data,
         getSedeByEmail,
         getDocumentoElectronicoByCodigoAleatorio,
-        getBitacorasElectronicasBySumilla
+        getBitacorasElectronicasBySumilla,
+        getDocumentoExternoByBidCodigoRecibidos
     }
 }

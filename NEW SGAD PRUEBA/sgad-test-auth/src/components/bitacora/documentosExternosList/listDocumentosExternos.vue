@@ -171,7 +171,7 @@
         v-model="modalView"
         title=""
         title-hidden
-        small
+        sectioned
         :secondaryActions="[
         {
           content: 'Cerrar',
@@ -179,50 +179,77 @@
         },
       ]"
     >
-    <FCardSection>
-      <FVerticalStack gap="4">
-        <FText id="destinatarioLbl" as="h6" variant="bodyMd" color="subdued" fontWeight="regular">
-            Número de sumilla:
-          </FText>
-          <FText id="destinatarioLbl" as="h6" variant="bodyMd" color="subdued" fontWeight="semibold" style="padding-left: 15px;">
-            {{bitacoraExternaSelected.sumilla.numero_sumilla}}
-          </FText>
-          <FText id="destinatarioLbl" as="h6" variant="bodyMd" color="subdued" fontWeight="regular">
-            Nombres del remitente:
-          </FText>
-          <FText id="destinatarioLbl" as="h6" variant="bodyMd" color="subdued" fontWeight="semibold" style="padding-left: 15px;">
-            {{bitacoraExternaSelected.nombres_remitente}}
-          </FText>
-          <FText id="destinatarioLbl" as="h6" variant="bodyMd" color="subdued" fontWeight="regular">
-            Apellidos del remitente:
-          </FText>
-          <FText id="destinatarioLbl" as="h6" variant="bodyMd" color="subdued" fontWeight="semibold" style="padding-left: 15px;">
-            {{bitacoraExternaSelected.apellidos_remitente}}
+    <FCardSection >
+      <FVerticalStack gap="4" inline-align="start">
+
+        <FText id="destinatarioLbl" as="h6" variant="bodyLg" color="subdued" fontWeight="regular">
+            Documentos:
           </FText>     
-          <FText id="destinatarioLbl" as="h6" variant="bodyMd" color="subdued" fontWeight="regular">
-            Nombre de la organización:
+          <div v-if="documentosExternosRecibidos.length > 0">
+      <ul>
+        <FVerticalStack gap="4">
+        <li
+          v-for="(documento, index) in documentosExternosRecibidos"
+          :key="documento.doe_nombre_archivo"      
+          >
+            <a
+            :href="createDownloadLink(documento.doe_archivo, documento.doe_nombre_archivo)"
+            :download="documento.doe_nombre_archivo "
+          >
+
+            <i class="pi pi-file" style="margin-right: 8px;"></i>
+            {{ documento.doe_nombre_archivo }}
+
+          </a>
+        </li>
+      </FVerticalStack>
+
+      </ul>
+    </div>             
+
+        <FText id="destinatarioLbl" as="h6" variant="bodyLg" color="subdued" fontWeight="regular">
+            Número de sumilla: {{bitacoraExternaSelected.sumilla.numero_sumilla}}
           </FText>
           <FText id="destinatarioLbl" as="h6" variant="bodyMd" color="subdued" fontWeight="semibold" style="padding-left: 15px;">
-            {{bitacoraExternaSelected.nombre_organizacion}}
+            
           </FText>
-          <FText id="destinatarioLbl" as="h6" variant="bodyMd" color="subdued" fontWeight="regular">
-            Asunto:
+          <FText id="destinatarioLbl" as="h6" variant="bodyLg" color="subdued" fontWeight="regular">
+            Nombres del remitente: {{bitacoraExternaSelected.nombres_remitente}}
           </FText>
           <FText id="destinatarioLbl" as="h6" variant="bodyMd" color="subdued" fontWeight="semibold" style="padding-left: 15px;">
-            {{bitacoraExternaSelected.asunto}}
+            <!-- {{bitacoraExternaSelected.nombres_remitente}} -->
+          </FText>
+          <FText id="destinatarioLbl" as="h6" variant="bodyLg" color="subdued" fontWeight="regular">
+            Apellidos del remitente: {{bitacoraExternaSelected.apellidos_remitente}}
+          </FText>
+          <FText id="destinatarioLbl" as="h6" variant="bodyMd" color="subdued" fontWeight="semibold" style="padding-left: 15px;">
+            <!-- {{bitacoraExternaSelected.apellidos_remitente}} -->
+          </FText>     
+          <FText id="destinatarioLbl" as="h6" variant="bodyLg" color="subdued" fontWeight="regular">
+            Nombre de la organización: {{bitacoraExternaSelected.nombre_organizacion}}
+          </FText>
+          <FText id="destinatarioLbl" as="h6" variant="bodyMd" color="subdued" fontWeight="semibold" style="padding-left: 15px;">
+            <!-- {{bitacoraExternaSelected.nombre_organizacion}} -->
+          </FText>
+          <FText id="destinatarioLbl" as="h6" variant="bodyLg" color="subdued" fontWeight="regular">
+            Asunto: {{bitacoraExternaSelected.asunto}}
+          </FText>
+          <FText id="destinatarioLbl" as="h6" variant="bodyMd" color="subdued" fontWeight="semibold" style="padding-left: 15px;">
+            <!-- {{bitacoraExternaSelected.asunto}} -->
           </FText>    
-          <FText id="destinatarioLbl" as="h6" variant="bodyMd" color="subdued" fontWeight="regular">
-            Correo remitente:
+          <FText id="destinatarioLbl" as="h6" variant="bodyLg" color="subdued" fontWeight="regular">
+            Correo remitente: {{bitacoraExternaSelected.correo_remitente}}
           </FText>
           <FText id="destinatarioLbl" as="h6" variant="bodyMd" color="subdued" fontWeight="semibold" style="padding-left: 15px;">
-            {{bitacoraExternaSelected.correo_remitente}}
+            <!-- {{bitacoraExternaSelected.correo_remitente}} -->
           </FText>      
-          <FText id="destinatarioLbl" as="h6" variant="bodyMd" color="subdued" fontWeight="regular">
-            Nombres completos del destinatario:
+          <FText id="destinatarioLbl" as="h6" variant="bodyLg" color="subdued" fontWeight="regular">
+            Nombres completos del destinatario: {{bitacoraExternaSelected.nombre_completo_destinatario}}
           </FText>
           <FText id="destinatarioLbl" as="h6" variant="bodyMd"  color="subdued" fontWeight="semibold" style="padding-left: 15px;">
-            {{bitacoraExternaSelected.nombre_completo_destinatario}}
-          </FText>                    
+            <!-- {{bitacoraExternaSelected.nombre_completo_destinatario}} -->
+          </FText>
+           
       </FVerticalStack>
     </FCardSection>
         
@@ -232,6 +259,7 @@
 
 <script setup lang="ts">
 import { useBitacoraExternaComposable } from "~/composables/documentosExternos/bitacoraExternaComposable";
+import type { DocumentosExternos } from "~/models/DocumentosExternos.model";
 import type { BitacoraExternos } from "~/models/BitacoraExternos.model";
 import type { SedeProjection } from "~/models/projection/SedeProjection.model";
 import type { Persona } from "~/models/Sumilla.model";
@@ -256,6 +284,7 @@ const filteredItems = ref<Persona[]>([]);
 const destinatarioPersonaList = ref<Persona[]>([]);
 const lblButton = ref<string>("Confirmar");
 const bitacoraExternaSelected = ref<BitacoraExternos>({} as BitacoraExternos);
+const documentosExternosRecibidos = ref<DocumentosExternos[]>([]);
 
 const filtersSumillaElectronica = ref({
         global: { value: "", matchMode: FilterMatchMode.CONTAINS },
@@ -268,7 +297,7 @@ const {
     sedeList,
     getUsrLogin,
     editBitacoraExterna,
-    
+    getDocumentoExternoByBidCodigoRecibidos
 } = useBitacoraExternaComposable();
 
 const {
@@ -342,10 +371,24 @@ const handleChangeView = () =>{
   modalView.value = !modalView.value
 }
 
-const prepareView = (bitacoraExt: BitacoraExternos) => {
+const prepareView = async (bitacoraExt: BitacoraExternos) => {
   bitacoraExternaSelected.value = bitacoraExt;
+  documentosExternosRecibidos.value = await getDocumentoExternoByBidCodigoRecibidos(bitacoraExt.codigo);
   handleChangeView();
 }
+
+const createDownloadLink = (doc_archivo: any, doc_nombre_archivo: any) => {
+  const byteCharacters = atob(doc_archivo);
+  const byteNumbers = new Array(byteCharacters.length);
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+  const byteArray = new Uint8Array(byteNumbers);
+  const blob = new Blob([byteArray], { type: "application/pdf" });
+  const url = URL.createObjectURL(blob);
+
+  return url;
+};
 
 const onSubmitEnviarDocumento = handleSubmit(async (values:any) => {
   switch (values.accion) {

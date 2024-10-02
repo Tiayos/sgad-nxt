@@ -796,8 +796,8 @@ const {
   asuntoError,
   resetasunto,
   getPersonasByFilterName,
+  sendEmailDocFisicaBitacora
 } = useSumillaComposable();
-
 
 const { data: userLogin } = useSessionStorage<Persona>("userLogin");
 const fechaSumillaView = ref();
@@ -1018,6 +1018,7 @@ const onSubmitEnviarDocumento = async () => {
   await saveEventoBitacora(eventoBitacora.value);
   mostrarMsgCorrecto.value = true;
   mensajeToast.value = "El documento se envío correctamente";
+  await sendEmailDocFisicaBitacora(eventoBitacora.value.bitacora);
   await findBitacoras();
   handleChangeEnvioDocumento();
 };

@@ -2,6 +2,7 @@ import type {EventoBitacora} from "~/models/EventoBitacora.model";
 import type {BitacoraExternos} from "~/models/BitacoraExternos.model";
 import type { Sumilla } from "~/models/Sumilla.model";
 import { useAuthService } from "./useAuthService";
+import type { Bitacora } from "~/models/Bitacora.model";
 
 export const useSendEmailService = () => {
     const config = useRuntimeConfig()
@@ -91,12 +92,28 @@ export const useSendEmailService = () => {
         }
     }
 
+
+    const sendEmailDocFisicaBitacora = async(bitacora:Bitacora) => {
+        try {
+            return await $fetch(`${apiUrl}/sendEmailDocFisicaDestinatario`,
+                {
+                    method: 'POST',
+                    body:   bitacora,
+                    ...await authService.getHeaders(),
+
+                })
+        } catch (error:any) {
+            return {} as BitacoraExternos;
+        }
+    }
+
     return {
         sendEmail,
         sendEmailUsuarioExterno,
         sendEmailReasignado,
         sendEmailDestinatario,
         sendEmailSolDocumentacionFisica,
-        sendEmailRespuestaElectronicaRemitente
+        sendEmailRespuestaElectronicaRemitente,
+        sendEmailDocFisicaBitacora
     }
 }
