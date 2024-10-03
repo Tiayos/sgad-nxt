@@ -461,7 +461,8 @@ const {
   editBitacoraExterna,
   editBitacoraElectronica,
   sendEmailSolDocumentacionFisica,
-  sendEmailRespuestaElectronicaRemitente
+  sendEmailRespuestaElectronicaRemitente,
+  enviarMailDocumentacionFisicaReasignada
 } = useBitacorasDestinatariosComposable();
 const eventoSelected = ref<EventoBitacora>({} as EventoBitacora);
 const accionesModal = ref<boolean>(false);
@@ -721,6 +722,7 @@ const onSubmitAcciones = handleSubmit(async (values:any) => {
         await saveEventoBitacora(eventoSelected.value);
         mostrarMsgCorrecto.value = true;
         mensajeToast.value = 'Se reasignó el documento correctamente';
+        await enviarMailDocumentacionFisicaReasignada(eventoSelected.value);
         handleChangeAcciones();
         break;
     }

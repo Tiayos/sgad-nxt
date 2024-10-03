@@ -26,7 +26,7 @@ export const useBitacorasDestinatariosComposable = () =>{
     const {getAllBitacorasExternosBySede, getAllBitacorasExternosByPerCodigo, editBitacoraExterna, editBitacoraElectronica} = useBitacoraExternaService();
     const { getSedeByEmail} = useSumillaService();
     const { getDocumentoExternoByBidCodigo, saveDocumentoExterno, getDocumentoExternoByBidCodigoRecibidos, getDocumentoExternoByBidCodigoRespuesta} = useDocumentosExternosService();
-    const {sendEmail, sendEmailSolDocumentacionFisica, sendEmailRespuestaElectronicaRemitente} = useSendEmailService();
+    const {sendEmail, sendEmailSolDocumentacionFisica, sendEmailRespuestaElectronicaRemitente, enviarMailDocumentacionFisicaReasignada} = useSendEmailService();
 
     //*Auth
     const { data } = useAuth();
@@ -70,7 +70,8 @@ export const useBitacorasDestinatariosComposable = () =>{
         editBitacoraExterna,
         editBitacoraElectronica,
         sendEmailSolDocumentacionFisica,
-        sendEmailRespuestaElectronicaRemitente
+        sendEmailRespuestaElectronicaRemitente,
+        enviarMailDocumentacionFisicaReasignada
     }
 
 }

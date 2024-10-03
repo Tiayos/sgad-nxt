@@ -16,7 +16,7 @@ export default defineNuxtRouteMiddleware(async(to, from) => {
             }
 
           const appRoles = decodedToken?.resource_access?.['sgad-next-dev']?.roles || [];
-          if(appRoles.length == 1){ // es invitado
+          if(appRoles.length == 1 && !decodedToken.email.endsWith('@ups.edu.ec')){ // es invitado
             if((to.path == '/sumilla' || to.path == '/bitacora' || to.path == '/') ){
               return abortNavigation();
           }
