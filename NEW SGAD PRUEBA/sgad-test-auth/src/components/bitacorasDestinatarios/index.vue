@@ -12,7 +12,7 @@
             :paginator="true"
             :rows="10"
         >
-          <Column field="codigo" header="No. de ref" style="width: 5px"></Column>
+          <Column field="bitacora.sumilla.numero_sumilla" header="No. de sumilla" style="width: 5px"></Column>
           <Column header="Remitente" style="width: 5px">
             <template #body="slotProps">
               {{ slotProps.data.bitacora.nombres_remitente }}

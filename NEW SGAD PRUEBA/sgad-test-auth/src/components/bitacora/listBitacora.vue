@@ -865,7 +865,6 @@ const completeObjectBitacora = () =>{
 }
 
 const onSubmited = handleSubmit(async (values:any) => {
-  console.log(values);
     if (action.value == persistAction.create) {
       sumilla.value.numero_hojas = parseInt(numHojas.value);
       sumilla.value.fecha_sumilla = new Date();
@@ -1005,22 +1004,27 @@ const handleChangeEnvioDocumento = () => {
 };
 
 const onSubmitEnviarDocumento = async () => {
-  eventoBitacora.value.estado = {} as Estado;
-  eventoBitacora.value.per_codigo_responsable = {} as Persona;
+  try {
+    eventoBitacora.value.estado = {} as Estado;
+    eventoBitacora.value.per_codigo_responsable = {} as Persona;
 
-  eventoBitacora.value.fecha = new Date();
-  eventoBitacora.value.vigencia = "S";
-  eventoBitacora.value.bitacora = bitacora.value;
-  eventoBitacora.value.estado.codigo = 5;
-  eventoBitacora.value.adicionado = data.value?.user?.email!;
-  eventoBitacora.value.per_codigo_responsable.codigo =
-      bitacora.value.receptor_documento.codigo;
-  await saveEventoBitacora(eventoBitacora.value);
-  mostrarMsgCorrecto.value = true;
-  mensajeToast.value = "El documento se envío correctamente";
-  await sendEmailDocFisicaBitacora(eventoBitacora.value.bitacora);
-  await findBitacoras();
-  handleChangeEnvioDocumento();
+    eventoBitacora.value.fecha = new Date();
+    eventoBitacora.value.vigencia = "S";
+    eventoBitacora.value.bitacora = bitacora.value;
+    eventoBitacora.value.estado.codigo = 5;
+    eventoBitacora.value.adicionado = data.value?.user?.email!;
+    eventoBitacora.value.per_codigo_responsable.codigo =
+        bitacora.value.receptor_documento.codigo;
+    await saveEventoBitacora(eventoBitacora.value);
+    mostrarMsgCorrecto.value = true;
+    mensajeToast.value = "El documento se envío correctamente";
+    await sendEmailDocFisicaBitacora(eventoBitacora.value.bitacora);
+    await findBitacoras();
+    handleChangeEnvioDocumento();
+  } catch (error) {
+    console.log(error);
+  }
+  
 };
 
 const handleChangeTransferencia = () => {
@@ -1054,12 +1058,14 @@ const prepareEnviarDocumento = async (sumillaDocumento: Sumilla) => {
   bitacora.value = await getBitacoraByNumSumilla(sumillaDocumento.numero_sumilla);
   documentosBitacoraList.value = await getDocumentosByBitCodigo(bitacora.value.codigo);
 
-  if (documentosBitacoraList.value.length > 0) {
-    handleChangeEnvioDocumento();
-  } else {
-    mostrarMsgError.value = true;
-    mensajeToast.value = 'No está subido el documento digital';
-  }
+  handleChangeEnvioDocumento();
+
+  // if (documentosBitacoraList.value.length > 0) {
+  //   handleChangeEnvioDocumento();
+  // } else {
+  //   mostrarMsgError.value = true;
+  //   mensajeToast.value = 'No está subido el documento digital';
+  // }
 };
 
 watch(
