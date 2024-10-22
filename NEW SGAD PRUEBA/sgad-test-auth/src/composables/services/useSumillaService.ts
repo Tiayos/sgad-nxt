@@ -91,7 +91,6 @@ export const useSumillaService = () => {
             return await $fetch<Sumilla>(`${apiUrl}/saveSumillaExt`, {
                 method: "POST",
                 body: sumilla,
-                ...await authService.getHeaders(),
             });
         } catch (error: any) {
             return {} as Sumilla;

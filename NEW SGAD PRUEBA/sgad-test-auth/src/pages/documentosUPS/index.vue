@@ -6,9 +6,9 @@
 import {definePageMeta} from "#imports";
 
 // ? El definePageMeta es para que la pagina no tenga autorización 
-// definePageMeta({
-//   auth: false,
-// })
+definePageMeta({
+  auth: false,
+})
 
 </script>
 <style lang="css"></style>

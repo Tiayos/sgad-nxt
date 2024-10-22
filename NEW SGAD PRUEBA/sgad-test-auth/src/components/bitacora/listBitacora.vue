@@ -1072,7 +1072,6 @@ watch(
     () => bitacoraSelected.value,
     async () => {
       if(bitacoraSelected.value != null){
-        console.log('AQUI SI NO?');
         const evento: EventoBitacora = await getEventoBitacoraService(
             bitacoraSelected.value.codigo
         );

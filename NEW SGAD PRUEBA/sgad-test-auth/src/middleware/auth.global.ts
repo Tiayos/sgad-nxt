@@ -32,7 +32,6 @@ export default defineNuxtRouteMiddleware(async(to, from) => {
           console.error("Error al decodificar el token:", error);
         }
       } else {
-        console.log("No hay access token disponible");
       }
     });
 

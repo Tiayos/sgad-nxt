@@ -40,7 +40,7 @@ public class BitacoraDocumentosExternosController {
         return ResponseEntity.ok(this.iBitacorasDocumentosExternosService.findBitacoraBySumilla(numSumilla, codigo));
     }
 
-    @PostMapping("/saveDocumentos")
+    @PostMapping
     public ResponseEntity<?> saveDocumentosExternos(@RequestBody BitacoraDocumentosExternosDTO bitacoraDocumentosExternosDTO){
        return ResponseEntity.ok(this.iBitacorasDocumentosExternosService.saveBitacorasExternos(bitacoraDocumentosExternosDTO));
     }

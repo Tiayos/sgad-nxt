@@ -62,7 +62,6 @@ export const useBitacoraExternaService = () => {
             {
                 method: 'POST',
                 body:  bitacoraExterna,
-                ...await authService.getHeaders(),
             })
         } catch (error) {
             throw new Error("Error al guardar las bitacora externa");

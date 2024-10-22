@@ -60,8 +60,6 @@ export const useDocumentosExternosService = () => {
             {
                 method: 'POST',
                 body:  documentoExterno,
-                ...await authService.getHeaders(),
-
             })
         } catch (error) {
             throw new Error("Error al guardar los documentos externos");

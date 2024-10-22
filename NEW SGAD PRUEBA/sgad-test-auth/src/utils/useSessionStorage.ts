@@ -5,7 +5,6 @@ export function useSessionStorage<T>(key: string, initialValue?: T) {
     const data = ref<T | undefined>(initialValue);
 
     const clearStorage = () => {
-        console.log('entra al remove');
         sessionStorage.removeItem(key);
     }
 

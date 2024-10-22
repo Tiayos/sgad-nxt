@@ -329,7 +329,6 @@ const handleChangeSubmitModal = () =>{
 }
 
 const onSubmit = handleSubmit( async(values:any) => {
-  console.log('object');
   try {
     // sumilla.value.codigo = 0;
     sumilla.value.responsable = {} as Persona;

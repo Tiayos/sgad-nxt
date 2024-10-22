@@ -8,7 +8,7 @@ export const usePersonaService = () => {
 
     const getUsrLogin = async(email:String): Promise<Persona> => {
         try {
-            const resp = await $fetch<Persona>(`${apiUrl}/findEmail?email=${email}`, await authService.getHeaders())
+            const resp = await $fetch<Persona>(`${apiUrl}/findEmail?email=${email}`)
             return resp;
         } catch (error) {
             throw new Error("Error al consultar las sumillas");

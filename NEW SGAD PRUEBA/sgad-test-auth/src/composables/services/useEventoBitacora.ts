@@ -26,7 +26,6 @@ export const useEventoBitacora = () => {
     const getAllEventosByBitCodigo = async (bitCodigo: number): Promise<EventoBitacora[]> => {
         try {
             const resp = await $fetch<EventoBitacora[]>(`${apiUrl}/getAllEventos?bitCodigo=${bitCodigo}`, await authService.getHeaders());
-            console.log(resp);
             const updatedResp = resp.map(evento => {
                 if (evento.estado.codigo === 7) {
                     evento.estado.estado_descripcion = 'Reasignado';

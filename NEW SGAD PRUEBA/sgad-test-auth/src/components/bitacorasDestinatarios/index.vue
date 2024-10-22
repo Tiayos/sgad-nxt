@@ -663,7 +663,6 @@ const saveDocumentos = async () => {
             // Convertir Uint8Array a byte[]
             const byteArrayJava = Array.from(byteArray);
             // documentoExternoObj.value = await getDocumentoExternoByBidCodigo(bitacoraExternaSelected.value.codigo);
-            console.log(file,'<<<');
             documentoExternoObj.value.documentos_externos = bitacoraExternaSelected.value;
             documentoExternoObj.value.doe_archivo = byteArrayJava;
             documentoExternoObj.value.doe_nombre_archivo = file.name;

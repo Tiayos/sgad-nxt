@@ -30,7 +30,6 @@ export const useSendEmailService = () => {
                 {
                     method: 'POST',
                     body:   bitacoraExterno,
-                    ...await authService.getHeaders(),
 
                 })
         } catch (error:any) {
