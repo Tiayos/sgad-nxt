@@ -1,0 +1,30 @@
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: gitlab-pull-secret
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJyZWdpc3RyeS5naXRsYWIuY29tIjp7ImF1dGgiOiJWR2xoZVc5ek9tZHNjR0YwTFhaUmEwMVpXWGhUUkVodlgyWkhaM1Z6VW5CRSJ9fX0=
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sgad-nxt-svc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sgad-nxt-svc
+  template:
+    metadata:
+      labels:
+        app: sgad-nxt-svc
+    spec:
+      containers:
+        - name: sgad-nxt-svc
+          image: registry.gitlab.com/ups-dev/development/gitlab/packages/docker:dev-sgad-svc-1.0.0
+      imagePullSecrets:
+        - name: gitlab-pull-secret
+      nodeSelector:
+        kubernetes.io/hostname: clkbrnts-03
