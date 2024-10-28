@@ -12,22 +12,22 @@ ENV NITRO_PORT=8080
 
 # Desarrollo
 
-ENV PORT=443
-ENV KEYCLOAK_ISSUER=https://auth.ups.edu.ec/realms/dev
-ENV KEYCLOAK_ID=dev-sgadui
-ENV KEYCLOAK_SECRET=fH4mALTkm3kJqjIRM99fPykjTsH5BDKY
-ENV AUTH_ORIGIN=https://sgadui.ups.edu.ec/
-ENV AUTH_SECRET=12345
-ENV NEXTAUTH_URL=https://sgadui.ups.edu.ec/
+# ENV PORT=443
+# ENV KEYCLOAK_ISSUER=https://auth.ups.edu.ec/realms/dev
+# ENV KEYCLOAK_ID=dev-sgadui
+# ENV KEYCLOAK_SECRET=fH4mALTkm3kJqjIRM99fPykjTsH5BDKY
+# ENV AUTH_ORIGIN=https://sgadui.ups.edu.ec/
+# ENV AUTH_SECRET=12345
+# ENV NEXTAUTH_URL=https://sgadui.ups.edu.ec/
 
 #Produccion
-#ENV PORT=443
-#ENV KEYCLOAK_ISSUER=https://auth.ups.edu.ec/realms/dev
-#ENV KEYCLOAK_ID=sgad-produccion
-#ENV KEYCLOAK_SECRET=IoYr2A0YPLSQ0U11GAvMJ2MAxCSsK7Yx
-#ENV AUTH_ORIGIN=https://sgad.ups.edu.ec
-#ENV AUTH_SECRET=12345
-#ENV NEXTAUTH_URL=https://sgad.ups.edu.ec
+ENV PORT=443
+ENV KEYCLOAK_ISSUER=https://auth.ups.edu.ec/realms/dev
+ENV KEYCLOAK_ID=sgad-produccion
+ENV KEYCLOAK_SECRET=IoYr2A0YPLSQ0U11GAvMJ2MAxCSsK7Yx
+ENV AUTH_ORIGIN=https://sgad.ups.edu.ec/
+ENV AUTH_SECRET=12345
+ENV NEXTAUTH_URL=https://sgad.ups.edu.ec/
 
 # Exponer el puerto necesario
 EXPOSE 8080

@@ -51,7 +51,6 @@ export default NuxtAuthHandler({
     },
     events: {
         async signOut({ token }) {
-            console.log("TOKEN: "+token.id_token);
             if (token.provider === "keycloak") {
                 const issuerUrl = process.env.KEYCLOAK_ISSUER
                 const logOutUrl = new URL(`${issuerUrl}/protocol/openid-connect/logout`)

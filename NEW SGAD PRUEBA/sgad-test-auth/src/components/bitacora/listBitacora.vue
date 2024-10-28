@@ -1077,7 +1077,6 @@ watch(
         );
         if (evento.estado.codigo != 2 && bitacoraSelected.value.destinatario != null) {
           disabledEnviarDocumento.value = true;
-          console.log('entro?');
         } else {
           disabledEnviarDocumento.value = false;
         }

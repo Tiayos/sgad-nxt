@@ -494,7 +494,6 @@ interface TabDescriptor {
 }
 
 const handleFileSelectRespuesta = (event: any) => {
-  console.log(event);
   filesRespuesta.value = event.files;
 };
 
