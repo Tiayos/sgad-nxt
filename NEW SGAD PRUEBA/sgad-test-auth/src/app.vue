@@ -1,19 +1,32 @@
 <script setup lang="ts">
-import { ref } from "vue";
+// import { ref } from "vue";
 import type {Persona} from "~/models/Sumilla.model";
 import {useSessionStorage} from "~/utils/useSessionStorage";
 import {usePersonaService} from "~/composables/services/usePersonaService";
-import Footer from "~/components/navigation/Footer.vue";
+// import Footer from "~/components/navigation/Footer.vue";
 import { useArchivosStore } from "./composables/store/useArchivosStore";
+
+import {
+  HouseSolid,
+  EyeRegular,
+  InboxSolid,
+  BarsSolid,
+  BugSolid,
+  MessageDotsRegular,
+  MessageDotsSolid,
+  BracketsCurlySolid,
+  BoxArchiveSolid
+} from "@ups-dev/freya-icons";
 
 const { data, signOut  } = useAuth();
 const skipToContentRef = ref(null);
 const searchActive = ref(false);
 const searchValue = ref("");
 const userMenuActive = ref(false);
-const mobileNavigationActive = ref(false);
+const mobileNavigationActive = ref(true);
 const router = useRouter(); //* redirecciones
 const store = useArchivosStore();
+const showSumilla = ref<boolean>(false);
 
 const validarRuta = ref<string>(router.currentRoute.value.fullPath);
 
@@ -27,7 +40,12 @@ onMounted(async () => {
   if(!validarRuta.value.includes("documentosUPS")){
     userLogin.value = await getUsrLogin(data.value?.user?.email!);
   }
-});   
+  store.appRoles.forEach(async (e:any) => {
+  if (e.startsWith("recepcionist")) {
+    showSumilla.value = true;
+  }
+});
+})   
 
 const handleSearchResultsDismiss = () => {
   searchActive.value = false;
@@ -68,6 +86,26 @@ const getInitials = (name: string) => {
   const parts = name.split(" ");
   return [parts[0], parts[2]].map((p) => p.charAt(0)).join("");
 };
+
+const items: FNavigationItem[] = [
+    {
+      to: '/sumilla',
+      label: 'Sumilla',
+      icon: BoxArchiveSolid,
+    }, {
+      to: '/bitacora',
+      label: 'Bitácora',
+      icon: MessageDotsSolid,
+    }];
+
+    
+const items2: FNavigationItem[] = [
+    {
+      to: '/bitacora',
+      label: 'Bitácora',
+      icon: MessageDotsSolid,
+    }];
+
 </script>
 <template>
   <FAppProvider>
@@ -77,14 +115,20 @@ const getInitials = (name: string) => {
         @navigation-dismiss="toggleMobileNavigationActive"
         :skipToContentTarget="skipToContentRef"
     >
+      <FButton @click="toggleMobileNavigationActive"  
+      :icon="BarsSolid" 
+      :style="[(mobileNavigationActive==true) ? '' : 'margin-left: -220px;']" 
+      size="medium" 
+      :pressed="mobileNavigationActive==true">
+      </FButton>
       <template #topBar>
         <FTopBar
             showNavigationToggle
             :searchResultsVisible="searchActive"
             @searchResultsDismiss="handleSearchResultsDismiss"
             @navigation-toggle="toggleMobileNavigationActive"
-
         >
+                            <!-- Botón para alternar visibilidad del menú -->
           <template #userMenu>
             <FTopBarUserMenu
                 :actions="userMenuActions"
@@ -96,6 +140,16 @@ const getInitials = (name: string) => {
           </template>
         </FTopBar>
       </template>
+
+      <template #navigation>
+        <!-- Menú de navegación -->
+        <div v-if="mobileNavigationActive">
+          <FNavigation :location="$route.path">
+            <FNavigationSection :items="showSumilla ? items : items2" />
+          </FNavigation>
+        </div>
+      </template>
+
       <FPage full-width  >
         <LazyNuxtPage />
       </FPage>
@@ -178,5 +232,19 @@ const getInitials = (name: string) => {
 /* Asegurarse de que solo el botón de selección de archivos se muestre */
 .p-fileupload .p-fileupload-choose {
   display: block !important; /* Asegura que el botón de elegir archivos esté visible */
+}
+
+.menu-toggle {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.menu-toggle:hover {
+  background-color: #0056b3;
 }
 </style>

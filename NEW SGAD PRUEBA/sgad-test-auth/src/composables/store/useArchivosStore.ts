@@ -14,13 +14,16 @@ export const useArchivosStore = defineStore('useArchivosStore', () => {
         global: { value: "", matchMode: FilterMatchMode.CONTAINS },
     });
 
+    const appRoles = ref<string[]>([]);
+
     return {
         eventosBitacorasList,
         eventoBitacora,
         disabledMenu,
         bitacorasList,
         filtersSumillaBitacora,
-        error
+        error,
+        appRoles
     };
 
 })

@@ -7,6 +7,8 @@ export default defineNuxtRouteMiddleware(async(to, from) => {
     const config = useRuntimeConfig();
     const {data} = useAuth();
     const accessToken = data?.value?.access_token;
+    const authStore = useArchivosStore();
+    const {appRoles} = storeToRefs(authStore);
 
     if (accessToken) {
         try {
@@ -15,15 +17,15 @@ export default defineNuxtRouteMiddleware(async(to, from) => {
                 return abortNavigation();
             }
 
-          const appRoles = decodedToken?.resource_access?.['sgad-produccion']?.roles || [];
-          if(appRoles.length == 1 && !decodedToken.email.endsWith('@ups.edu.ec')){ // es invitado
+          appRoles.value = decodedToken?.resource_access?.['sgad-produccion']?.roles || [];
+          if(appRoles.value.length == 1 && !decodedToken.email.endsWith('@ups.edu.ec')){ // es invitado
             if((to.path == '/sumilla' || to.path == '/bitacora' || to.path == '/') ){
               return abortNavigation();
           }
           }
 
           // si no tiene el rol de recepcionista no se le permite ingresar a /sumilla
-          if (appRoles.includes("recepcionist")) {
+          if (appRoles.value.includes("recepcionist")) {
           } else {
             if(to.path == '/sumilla')
                 return abortNavigation();

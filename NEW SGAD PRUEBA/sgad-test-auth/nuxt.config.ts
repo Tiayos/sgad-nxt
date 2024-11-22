@@ -14,8 +14,16 @@ export default defineNuxtConfig({
     }
   },
 
-  router: {
-    middleware: ['auth.global.ts']
+  hooks: {
+    'render:errorMiddleware'(app) {
+      app.use((err: any, req: any, res: any, next: any) => {
+        console.error('Captured error:', err); // Log detallado en el servidor
+        
+        // Enviar un mensaje de error al cliente
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ statusCode: 500, message: 'Ha ocurrido un error en el servidor.' }));
+      });
+    },
   },
 
   modules: [
