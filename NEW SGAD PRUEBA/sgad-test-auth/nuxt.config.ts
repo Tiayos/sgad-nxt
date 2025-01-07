@@ -56,16 +56,6 @@ export default defineNuxtConfig({
       },
 
       //* pruebas servidor enlaces directos
-      // SGAD_SUMILLA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/sumilla',
-      // SGAD_BITACORA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/bitacora',
-      // SGAD_PERSONA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/persona',
-      // SGAD_TRANSFERENCIA: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/transferencia',
-      // SGAD_EVENTO: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/eventoBitacora',
-      // SGAD_EMAIL: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/email',
-      // SGAD_BITACORA_EXTERNO: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/bitacoraExternos',
-      // SGAD_DOCUMENTOS_EXTERNOS: 'https://sgadsvc.ups.edu.ec/sgad/api/v1/documentosExternos',
-
-      //?PRODUCCIÓN
       SGAD_SUMILLA: 'https://sgadpsvc.ups.edu.ec/sgad/api/v1/sumilla',
       SGAD_BITACORA: 'https://sgadpsvc.ups.edu.ec/sgad/api/v1/bitacora',
       SGAD_PERSONA: 'https://sgadpsvc.ups.edu.ec/sgad/api/v1/persona',
@@ -74,6 +64,16 @@ export default defineNuxtConfig({
       SGAD_EMAIL: 'https://sgadpsvc.ups.edu.ec/sgad/api/v1/email',
       SGAD_BITACORA_EXTERNO: 'https://sgadpsvc.ups.edu.ec/sgad/api/v1/bitacoraExternos',
       SGAD_DOCUMENTOS_EXTERNOS: 'https://sgadpsvc.ups.edu.ec/sgad/api/v1/documentosExternos',
+
+      //?PRODUCCIÓN
+      // SGAD_SUMILLA: 'https://sgadpsvc.ups.edu.ec/sgad/api/v1/sumilla',
+      // SGAD_BITACORA: 'https://sgadpsvc.ups.edu.ec/sgad/api/v1/bitacora',
+      // SGAD_PERSONA: 'https://sgadpsvc.ups.edu.ec/sgad/api/v1/persona',
+      // SGAD_TRANSFERENCIA: 'https://sgadpsvc.ups.edu.ec/sgad/api/v1/transferencia',
+      // SGAD_EVENTO: 'https://sgadpsvc.ups.edu.ec/sgad/api/v1/eventoBitacora',
+      // SGAD_EMAIL: 'https://sgadpsvc.ups.edu.ec/sgad/api/v1/email',
+      // SGAD_BITACORA_EXTERNO: 'https://sgadpsvc.ups.edu.ec/sgad/api/v1/bitacoraExternos',
+      // SGAD_DOCUMENTOS_EXTERNOS: 'https://sgadpsvc.ups.edu.ec/sgad/api/v1/documentosExternos',
 
       // * pruebas local
         //  SGAD_SUMILLA: '/sgad-nuxt/sumilla',
@@ -85,13 +85,21 @@ export default defineNuxtConfig({
         //  SGAD_BITACORA_EXTERNO: '/sgad-nuxt/bitacoraExternos',
         //  SGAD_DOCUMENTOS_EXTERNOS: '/sgad-nuxt/documentosExternos',
 
+        //  PORT:3000,
+        //  KEYCLOAK_ISSUER:'https://auth.ups.edu.ec/realms/dev',
+        //  KEYCLOAK_ID:'sgad-next-dev',
+        //  KEYCLOAK_SECRET:'evVRjt1nt1CUldvfGEDOeEvx5kMXRZtq',
+        //  AUTH_ORIGIN:'http://localhost:3000/',
+        //  AUTH_SECRET:12345,
+        //  NEXTAUTH_URL:'http://localhost:3000/',
+
          PORT:3000,
          KEYCLOAK_ISSUER:'https://auth.ups.edu.ec/realms/dev',
-         KEYCLOAK_ID:'sgad-next-dev',
-         KEYCLOAK_SECRET:'evVRjt1nt1CUldvfGEDOeEvx5kMXRZtq',
-         AUTH_ORIGIN:'http://localhost:3000/',
+         KEYCLOAK_ID:'sgad-produccion',
+         KEYCLOAK_SECRET:'IoYr2A0YPLSQ0U11GAvMJ2MAxCSsK7Yx',
+         AUTH_ORIGIN:'https://sgad.ups.edu.ec/',
          AUTH_SECRET:12345,
-         NEXTAUTH_URL:'http://localhost:3000/',
+         NEXTAUTH_URL:'https://sgad.ups.edu.ec/',
     }
   },
 

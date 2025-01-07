@@ -37,14 +37,19 @@ const { data: userLogin } = useSessionStorage<Persona>("userLogin");
 const { getUsrLogin } = usePersonaService();
 
 onMounted(async () => {
+
+  store.appRoles.forEach(async (e:string) => {
+    console.log(e, 'eeeeeee' );
+    console.log(showSumilla.value, 'showSumilla');
+    if (e == 'recepcionist') {
+    showSumilla.value = true;
+    console.log(showSumilla.value,'SI ENTRA');
+  }
+});
+
   if(!validarRuta.value.includes("documentosUPS")){
     userLogin.value = await getUsrLogin(data.value?.user?.email!);
   }
-  store.appRoles.forEach(async (e:any) => {
-  if (e.startsWith("recepcionist")) {
-    showSumilla.value = true;
-  }
-});
 })   
 
 const handleSearchResultsDismiss = () => {
@@ -145,7 +150,7 @@ const items2: FNavigationItem[] = [
         <!-- Menú de navegación -->
         <div v-if="mobileNavigationActive">
           <FNavigation :location="$route.path">
-            <FNavigationSection :items="showSumilla ? items : items2" />
+            <FNavigationSection :items="(showSumilla == true) ? items : items2" />
           </FNavigation>
         </div>
       </template>

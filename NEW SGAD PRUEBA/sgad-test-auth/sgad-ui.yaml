@@ -5,7 +5,7 @@ metadata:
   name: gitlab-pull-secret
 type: kubernetes.io/dockerconfigjson
 data:
-  .dockerconfigjson: eyJhdXRocyI6eyJyZWdpc3RyeS5naXRsYWIuY29tIjp7ImF1dGgiOiJWR2xoZVc5ek9tZHNjR0YwTFhaUmEwMVpXWGhUUkVodlgyWkhaM1Z6VW5CRSJ9fX0=
+  .dockerconfigjson: eyJhdXRocyI6eyJyZWdpc3RyeS5naXRsYWIuY29tIjp7ImF1dGgiOiJWR2xoZVc5ek9tZHNjR0YwTFdGYVRtUk9UVFY2UTBSNWIwTldiWE5aTWpjNSJ9fX0=
 ---
 apiVersion: v1
 kind: Service
@@ -40,7 +40,7 @@ spec:
     spec:
       containers:
         - name: sgadnxtui
-          image: registry.gitlab.com/ups-dev/development/gitlab/packages/docker:sgadui-nxt-dev-1.0.3
+          image: registry.gitlab.com/ups-dev/development/gitlab/packages/docker:prod-sgad-ui-1.0.7
           ports:
             - containerPort: 8080
           env:
@@ -51,16 +51,16 @@ spec:
             - name: KEYCLOAK_ISSUER
               value: "https://auth.ups.edu.ec/realms/dev"
             - name: KEYCLOAK_ID
-              value: "dev-sgadui"
+              value: "sgad-produccion"
             - name: KEYCLOAK_SECRET
-              value: "fH4mALTkm3kJqjIRM99fPykjTsH5BDKY"
+              value: "IoYr2A0YPLSQ0U11GAvMJ2MAxCSsK7Yx"
             - name: AUTH_ORIGIN
-              value: "https://sgadui.ups.edu.ec/"
+              value: "https://sgad.ups.edu.ec/"
             - name: AUTH_SECRET
               value: "12345"
             - name: NEXTAUTH_URL
-              value: "https://sgadui.ups.edu.ec/"
+              value: "https://sgad.ups.edu.ec/"
       imagePullSecrets:
         - name: gitlab-pull-secret
       nodeSelector:
-        kubernetes.io/hostname: clkbrnts-02
+        kubernetes.io/hostname: kbrntsdmz01.ups.edu.ec
