@@ -37,8 +37,14 @@ const { data: userLogin } = useSessionStorage<Persona>("userLogin");
 const { getUsrLogin } = usePersonaService();
 
 onMounted(async () => {
+  console.log(store.appRoles, 'store.appRoles');
 
-  store.appRoles.forEach(async (e:string) => {
+if(store.appRoles.includes('recepcionist')){
+  showSumilla.value = true;
+  console.log(showSumilla.value,'SI ENTRA 1');
+}
+
+  store.appRoles.forEach((e:string) => {
     console.log(e, 'eeeeeee' );
     console.log(showSumilla.value, 'showSumilla');
     if (e == 'recepcionist') {
