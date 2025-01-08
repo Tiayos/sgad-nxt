@@ -65,4 +65,22 @@ public interface ISumillaDao extends JpaRepository<SumillaModel, Long> {
 
     @Query("SELECT sml FROM SumillaModel sml  where sml.numeroSumilla=?1 ")
     SumillaModel getSumillaModelByNumeroSumilla(String numeroSumilla);
+
+    @Query(nativeQuery = true, value = "SELECT  \n" +
+            "NVL(MAX(sumil.sum_cod_sede),0)+1  \n" +
+            "FROM \n " +
+            "    sgad.sgad_sumilla sumil  \n" +
+            "where  \n" +
+            "    sumil.sum_sede = ?1 \n" +
+            "and sumil.sum_numero_sumilla not like '%EXT%'")
+    Long secuencialEstructura(Long codigoConsultorio);
+
+    @Query(nativeQuery = true, value = "SELECT \n" +
+            "    NVL(MAX(sumil.sum_cod_sede),0)+1 \n" +
+            "FROM \n" +
+            "    sgad.sgad_sumilla sumil \n" +
+            "where \n" +
+            "    sumil.sum_sede = ?1 \n" +
+            "and sumil.sum_numero_sumilla like '%EXT%'")
+    Long secuencialEstructuraExt(Long codigoConsultorio);
 }

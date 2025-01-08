@@ -47,12 +47,14 @@ public class SumillaImpl implements ISumillaService {
         String numSumilla = "";
         Long ultimoIdSumilla = sumillaDao.obtenerUltimoIdSumilla(sedeProjection.getDeeCodigo()) + 1;
 
+        Long sumCodSede = sumillaDao.secuencialEstructura(sedeProjection.getDeeCodigo());
+
         if(sedeProjection.getDeeCodigo()== 2){ //cuenca
-            numSumilla = "00"+ ultimoIdSumilla + "-00"+ 1 + "-UPSCUE";
+            numSumilla = "00"+ sumCodSede + "-00"+ 1 + "-UPSCUE";
         } else if (sedeProjection.getDeeCodigo() == 3) { //QUITO
-            numSumilla = "00"+ ultimoIdSumilla + "-00"+ 1 + "-UPSUIO";
+            numSumilla = "00"+ sumCodSede + "-00"+ 1 + "-UPSUIO";
         }else if (sedeProjection.getDeeCodigo() == 4) { //GUAYAQUIL
-            numSumilla = "00"+ ultimoIdSumilla + "-00"+ 1 + "-UPSGYE";
+            numSumilla = "00"+ sumCodSede + "-00"+ 1 + "-UPSGYE";
         }
 
         SumillaDTO sumillaDTO1 = new SumillaDTO(
@@ -63,7 +65,8 @@ public class SumillaImpl implements ISumillaService {
                 sumillaDTO.numeroHojas(),
                 numSumilla,
                 ultimoIdSumilla,
-                sedeProjection.getDeeCodigo()
+                sedeProjection.getDeeCodigo(),
+                sumCodSede
         );
         return SumillaDTO.toDTO(sumillaDao.save(new SumillaModel(sumillaDTO1)));
     }
@@ -73,12 +76,14 @@ public class SumillaImpl implements ISumillaService {
         String numSumilla = "";
         Long ultimoIdSumilla = sumillaDao.obtenerUltimoIdSumillaExterna(sumillaDTO.sumSede()) + 1;
 
+        Long sumCodSedeExt = sumillaDao.secuencialEstructuraExt(sumillaDTO.sumSede());
+
         if(sumillaDTO.sumSede() == 2){ //cuenca
-            numSumilla = "00"+ ultimoIdSumilla + "-00"+ ultimoIdSumilla + "-EXT-UPSCUE";
+            numSumilla = "00"+ sumCodSedeExt + "-00"+ ultimoIdSumilla + "-EXT-UPSCUE";
         } else if (sumillaDTO.sumSede() == 3) { //QUITO
-            numSumilla = "00"+ ultimoIdSumilla + "-00"+ ultimoIdSumilla + "-EXT-UPSUIO";
+            numSumilla = "00"+ sumCodSedeExt + "-00"+ ultimoIdSumilla + "-EXT-UPSUIO";
         }else if (sumillaDTO.sumSede() == 4) { //GUAYAQUIL
-            numSumilla = "00"+ ultimoIdSumilla + "-00"+ ultimoIdSumilla + "-EXT-UPSGYE";
+            numSumilla = "00"+ sumCodSedeExt + "-00"+ ultimoIdSumilla + "-EXT-UPSGYE";
         }
 
         SumillaDTO sumillaDTO1 = new SumillaDTO(
@@ -89,7 +94,8 @@ public class SumillaImpl implements ISumillaService {
                 sumillaDTO.numeroHojas(),
                 numSumilla,
                 ultimoIdSumilla,
-                sumillaDTO.sumSede()
+                sumillaDTO.sumSede(),
+                sumCodSedeExt
         );
         return SumillaDTO.toDTO(sumillaDao.save(new SumillaModel(sumillaDTO1)));
     }

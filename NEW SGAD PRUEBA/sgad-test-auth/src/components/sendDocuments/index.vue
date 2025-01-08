@@ -1,11 +1,13 @@
 <template>
   <FPage
-         title="Sistema de Gestión documental"
-         subtitle= "Registra la bitácora que se enviará al usuario de la UPS"
-         :pagination="{ hasPrevious: true, hasNext: true}">
+         title="Sistema de Gestión Documental"
+         subtitle= "Registra la bitácora que se enviará al colaborador de la UPS"
+         :pagination="{ hasPrevious: true, hasNext: true}"
+         :full-width="true"
+         >
 
-    <FTabs :tabs="tabs" v-model:selected="selected" fitted>
-      <FCard sectioned title="" v-if="selected==0">
+    <FTabs :tabs="tabs" v-model:selected="selected" fitted style="margin-left: -150px;">
+      <FCard sectioned title="" v-if="selected==0" style="">
         <FVerticalStack gap="4">
           <FFormLayout>
           <FFormLayoutGroup>
@@ -96,10 +98,10 @@
       </FVerticalStack>
       </FCard>
       <FPageActions v-if="selected==0" :primaryAction="{content: 'Enviar documento',
-        icon: PlusSolid,
+        icon:  CheckSolid,
         disabled: captchaValue==false,
         onAction:() => onSubmit(),}" 
-        :secondaryActions="[{content: 'Limpiar', onAction: () => limpiar(),
+        :secondaryActions="[{content: 'Limpiar', onAction: () => limpiar(), icon: TrashCanSolid
         }]">
       </FPageActions>
       
@@ -193,8 +195,7 @@
 <script lang="ts" setup>
 import {
   FileSolid,
-  PlusSolid, TrashCanSolid, MagnifyingGlassSolid,
-  CheckSolid
+  PlusSolid, TrashCanSolid, MagnifyingGlassSolid, CheckSolid,  
 } from "@ups-dev/freya-icons";
 import {useBitacoraExternaComposable} from "~/composables/documentosExternos/bitacoraExternaComposable";
 import { RecaptchaV2 } from "vue3-recaptcha-v2";

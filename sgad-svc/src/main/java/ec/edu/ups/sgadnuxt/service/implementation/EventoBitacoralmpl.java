@@ -78,7 +78,7 @@ public class EventoBitacoralmpl implements IEventoBitacoraService {
             iEventoBitacoraDao.save(sgadEventoBitacora1);
 
 
-            Long ultimoIdSumilla = eventoBitacoraDTO.bitacora().sumilla().codigo();
+            Long ultimoIdSumilla = eventoBitacoraDTO.bitacora().sumilla().sumCodSede(); // se cambia por el sumCodSede
             Long numeroReferenciaSumilla = iSumillaDao.completarNumSumilla(eventoBitacoraDTO.bitacora().sumilla().codigo());
 
             if(eventoBitacoraDTO.bitacora().sumilla().sumSede() == 2){ //cuenca

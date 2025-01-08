@@ -55,8 +55,6 @@ public class BitacoraController {
        return ResponseEntity.ok(this.bitacoraService.saveBitacora(bitacoraDTO));
     }
 
-
-
     @PutMapping
     public void updateBitacoras(@RequestBody BitacoraDTO bitacoraDTO, @RequestParam Long codigo) {
          this.bitacoraService.updateBitacora(bitacoraDTO, codigo);

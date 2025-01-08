@@ -47,8 +47,8 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
 
         // Extract roles from resource_access.demo
         Map<String, Object> resourceAccess = jwt.getClaim("resource_access");
-        if (resourceAccess != null && resourceAccess.containsKey("sgad-next-dev")) {
-            Map<String, Object> demoAccess = (Map<String, Object>) resourceAccess.get("sgad-next-dev");
+        if (resourceAccess != null && resourceAccess.containsKey("sgad-produccion")) {
+            Map<String, Object> demoAccess = (Map<String, Object>) resourceAccess.get("sgad-produccion");
             if (demoAccess != null && demoAccess.containsKey("roles")) {
                 roles.addAll((Collection<? extends String>) demoAccess.get("roles"));
             }

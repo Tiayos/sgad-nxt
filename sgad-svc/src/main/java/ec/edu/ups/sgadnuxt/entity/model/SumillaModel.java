@@ -27,19 +27,16 @@ public class SumillaModel implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PER_CODIGO_RESPONSABLE", referencedColumnName = "PER_CODIGO")
     private GthPersona responsable;
-
     @Column(name = "SUM_NUM_HOJAS")
     private Integer numeroHojas;
-
     @Column(name = "SUM_NUMERO_SUMILLA")
     private String numeroSumilla;
-
     @Column(name = "SUM_NUMERO_TRAMITE")
     private Long numeroTramite;
-
     @Column(name = "SUM_SEDE")
     private Long sumSede;
-
+    @Column(name = "SUM_COD_SEDE")
+    private Long sumCodSede;
     @Column(name = "AUD_ELIMINADO")
     private String eliminado;
     @Column(name = "AUD_ADICIONADO")
@@ -67,6 +64,7 @@ public class SumillaModel implements Serializable {
         this.numeroSumilla = dto.numeroSumilla();
         this.numeroTramite = dto.numeroTramite();
         this.sumSede = dto.sumSede();
+        this.sumCodSede = dto.sumCodSede();
     }
 
     @PrePersist
@@ -185,5 +183,13 @@ public class SumillaModel implements Serializable {
 
     public void setSumSede(Long sumSede) {
         this.sumSede = sumSede;
+    }
+
+    public Long getSumCodSede() {
+        return sumCodSede;
+    }
+
+    public void setSumCodSede(Long sumCodSede) {
+        this.sumCodSede = sumCodSede;
     }
 }

@@ -7,6 +7,7 @@ export interface Sumilla {
     numero_sumilla: string;
     numero_tramite: number;
     sum_sede:       number;
+    sum_cod_sede:   number;
 }
 
 export interface Persona {

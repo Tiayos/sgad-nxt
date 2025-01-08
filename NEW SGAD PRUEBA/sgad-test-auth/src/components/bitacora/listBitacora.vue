@@ -59,7 +59,7 @@
           </div>
         </template>
 
-        <Column field="codigo" header="No. de ref" style="width: 5px"></Column>
+        <Column field="sumilla.sum_cod_sede" header="No. de ref" style="width: 5px"></Column>
         <Column
             field="sumilla.numero_sumilla"
             header="Número Sumilla"

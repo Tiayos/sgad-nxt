@@ -84,6 +84,7 @@ public class BitacoraImpl implements IBitacoraService {
     @Override
     public BitacoraDTO saveBitacora(BitacoraDTO bitacoraDTO) {
         try {
+
             BitacoraModel bitacoraModel = bitacoraDao.save(new BitacoraModel(bitacoraDTO));
             BitacoraDTO bitacoraDTO1 = BitacoraDTO.toDTO(bitacoraModel);  // Asegúrate de usar el DTO correcto
 

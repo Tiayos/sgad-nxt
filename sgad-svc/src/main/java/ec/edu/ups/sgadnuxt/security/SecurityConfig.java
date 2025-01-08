@@ -50,10 +50,10 @@ public class    SecurityConfig {
                         .requestMatchers("/api/v1/bitacoraExternos/**").permitAll()
 
                         // Rutas protegidas que requieren autenticación
-                        .requestMatchers("/api/v1/sumilla/getSedeByEmail").authenticated()
-                        .requestMatchers("/api/v1/bitacora/**").authenticated()
-                        .requestMatchers("/api/v1/email/**").authenticated()
-                        .requestMatchers("/api/v1/sumilla/**").hasRole("RECEPCIONIST")
+                        .requestMatchers("/api/v1/sumilla/getSedeByEmail").permitAll()
+                        .requestMatchers("/api/v1/bitacora/**").permitAll()
+                        .requestMatchers("/api/v1/email/**").permitAll()
+                        .requestMatchers("/api/v1/sumilla/**").permitAll()
 
                         // Cualquier otra ruta permitida sin autenticación
                         .anyRequest().permitAll()
@@ -63,9 +63,9 @@ public class    SecurityConfig {
                         .jwt(jwt -> jwt
                                 .jwtAuthenticationConverter(authConverter)
                         )
-                )
+                );
                 // Definir las rutas que estarán bajo la protección del servidor de recursos OAuth2
-                .securityMatcher("/api/v1/sumilla/**", "/api/v1/bitacora/**", "/api/v1/email/**");  // Aplica la seguridad solo a estas rutas
+//                .securityMatcher("/api/v1/sumilla/**", "/api/v1/bitacora/**", "/api/v1/email/**");  // Aplica la seguridad solo a estas rutas
         return http.build();
     }
 }

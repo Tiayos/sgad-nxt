@@ -14,7 +14,8 @@ public record SumillaDTO(
         @JsonProperty("numero_hojas") Integer numeroHojas,
         @JsonProperty("numero_sumilla") String numeroSumilla,
         @JsonProperty("numero_tramite") Long numeroTramite,
-        @JsonProperty("sum_sede") Long sumSede
+        @JsonProperty("sum_sede") Long sumSede,
+        @JsonProperty("sum_cod_sede") Long sumCodSede
 
         ) {
 
@@ -27,7 +28,8 @@ public record SumillaDTO(
                 model.getNumeroHojas(),
                 model.getNumeroSumilla(),
                 model.getNumeroTramite(),
-                model.getSumSede()
+                model.getSumSede(),
+                model.getSumCodSede()
         );
     }
 }

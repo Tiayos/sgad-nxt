@@ -328,5 +328,4 @@ public class BitacoraModel implements Serializable {
         this.estadoTransferencia = estadoTransferencia;
     }
 
-
 }

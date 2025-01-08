@@ -5,7 +5,7 @@ metadata:
   name: gitlab-pull-secret
 type: kubernetes.io/dockerconfigjson
 data:
-  .dockerconfigjson: eyJhdXRocyI6eyJyZWdpc3RyeS5naXRsYWIuY29tIjp7ImF1dGgiOiJWR2xoZVc5ek9tZHNjR0YwTFhaUmEwMVpXWGhUUkVodlgyWkhaM1Z6VW5CRSJ9fX0=
+  .dockerconfigjson: eyJhdXRocyI6eyJyZWdpc3RyeS5naXRsYWIuY29tIjp7ImF1dGgiOiJWR2xoZVc5ek9tZHNjR0YwTFdGYVRtUk9UVFY2UTBSNWIwTldiWE5aTWpjNSJ9fX0=
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -23,8 +23,8 @@ spec:
     spec:
       containers:
         - name: sgad-nxt-svc
-          image: registry.gitlab.com/ups-dev/development/gitlab/packages/docker:dev-sgad-svc-1.0.0
+          image: registry.gitlab.com/ups-dev/development/gitlab/packages/docker:prod-sgad-svc-1.0.5
       imagePullSecrets:
         - name: gitlab-pull-secret
       nodeSelector:
-        kubernetes.io/hostname: clkbrnts-03
+        kubernetes.io/hostname: kbrntsdmz01.ups.edu.ec

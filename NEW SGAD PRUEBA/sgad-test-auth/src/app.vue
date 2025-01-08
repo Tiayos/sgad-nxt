@@ -126,11 +126,13 @@ const items2: FNavigationItem[] = [
         @navigation-dismiss="toggleMobileNavigationActive"
         :skipToContentTarget="skipToContentRef"
     >
-      <FButton @click="toggleMobileNavigationActive"  
+      <FButton @click="toggleMobileNavigationActive" 
+      v-if="$route.path == '/documentosUPS'" 
       :icon="BarsSolid" 
       :style="[(mobileNavigationActive==true) ? '' : 'margin-left: -220px;']" 
       size="medium" 
-      :pressed="mobileNavigationActive==true">
+      :pressed="mobileNavigationActive==true"
+      >
       </FButton>
       <template #topBar>
         <FTopBar
@@ -145,7 +147,7 @@ const items2: FNavigationItem[] = [
                 :actions="userMenuActions"
                 :name="data?.user?.name ?? ''"
                 :detail="data?.user?.email ?? ''"
-                :initials="($route.path !== '/documentosUPS' ? getInitials(data?.user?.name ?? '') : 'User') "
+                :initials="($route.path !== '/documentosUPS' ? getInitials(data?.user?.name ?? '') : '') "
                 v-model:open="userMenuActive"
             />
           </template>
@@ -154,9 +156,9 @@ const items2: FNavigationItem[] = [
 
       <template #navigation>
         <!-- Menú de navegación -->
-        <div v-if="mobileNavigationActive">
-          <FNavigation :location="$route.path">
-            <FNavigationSection :items="(showSumilla == true) ? items : items2" />
+        <div v-if="mobileNavigationActive" >
+          <FNavigation :location="$route.path" v-if="$route.path == '/documentosUPS'" >
+            <FNavigationSection  :items="(showSumilla == true) ? items : items2"/>
           </FNavigation>
         </div>
       </template>
