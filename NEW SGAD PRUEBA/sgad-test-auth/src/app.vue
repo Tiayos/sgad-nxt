@@ -127,7 +127,7 @@ const items2: FNavigationItem[] = [
         :skipToContentTarget="skipToContentRef"
     >
       <FButton @click="toggleMobileNavigationActive" 
-      v-if="$route.path == '/documentosUPS'" 
+      v-if="$route.path == 'documentosUPS'" 
       :icon="BarsSolid" 
       :style="[(mobileNavigationActive==true) ? '' : 'margin-left: -220px;']" 
       size="medium" 
@@ -157,7 +157,7 @@ const items2: FNavigationItem[] = [
       <template #navigation>
         <!-- Menú de navegación -->
         <div v-if="mobileNavigationActive" >
-          <FNavigation :location="$route.path" v-if="$route.path == '/documentosUPS'" >
+          <FNavigation :location="$route.path" v-if="$route.path == 'documentosUPS'" >
             <FNavigationSection  :items="(showSumilla == true) ? items : items2"/>
           </FNavigation>
         </div>
