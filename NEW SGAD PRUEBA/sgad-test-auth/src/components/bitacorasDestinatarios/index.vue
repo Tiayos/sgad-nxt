@@ -4,6 +4,7 @@
 
       <FFormLayout v-if="selected==0">
       <FLayoutSection>
+        <!-- tabla en bitácora para ver documentos físicos -->
         <DataTable
             :value="eventosBitacorasList"
             show-gridlines

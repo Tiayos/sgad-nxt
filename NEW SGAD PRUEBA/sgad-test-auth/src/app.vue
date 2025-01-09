@@ -37,19 +37,14 @@ const { data: userLogin } = useSessionStorage<Persona>("userLogin");
 const { getUsrLogin } = usePersonaService();
 
 onMounted(async () => {
-  console.log(store.appRoles, 'store.appRoles');
 
 if(store.appRoles.includes('recepcionist')){
   showSumilla.value = true;
-  console.log(showSumilla.value,'SI ENTRA 1');
 }
 
   store.appRoles.forEach((e:string) => {
-    console.log(e, 'eeeeeee' );
-    console.log(showSumilla.value, 'showSumilla');
     if (e == 'recepcionist') {
     showSumilla.value = true;
-    console.log(showSumilla.value,'SI ENTRA');
   }
 });
 
@@ -127,7 +122,7 @@ const items2: FNavigationItem[] = [
         :skipToContentTarget="skipToContentRef"
     >
       <FButton @click="toggleMobileNavigationActive" 
-      v-if="$route.path == 'documentosUPS'" 
+      v-if="$route.path != '/documentosUPS'" 
       :icon="BarsSolid" 
       :style="[(mobileNavigationActive==true) ? '' : 'margin-left: -220px;']" 
       size="medium" 
@@ -157,8 +152,8 @@ const items2: FNavigationItem[] = [
       <template #navigation>
         <!-- Menú de navegación -->
         <div v-if="mobileNavigationActive" >
-          <FNavigation :location="$route.path" v-if="$route.path == 'documentosUPS'" >
-            <FNavigationSection  :items="(showSumilla == true) ? items : items2"/>
+          <FNavigation :location="$route.path" v-if="$route.path != '/documentosUPS'" >
+            <FNavigationSection  :items="showSumilla ? items : items2"/>
           </FNavigation>
         </div>
       </template>
