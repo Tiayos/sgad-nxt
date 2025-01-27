@@ -31,6 +31,10 @@ public class SgadDocumentoBitacora implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BIT_CODIGO", referencedColumnName = "BIT_CODIGO")
     private BitacoraModel bitacoraModel;
+
+    @Column(name = "DOC_ESTADO_TRAMITE")
+    private String estadoTramite;
+
     @Column(name = "AUD_ADICIONADO")
     private String audAdicionado;
     @Column(name = "AUD_ELIMINADO")
@@ -49,10 +53,12 @@ public class SgadDocumentoBitacora implements Serializable {
         this.docCodigo = docCodigo;
     }
 
-    public SgadDocumentoBitacora(Long docCodigo, byte[] docArchivo, BitacoraModel bitacoraModel, String audAdicionado, String audEliminado, LocalDateTime audFechaAdicion, LocalDateTime audFechaModificacion, String audModificado) {
+    public SgadDocumentoBitacora(Long docCodigo, byte[] docArchivo, String docNombreArchivo, BitacoraModel bitacoraModel, String estadoTramite, String audAdicionado, String audEliminado, LocalDateTime audFechaAdicion, LocalDateTime audFechaModificacion, String audModificado) {
         this.docCodigo = docCodigo;
         this.docArchivo = docArchivo;
+        this.docNombreArchivo = docNombreArchivo;
         this.bitacoraModel = bitacoraModel;
+        this.estadoTramite = estadoTramite;
         this.audAdicionado = audAdicionado;
         this.audEliminado = audEliminado;
         this.audFechaAdicion = audFechaAdicion;
@@ -79,6 +85,7 @@ public class SgadDocumentoBitacora implements Serializable {
         this.bitacoraModel = dto.bitacora()!= null ? new BitacoraModel(dto.bitacora().codigo()) : null;
         this.audAdicionado = dto.adicionado();
         this.docNombreArchivo = dto.docNombreArchivo();
+        this.estadoTramite = dto.estadoTramite();
     }
 
     public Long getDocCodigo() {
@@ -153,4 +160,11 @@ public class SgadDocumentoBitacora implements Serializable {
         this.docNombreArchivo = docNombreArchivo;
     }
 
+    public String getEstadoTramite() {
+        return estadoTramite;
+    }
+
+    public void setEstadoTramite(String estadoTramite) {
+        this.estadoTramite = estadoTramite;
+    }
 }

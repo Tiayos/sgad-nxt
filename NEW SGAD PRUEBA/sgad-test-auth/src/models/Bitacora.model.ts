@@ -22,4 +22,7 @@ export interface Bitacora {
     nombre_archivo:      string;
     estado_transferencia: string;
     adicionado:          string;
+    mensajero_externo:   string;
+
+    documento_reasignado: boolean;
 }

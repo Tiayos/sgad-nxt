@@ -8,7 +8,8 @@ public record DocumentosBitacoraDTO(
         @JsonProperty("doc_archivo") byte[] docArchivo,
         BitacoraDTO bitacora,
         String adicionado,
-        @JsonProperty("doc_nombre_archivo") String docNombreArchivo
+        @JsonProperty("doc_nombre_archivo") String docNombreArchivo,
+        @JsonProperty("estado_tramite") String estadoTramite
 
 
         ) {
@@ -18,7 +19,8 @@ public record DocumentosBitacoraDTO(
                 model.getDocArchivo(),
                 model.getBitacoraModel() != null ? BitacoraDTO.toDTO(model.getBitacoraModel()) : null,
                 model.getAudAdicionado(),
-                model.getDocNombreArchivo()
+                model.getDocNombreArchivo(),
+                model.getEstadoTramite()
                 );
     }
 }

@@ -46,6 +46,7 @@ public class    SecurityConfig {
                         .requestMatchers("/api/v1/persona/findEmail").permitAll()
                         .requestMatchers("/api/v1/persona/**").permitAll()
                         .requestMatchers("/api/v1/email/sendCodigoUsuarioExterno").permitAll()
+                        .requestMatchers("/api/v1/email/sendEmailDocumentacionFisica").permitAll()
                         .requestMatchers("/api/v1/bitacoraExternos").permitAll()
                         .requestMatchers("/api/v1/bitacoraExternos/**").permitAll()
 

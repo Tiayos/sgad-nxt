@@ -73,6 +73,10 @@ public class BitacoraModel implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SUM_CODIGO", referencedColumnName = "SUM_CODIGO")
     private SumillaModel sumilla;
+
+    @Column(name = "BIT_MENSAJERO_EXTERNO")
+    private String mensajeroExterno;
+
     @Column(name = "AUD_ELIMINADO")
     private String eliminado;
     @Column(name = "AUD_ADICIONADO")
@@ -113,6 +117,7 @@ public class BitacoraModel implements Serializable {
         this.nombreArchivo = dto.nombreArchivo();
         this.estadoTransferencia = dto.estadoTransferencia();
         this.adicionado = dto.adicionado();
+        this.mensajeroExterno = dto.mensajeroExterno();
     }
 
     @PrePersist
@@ -328,4 +333,11 @@ public class BitacoraModel implements Serializable {
         this.estadoTransferencia = estadoTransferencia;
     }
 
+    public String getMensajeroExterno() {
+        return mensajeroExterno;
+    }
+
+    public void setMensajeroExterno(String mensajeroExterno) {
+        this.mensajeroExterno = mensajeroExterno;
+    }
 }

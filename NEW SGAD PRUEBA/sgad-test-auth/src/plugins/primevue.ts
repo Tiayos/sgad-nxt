@@ -39,6 +39,8 @@ import Calendar from 'primevue/calendar';
 import InputIcon from 'primevue/inputicon';
 import { install } from "vue3-recaptcha-v2";
 import VueCookies from "vue-cookies";
+import InputSwitch from 'primevue/inputswitch'; 
+import ToggleButton from 'primevue/togglebutton'; 
 
 export default defineNuxtPlugin(({vueApp: app}) => {
     app.use(PrimeVue, {
@@ -91,5 +93,7 @@ export default defineNuxtPlugin(({vueApp: app}) => {
     app.component('FileUpload', FileUpload)
     app.component('Calendar', Calendar)
     app.component('InputIcon', InputIcon)
+    app.component('InputSwitch', InputSwitch)
+    app.component('ToggleButton', ToggleButton)
 
 })

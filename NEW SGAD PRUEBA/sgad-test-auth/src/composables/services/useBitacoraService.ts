@@ -51,6 +51,14 @@ export const useBitacoraService = () => {
         }
     }
 
+    const getDocsRespuestaTramiteByBitCodigo = async(bitCodigo:number): Promise<DocumentoBitacora[]> => {
+        try {
+            return await $fetch<DocumentoBitacora[]>(`${apiUrl}/getDocsRespuestaByBitCodigo?bitCodigo=${bitCodigo}`, await authService.getHeaders())
+        } catch (error) {
+            throw new Error("Error al consultar los documentos");
+        }
+    }
+
     const getBitacorasByPerCodigoDestinatario = async(perCodigoDestinatario:number): Promise<Bitacora[]> => {
         try {
             return await $fetch<Bitacora[]>(`${apiUrl}/getBitacorasByDestinatario?perCodigoDestinatario=${perCodigoDestinatario}`,await authService.getHeaders())
@@ -160,7 +168,8 @@ export const useBitacoraService = () => {
         getBitacorasByPerCodigoDestinatario,
         saveDocumentoBitacora,
         getDocumentosByBitCodigo,
-        deleteDocumentosByBitCodigo
+        deleteDocumentosByBitCodigo,
+        getDocsRespuestaTramiteByBitCodigo
 
     }
 }

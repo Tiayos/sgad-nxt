@@ -6,4 +6,5 @@ export interface DocumentoBitacora {
     doc_nombre_archivo:         string;
     bitacora:                   Bitacora;
     adicionado:                 string;
+    estado_tramite:            string;
 }

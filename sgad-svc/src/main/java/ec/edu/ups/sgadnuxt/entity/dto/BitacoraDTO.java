@@ -28,8 +28,9 @@ public record BitacoraDTO(
         @JsonProperty("doc_archivo") byte[] docArchivo,
         @JsonProperty("nombre_archivo") String nombreArchivo,
         @JsonProperty("estado_transferencia") char estadoTransferencia,
-        String adicionado
-
+        String adicionado,
+        @JsonProperty("mensajero_externo") String mensajeroExterno,
+        @JsonProperty("documento_reasignado") boolean documentoReasignado
 
 ) {
 
@@ -55,7 +56,9 @@ public record BitacoraDTO(
                 model.getDocArchivo(),
                 model.getNombreArchivo(),
                 model.getEstadoTransferencia(),
-                model.getAdicionado()
+                model.getAdicionado(),
+                model.getMensajeroExterno(),
+                false
         );
     }
 }

@@ -134,8 +134,7 @@
                 size="medium"
                 :icon="PencilSolid"
                 @click="prepareEdit(slotProps.data.sumilla, persistAction.edit)"
-            >Editar</FButton
-            >
+            >Editar</FButton>
           </template>
         </Column>
         <Column style="width: 10px">
@@ -298,10 +297,25 @@
               :error="apellidos_remitenteError"
               :disabled="action == persistAction.view"
           />
+          
+          <FHorizontalStack gap="8">
+            <FText as="h6" variant="bodyLg" fontWeight="semibold"  >
+            Es un mensajero externo?:
+            </FText>
+            <ToggleButton v-model="checked" onLabel="Si" offLabel="No" />
+          </FHorizontalStack>
 
-          <FText id="mensajeroLbl" as="h6" variant="bodyMd" fontWeight="semibold">
+          <FText id="mensajeroLbl" as="h6" variant="bodyMd" fontWeight="semibold" >
             Mensajero:
           </FText>
+
+          <FTextField
+              id="mensajeroExterno"
+              v-model="mensajeroExterno"
+              :error="mensajeroExternoError"
+              v-if="checked==true"
+          />
+
           <FBox
               background="bg"
               padding="0"
@@ -309,6 +323,7 @@
               borderColor="border"
               style="border-radius: 5px"
               :style="[mensajeroError != null ? { 'border-color': '#FF6767' } : {}]"
+              v-if="checked==false"
           >
             <AutoComplete
                 v-model="mensajero"
@@ -340,6 +355,14 @@
 
           <FDivider border-width="5" border-color="border-inverse"/>
            <FVerticalStack gap="4">
+
+              <FHorizontalStack gap="8">
+                <FText as="h6" variant="bodyLg" fontWeight="semibold"  >
+                  Este documento se reasigna a otra sede?:
+                </FText>
+                <ToggleButton v-model="checkedReasignacion" onLabel="Si" offLabel="No" />
+              </FHorizontalStack>
+
                 <FText
                     id="destinatarioLbl"
                     as="h6"
@@ -394,7 +417,7 @@
                   <FileUpload
                       ref="fileUpload"
                       name="file"
-                      accept=".pdf"
+                      accept=".pdf, .jpg, .jpeg, .png"
                       multiple
                       class="f"
                       :maxFileSize="10485760"
@@ -522,6 +545,53 @@
                   @Complete="searchItem"
                   :disabled="action == persistAction.view"
               />
+              <FModalSection v-if="action == persistAction.edit">
+                <FVerticalStack gap="4">
+                  <FDivider border-width="5" border-color="border-inverse"/>
+                  <FText id="personaRecibeLbl" as="h6" variant="bodyLg" fontWeight="semibold">
+                    Respuesta al trámite:
+                  </FText>
+
+                  <FVerticalStack gap="4">
+                  <FileUpload
+                      ref="fileUpload"
+                      name="file"
+                      accept=".pdf, .jpg, .jpeg, .png"
+                      multiple
+                      class="f"
+                      :maxFileSize="10485760"
+                      :chooseLabel="'Seleccionar archivos'"
+                      :onSelect="handleFileSelectDocumentosRespuesta"
+                      :disabled="action == persistAction.view"
+                  />
+                  <div v-if="docBitacoraListRespuesta.length > 0">
+                    <h3>Documentos de respuesta al trámite:</h3>
+                    <ul>
+                      <li
+                          v-for="(documento, index) in docBitacoraListRespuesta"
+                          :key="documento.doc_nombre_archivo">
+
+                        <a :href="createDownloadLink(documento.doc_archivo,documento.doc_nombre_archivo)"
+                            :download="documento.doc_nombre_archivo">
+                          {{ documento.doc_nombre_archivo }}
+                        </a>
+                        <FButton
+                            plain
+                            destructive
+                            size="micro"
+                            :icon="TrashCanSolid"
+                            @click="deleteFileDocsRespuesta(index)"
+                            style="margin-left: 2rem; margin-top: 1rem; align-items: end"
+                            :disabled="action == persistAction.view">Eliminar
+                        </FButton>
+                        <FDivider :border-width="'4'" />
+                      </li>
+                    </ul>
+                  </div>
+                </FVerticalStack>
+                </FVerticalStack>
+
+              </FModalSection>
             </FVerticalStack>
         </FVerticalStack>
       </FModalSection>
@@ -775,6 +845,7 @@ const {
   documentObj,
   saveDocumentoBitacora,
   files,
+  filesRespuesta,
   documentosBitacoraList,
   handleSubmit,
   nombres_remitente,
@@ -796,7 +867,13 @@ const {
   asuntoError,
   resetasunto,
   getPersonasByFilterName,
-  sendEmailDocFisicaBitacora
+  sendEmailDocFisicaBitacora,
+  checked,
+  mensajeroExterno,
+  mensajeroExternoError,
+  resetMensajeroExterno,
+  checkedReasignacion,
+  docBitacoraListRespuesta
 } = useSumillaComposable();
 
 const { data: userLogin } = useSessionStorage<Persona>("userLogin");
@@ -814,6 +891,7 @@ const estadoDocumentoModal = ref<boolean>(false);
 const mostrarMsgCorrecto = ref<boolean>(false);
 const mostrarMsgError = ref<boolean>(false);
 const mensajeToast = ref<string>('');
+const eventoBitacoraAux = ref<EventoBitacora>({} as EventoBitacora);
 
 
 const prepareCreate = async () => {
@@ -823,6 +901,7 @@ const prepareCreate = async () => {
   bitacora.value = {} as Bitacora;
   sumilla.value = {} as Sumilla;
   files.value = [];
+  filesRespuesta.value = [];
   documentosBitacoraList.value = [];
   resetNumHojas();
   resetnombres_remitente();
@@ -831,6 +910,7 @@ const prepareCreate = async () => {
   resetmensajero();
   resetlugar_destino()
   resetdestinatario();
+  resetMensajeroExterno
   // v$.value.$reset();
   // resetForm();
   sumilla.value.responsable = userLogin.value;
@@ -855,6 +935,10 @@ const handleFileSelect = (event: any) => {
   files.value = event.files;
 };
 
+const handleFileSelectDocumentosRespuesta = (event: any) => {
+  filesRespuesta.value = event.files;
+};
+
 const completeObjectBitacora = () =>{
   bitacora.value.nombres_remitente = nombres_remitente.value;
   bitacora.value.apellidos_remitente = apellidos_remitente.value;
@@ -862,6 +946,8 @@ const completeObjectBitacora = () =>{
   bitacora.value.destinatario = destinatario.value;
   bitacora.value.asunto = asunto.value;
   bitacora.value.lugar_destino = lugar_destino.value;
+  bitacora.value.mensajero_externo = mensajeroExterno.value;
+  bitacora.value.documento_reasignado = checkedReasignacion.value;
 }
 
 const onSubmited = handleSubmit(async (values:any) => {
@@ -881,7 +967,10 @@ const onSubmited = handleSubmit(async (values:any) => {
       completeObjectBitacora();
       await editBitacora(bitacora.value, bitacora.value.codigo);
       if (files.value.length > 0) {
-        saveDocumentos();
+      await  saveDocumentos();
+      }
+      if(filesRespuesta.value.length > 0){
+        await saveDocumentosRespuesta();
       }
     } else {
       completeObjectBitacora();
@@ -921,6 +1010,47 @@ const saveDocumentos = async () => {
             documentObj.value.doc_nombre_archivo = file.name;
             documentObj.value.bitacora.codigo = bitacora.value.codigo;
             documentObj.value.adicionado = bitacora.value.adicionado;
+            documentObj.value.estado_tramite = 'C'; //* C: creado - R: Respuesta al trámite 
+
+            await saveDocumentoBitacora(documentObj.value);
+          } catch (error) {
+            console.error("Error processing file:", error);
+            // Puedes manejar el error aquí si es necesario
+          }
+        };
+        reader.onerror = (error) => {
+          console.error("Error reading file:", error);
+        };
+        reader.readAsArrayBuffer(file);
+      }
+    } catch (error) {
+      console.error("Error processing files:", error);
+      // Puedes agregar más lógica de manejo de errores aquí si es necesario
+    }
+  }
+};
+
+
+const saveDocumentosRespuesta = async () => {
+  if (filesRespuesta.value.length > 0) {
+    try {
+      // Procesar cada archivo
+      for (const file of filesRespuesta.value) {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          try {
+            const result = e.target!.result as ArrayBuffer;
+            const byteArray = new Uint8Array(result);
+
+            // Convertir Uint8Array a byte[]
+            const byteArrayJava = Array.from(byteArray);
+            documentObj.value.bitacora = {} as Bitacora;
+            documentObj.value.codigo = 0;
+            documentObj.value.doc_archivo = byteArrayJava;
+            documentObj.value.doc_nombre_archivo = file.name;
+            documentObj.value.bitacora.codigo = bitacora.value.codigo;
+            documentObj.value.adicionado = bitacora.value.adicionado;
+            documentObj.value.estado_tramite = 'R'; //* C: creado - R: Respuesta al trámite 
 
             await saveDocumentoBitacora(documentObj.value);
           } catch (error) {
@@ -1005,16 +1135,17 @@ const handleChangeEnvioDocumento = () => {
 
 const onSubmitEnviarDocumento = async () => {
   try {
+
     eventoBitacora.value.estado = {} as Estado;
     eventoBitacora.value.per_codigo_responsable = {} as Persona;
 
     eventoBitacora.value.fecha = new Date();
     eventoBitacora.value.vigencia = "S";
     eventoBitacora.value.bitacora = bitacora.value;
-    eventoBitacora.value.estado.codigo = 5;
+    eventoBitacora.value.estado.codigo = eventoBitacoraAux.value.estado.codigo == 8  ? 9 : 5;
     eventoBitacora.value.adicionado = data.value?.user?.email!;
     eventoBitacora.value.per_codigo_responsable.codigo =
-        bitacora.value.receptor_documento.codigo;
+    bitacora.value.receptor_documento.codigo;
     await saveEventoBitacora(eventoBitacora.value);
     mostrarMsgCorrecto.value = true;
     mensajeToast.value = "El documento se envío correctamente";
@@ -1057,15 +1188,8 @@ const confirmDelete = async () => {
 const prepareEnviarDocumento = async (sumillaDocumento: Sumilla) => {
   bitacora.value = await getBitacoraByNumSumilla(sumillaDocumento.numero_sumilla);
   documentosBitacoraList.value = await getDocumentosByBitCodigo(bitacora.value.codigo);
-
+  eventoBitacoraAux.value  = await getEventoBitacoraService(bitacora.value.codigo);
   handleChangeEnvioDocumento();
-
-  // if (documentosBitacoraList.value.length > 0) {
-  //   handleChangeEnvioDocumento();
-  // } else {
-  //   mostrarMsgError.value = true;
-  //   mensajeToast.value = 'No está subido el documento digital';
-  // }
 };
 
 watch(
@@ -1075,10 +1199,10 @@ watch(
         const evento: EventoBitacora = await getEventoBitacoraService(
             bitacoraSelected.value.codigo
         );
-        if (evento.estado.codigo != 2 && bitacoraSelected.value.destinatario != null) {
-          disabledEnviarDocumento.value = true;
-        } else {
+        if ((evento.estado.codigo == 2 || evento.estado.codigo == 8 ) && bitacoraSelected.value.destinatario != null) {
           disabledEnviarDocumento.value = false;
+        } else {
+          disabledEnviarDocumento.value = true;
         }
       }
     }
@@ -1109,8 +1233,18 @@ const createDownloadLink = (doc_archivo: any, doc_nombre_archivo: any) => {
 const deleteFile = async (index: any) => {
   const documento: DocumentoBitacora = documentosBitacoraList.value[index];
   try {
-    await deleteDocumentosByBitCodigo(documento.bitacora.codigo); // Asegúrate de que tu API soporte esto
+    await deleteDocumentosByBitCodigo(documento.bitacora.codigo); 
     documentosBitacoraList.value.splice(index, 1);
+  } catch (error) {
+    console.error("Error eliminando el archivo:", error);
+  }
+};
+
+const deleteFileDocsRespuesta = async (index: any) => {
+  const documento: DocumentoBitacora = docBitacoraListRespuesta.value[index];
+  try {
+    await deleteDocumentosByBitCodigo(documento.bitacora.codigo); 
+    docBitacoraListRespuesta.value.splice(index, 1);
   } catch (error) {
     console.error("Error eliminando el archivo:", error);
   }
@@ -1134,6 +1268,39 @@ const deleteFile = async (index: any) => {
 }
 .p-autocomplete {
   height: 35px;
+}
+
+.p-togglebutton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: 1.5rem; /* Para bordes redondeados */
+  width: 100px; /* Puedes ajustar el ancho */
+  height: 40px; /* Puedes ajustar el alto */
+  cursor: pointer;
+  user-select: none;
+}
+
+.p-togglebutton.p-highlight {
+  background-color: #1e7be6; /* Color cuando está activo */
+  color: white;
+}
+
+.p-togglebutton:not(.p-highlight) {
+  background-color: #ccc; /* Color cuando está inactivo */
+  color: black;
+}
+
+.p-togglebutton .p-button-label {
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  pointer-events: none; /* Desactiva interacciones con el texto */
+}
+
+.p-togglebutton .p-focus {
+  outline: none; /* Elimina el borde azul en enfoque */
 }
 
 </style>

@@ -28,7 +28,7 @@ export const useSumillaComposable = () =>{
     const {getBitacoras, getBitacorasBySede, getBitacorasByFechaAndEstado,
         saveBitacora, deleteBitacora, editBitacora, editEstadoEnvioBitacora,
         getBitacoraByNumSumilla, deleteBitacoraByNumSumilla, saveDocumentoBitacora,
-        getDocumentosByBitCodigo, deleteDocumentosByBitCodigo} = useBitacoraService();
+        getDocumentosByBitCodigo, deleteDocumentosByBitCodigo, getDocsRespuestaTramiteByBitCodigo} = useBitacoraService();
     const {saveTransferencia} = useTransferenciaDocumentalService();
     const {getEventoBitacoraService, saveEventoBitacora, deleteEventoBitacora} = useEventoBitacora();
     const {sendEmailDocFisicaBitacora} = useSendEmailService();
@@ -49,18 +49,39 @@ export const useSumillaComposable = () =>{
     const eventoVigente = ref<EventoBitacora>({} as EventoBitacora);
     const documentObj = ref<DocumentoBitacora>({} as DocumentoBitacora);
     const files = ref<File[]>([]); // Definir files como un ref que es un arreglo de File
+    const filesRespuesta = ref<File[]>([]); // Definir files como un ref que es un arreglo de File
     const documentosBitacoraList = ref<DocumentoBitacora[]>([]);
+    const docBitacoraListRespuesta = ref<DocumentoBitacora[]>([]);
+    const checked = ref(false);
+    const checkedReasignacion = ref(false);
+
     const { handleSubmit, resetForm } = useForm({
         validationSchema: yup.object({
             numHojas: yup.string().required(),
             nombres_remitente: yup.string().required(),
             apellidos_remitente: yup.string().required(),
-            mensajero: yup.object().required(),
+            // mensajero: yup.object().required(),
+            mensajero: yup.object()
+            .nullable() // Permite valores nulos si no es requerido
+            .when([], {
+                is: () => checked.value == false, // Chequea la condición
+                then: (schema) => schema.required('El mensajero es obligatorio'),
+                otherwise: (schema) => schema.nullable(), // Si no, no aplica restricciones
+            }),
             lugar_destino: yup.string().required(),
             destinatario: yup.object().required(),
             asunto: yup.string().required(),
+            mensajero_externo: yup.string()
+            .nullable() // Permite valores nulos si no es requerido
+            .when([], {
+                is: () => checked.value == true, // Chequea la condición
+                then: (schema) => schema.required('El mensajero externo es obligatorio'),
+                otherwise: (schema) => schema.nullable(), // Si no, no aplica restricciones
+            }),
         }),
     });
+
+
 
     const {
         value: numHojas,
@@ -88,8 +109,17 @@ export const useSumillaComposable = () =>{
         errorMessage: mensajeroError,
         resetField: resetmensajero,
     } = useField<Persona>("mensajero", {
-        required: true,
+        esInterno: [checked]
     })
+    const {
+        value: mensajeroExterno,
+        errorMessage: mensajeroExternoError,
+        resetField: resetMensajeroExterno,
+    } = useField<string>("mensajero_externo", {
+        exExterno: [checked]
+        // required: true
+    })
+
     const {
         value: lugar_destino,
         errorMessage: lugar_destinoError,
@@ -132,13 +162,16 @@ export const useSumillaComposable = () =>{
 
         bitacora.value = await getBitacoraByNumSumilla(sumilla.value.numero_sumilla);
         documentosBitacoraList.value = await getDocumentosByBitCodigo(bitacora.value.codigo);
+        docBitacoraListRespuesta.value = await getDocsRespuestaTramiteByBitCodigo(bitacora.value.codigo);
 
         nombres_remitente.value = bitacora.value.nombres_remitente;
         apellidos_remitente.value = bitacora.value.apellidos_remitente;
-        mensajero.value = bitacora.value.mensajero;
+        mensajero.value = bitacora.value.mensajero != null ? bitacora.value.mensajero : {} as Persona;
         lugar_destino.value = bitacora.value.lugar_destino;
         destinatario.value = bitacora.value.destinatario;
         asunto.value = bitacora.value.asunto;
+        mensajeroExterno.value = bitacora.value.mensajero_externo != null ? bitacora.value.mensajero_externo : "";
+        checked.value = bitacora.value.mensajero_externo != null ? true : false;
 
         fechaEntrega.value =
             bitacora.value.fecha_entrega != null ? bitacora.value.fecha_entrega.toString() : "";
@@ -260,6 +293,7 @@ export const useSumillaComposable = () =>{
         documentObj,
         saveDocumentoBitacora,
         files,
+        filesRespuesta,
         documentosBitacoraList,
         resetForm,
         handleSubmit,
@@ -283,6 +317,13 @@ export const useSumillaComposable = () =>{
         asuntoError,
         resetasunto,
         getPersonasByFilterName,
-        sendEmailDocFisicaBitacora
+        sendEmailDocFisicaBitacora,
+        mensajeroExterno,
+        mensajeroExternoError,
+        resetMensajeroExterno,
+        checked,
+        checkedReasignacion,
+        docBitacoraListRespuesta, 
+        getDocsRespuestaTramiteByBitCodigo
     }
 }

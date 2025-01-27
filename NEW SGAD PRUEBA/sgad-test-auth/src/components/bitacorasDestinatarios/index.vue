@@ -46,8 +46,7 @@
           >
             <template #body="slotProps">
               <FBadge status="info" v-if="slotProps.data.estado.codigo === 5"
-              >Recibido</FBadge
-              >
+              >Recibido</FBadge>
               <FBadge status="success" v-if="slotProps.data.estado.codigo === 4"
               >Aprobado</FBadge
               >
@@ -56,6 +55,9 @@
               >
               <FBadge status="attention" v-if="slotProps.data.estado.codigo === 7"
               >Reasignado para trámite</FBadge
+              >
+              <FBadge status="new" v-if="slotProps.data.estado.codigo === 9"
+              >Reasignado desde otra sede</FBadge
               >
             </template>
           </Column>
@@ -230,10 +232,10 @@
         </FModalSection>
       </FCollapsible>
 
-      <FModalSection>
-        <div v-if="documentosBitacoraList.length > 0">
+      <FModalSection v-if="documentosBitacoraList.length > 0 && eventoSelected.estado.codigo != 9">
+        <div >
           <FVerticalStack gap="4">
-            <FText as="h6" variant="bodyMd" font-weight="semibold">Documentos:</FText>
+            <FText as="h6" variant="bodyMd" font-weight="semibold">Documentos recibidos:</FText>
           </FVerticalStack>
           <ul>
             <li
@@ -254,6 +256,122 @@
         </div>
       </FModalSection>
 
+
+                <FVerticalStack gap="4" v-if="eventoSelected.estado.codigo == 9">
+                  <FText id="estadoLbl" as="h6" variant="bodyMd" fontWeight="semibold" alignment="justify" style="margin-left: 20px; margin-top: 25px;">
+                    Adjuntar Documentos:
+                  </FText>
+                  <FileUpload
+                      ref="fileUpload"
+                      name="file"
+                      accept=".pdf, .jpg, .jpeg, .png"
+                      multiple
+                      class="f"
+                      :maxFileSize="10485760"
+                      :chooseLabel="'Seleccionar archivos'"
+                      :onSelect="handleFileSelect"
+                      
+                  />
+                  <div v-if="documentosBitacoraList.length > 0">
+                    <h3 style="margin-left: 20px; margin-top: 25px;">Documentos guardados:</h3>
+                    <ul>
+                      <li
+                          v-for="(documento, index) in documentosBitacoraList"
+                          :key="documento.doc_nombre_archivo"
+                      >
+                        <a
+                            :href="
+                            createDownloadLink(
+                              documento.doc_archivo,
+                              documento.doc_nombre_archivo
+                            )
+                          "
+                            :download="documento.doc_nombre_archivo"
+                        >
+                          {{ documento.doc_nombre_archivo }}
+                        </a>
+                        <FButton
+                            plain
+                            destructive
+                            size="micro"
+                            :icon="TrashCanSolid"
+                            @click="deleteFile(index)"
+                            style="margin-left: 2rem; margin-top: 1rem; align-items: end"
+                            
+                        >Eliminar</FButton
+                        >
+                        <FDivider :border-width="'4'" />
+                      </li>
+                    </ul>
+                  </div>
+                </FVerticalStack>
+
+                <FVerticalStack gap="4">
+                  <FText id="estadoLbl" as="h6" variant="bodyMd" fontWeight="semibold" style="margin-left: 20px; margin-top: 25px;">
+                    Documentos de respuesta al trámite (si aplica):
+                  </FText>
+                  <FBox>
+                    <div v-if="documentosRespuestaBitacoraList.length > 0">
+                      <!-- <h3 style="margin-left: 20px; margin-top: 25px;">Documentos guardados:</h3> -->
+                      <ul>
+                        <li
+                            v-for="(documento, index) in documentosBitacoraList"
+                            :key="documento.doc_nombre_archivo"
+                        >
+                          <a
+                              :href="
+                              createDownloadLink(
+                                documento.doc_archivo,
+                                documento.doc_nombre_archivo
+                              )
+                            "
+                              :download="documento.doc_nombre_archivo">
+                            {{ documento.doc_nombre_archivo }}
+                          </a>
+                          <FButton
+                              plain
+                              destructive
+                              size="micro"
+                              :icon="TrashCanSolid"
+                              @click="deleteFile(index)"
+                              style="margin-left: 2rem; margin-top: 1rem; align-items: end"
+                              
+                          >Eliminar</FButton
+                          >
+                          <FDivider :border-width="'4'" />
+                        </li>
+                      </ul>
+                    </div>
+                  <FText id="estadoLbl" as="h6" variant="bodyMd" color="subdued" fontWeight="semibold" style="margin-left: 50px; margin-top: 25px;" v-if="documentosRespuestaBitacoraList.length == 0" >
+                      No se han adjuntado documentos de respuesta al trámite.
+                  </FText>
+                  </FBox>
+                  <FDivider :border-width="'4'" />
+                  <FTooltip
+                  modelValue
+                  content="Este contenido está ubicado encima del componente"
+                  placement="bottom"
+                  width="wide">
+                  
+                  <template #activator="{props}">
+                    <FHorizontalStack gap="1" v-bind="props">
+                      <FText variant="bodyLg" fontWeight="medium" as="span">
+                        Tooltip ubicado
+                      </FText>
+                      <FText variant="bodyLg" fontWeight="bold" as="span" color="success">
+                        encima
+                      </FText>
+                      <FText variant="bodyLg" fontWeight="medium" as="span">
+                        del componente
+                      </FText>
+                      <FHorizontalStack>
+                        <FIcon :source="CircleQuestionSolid" color="base"/>
+                      </FHorizontalStack>
+                    </FHorizontalStack>
+                  </template>
+              </FTooltip>
+                </FVerticalStack>
+              
       <FCardSection v-show="!desabilitarGuardarCambios">
         <FCardSubsection>
           <FFormLayout>
@@ -430,7 +548,8 @@ import {
   HouseSolid,
   LayerGroupSolid,
   UserSolid,
-  CaretDownSolid
+  CaretDownSolid,
+  CircleQuestionSolid
 } from "@ups-dev/freya-icons";
 import AutoComplete from "primevue/autocomplete";
 import {useBitacorasDestinatariosComposable} from "~/composables/bitacoras/useBitacorasDestinatariosComposable";
@@ -442,6 +561,9 @@ import {required, toTypedSchema} from "@vee-validate/rules";
 import * as yup from 'yup';
 import type { BitacoraExternos } from "~/models/BitacoraExternos.model";
 import type { DocumentosExternos } from '../../models/DocumentosExternos.model';
+import { useSumillaComposable } from "~/composables/sumillas/useSumillaComposable";
+import type { DocumentoBitacora } from "~/models/DocumentoBitacora.model";
+import type { Bitacora } from '../../models/Bitacora.model';
 
 const {
   eventosBitacorasList,
@@ -463,8 +585,11 @@ const {
   editBitacoraElectronica,
   sendEmailSolDocumentacionFisica,
   sendEmailRespuestaElectronicaRemitente,
-  enviarMailDocumentacionFisicaReasignada
+  enviarMailDocumentacionFisicaReasignada,
 } = useBitacorasDestinatariosComposable();
+
+const {getPersonasByFilterName, deleteDocumentosByBitCodigo, saveDocumentoBitacora, getDocsRespuestaTramiteByBitCodigo} = useSumillaComposable();
+
 const eventoSelected = ref<EventoBitacora>({} as EventoBitacora);
 const accionesModal = ref<boolean>(false);
 const eventosBitacorasAcciones = ref<EventoBitacora[]>([]);
@@ -481,6 +606,10 @@ const modalVerDocumentos = ref<boolean>(false);
 const filesRespuesta = ref<File[]>([]); // Definir files como un ref que es un arreglo de File
 const bitacoraExternaSelected = ref<BitacoraExternos>({} as BitacoraExternos);
 const documentoExternoObj = ref<DocumentosExternos>({} as DocumentosExternos);
+const files = ref<File[]>([]); // Definir files como un ref que es un arreglo de File
+const documentObj = ref<DocumentoBitacora>({} as DocumentoBitacora);
+const documentosRespuestaBitacoraList = ref<DocumentoBitacora[]>([]);
+
   const { data } = useAuth();
 
 const tramiteAccionList = ref(
@@ -498,6 +627,16 @@ const handleFileSelectRespuesta = (event: any) => {
   filesRespuesta.value = event.files;
 };
 
+const deleteFile = async (index: any) => {
+  const documento: DocumentoBitacora = documentosBitacoraList.value[index];
+  try {
+    await deleteDocumentosByBitCodigo(documento.bitacora.codigo); // Asegúrate de que tu API soporte esto
+    documentosBitacoraList.value.splice(index, 1);
+  } catch (error) {
+    console.error("Error eliminando el archivo:", error);
+  }
+};
+
 const tabs: TabDescriptor[] = [
   {
     id: "crear-sumilla",
@@ -508,6 +647,12 @@ const tabs: TabDescriptor[] = [
     content: "Documentos electrónicos",
   },
 ];
+
+const handleFileSelect = (event: any) => {
+  files.value = event.files;
+};
+
+
 
 const handleChangeDocumentos = ()=>{
   accionesDocumentosElectronicosModal.value = !accionesDocumentosElectronicosModal.value;
@@ -573,14 +718,25 @@ watch(
 const filteredItems = ref<Persona[]>([]);
 const receptorPersonaList = ref<Persona[]>([]);
 
-const searchItem = (event: any) => {
+// const searchItem = (event: any) => {
+//   const query = event.query.toLowerCase();
+//   filteredItems.value = receptorPersonaList.value.filter(
+//       (item:any) =>
+//           item.per_nombres.toLowerCase().includes(query) ||
+//           item.per_apellidos.toLowerCase().includes(query)
+//   );
+// };
+
+const searchItem = async(event: any) => {
   const query = event.query.toLowerCase();
+  receptorPersonaList.value = await getPersonasByFilterName(query);
   filteredItems.value = receptorPersonaList.value.filter(
       (item:any) =>
           item.per_nombres.toLowerCase().includes(query) ||
           item.per_apellidos.toLowerCase().includes(query)
   );
 };
+
 
 const createDownloadLink = (doc_archivo: any, doc_nombre_archivo: any) => {
   const byteCharacters = atob(doc_archivo);
@@ -600,18 +756,18 @@ const handleChangeAcciones = () => {
   resetPersonaObj();
   accionesModal.value = !accionesModal.value;
 };
-
+//prepare documentos físicos
 const prepareAcciones = async (eventoParam: EventoBitacora) => {
-  documentosBitacoraList.value = await getDocumentosByBitCodigo(
-      eventoParam.bitacora.codigo
-  );
+  documentosBitacoraList.value = await getDocumentosByBitCodigo(eventoParam.bitacora.codigo);
+  documentosRespuestaBitacoraList.value = await getDocsRespuestaTramiteByBitCodigo(eventoParam.bitacora.codigo);
   desabilitarGuardarCambios.value = false;
   eventoSelected.value = eventoParam;
   eventosBitacorasAcciones.value = await getAllEventosByBitCodigo(
       eventoParam.bitacora.codigo
   );
   estadosList.value = await getAllEstados();
-  receptorPersonaList.value = await getUsers();
+
+  // receptorPersonaList.value = await getUsers();
 
   const lastEvent: EventoBitacora =
       eventosBitacorasAcciones.value[eventosBitacorasAcciones.value.length - 1];
@@ -713,6 +869,9 @@ const onSubmitAcciones = handleSubmit(async (values:any) => {
         mensajeToast.value = 'Se solicitó documentación física';
         break;
       case 7:
+        if (files.value.length > 0) {
+         await saveDocumentosReasignados();
+        }
         eventoSelected.value.per_codigo_reasignado = {} as Persona;
         eventoSelected.value.estado.codigo = 7;
         eventoSelected.value.codigo = 0;
@@ -727,6 +886,45 @@ const onSubmitAcciones = handleSubmit(async (values:any) => {
     }
   }
 });
+
+const saveDocumentosReasignados = async () => {
+  if (files.value.length > 0) {
+    try {
+      // Procesar cada archivo
+      for (const file of files.value) {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          try {
+            const result = e.target!.result as ArrayBuffer;
+            const byteArray = new Uint8Array(result);
+
+            // Convertir Uint8Array a byte[]
+            const byteArrayJava = Array.from(byteArray);
+            documentObj.value.bitacora = {} as Bitacora;
+            documentObj.value.codigo = 0;
+            documentObj.value.doc_archivo = byteArrayJava;
+            documentObj.value.doc_nombre_archivo = file.name;
+            documentObj.value.bitacora.codigo = eventoSelected.value.bitacora.codigo;
+            documentObj.value.adicionado = eventoSelected.value.bitacora.adicionado;
+            documentoExternoObj.value.estado_documento_electronico = 'C';
+            
+            await saveDocumentoBitacora(documentObj.value);
+          } catch (error) {
+            console.error("Error processing file:", error);
+            // Puedes manejar el error aquí si es necesario
+          }
+        };
+        reader.onerror = (error) => {
+          console.error("Error reading file:", error);
+        };
+        reader.readAsArrayBuffer(file);
+      }
+    } catch (error) {
+      console.error("Error processing files:", error);
+      // Puedes agregar más lógica de manejo de errores aquí si es necesario
+    }
+  }
+};
 
 const enviarEmail = async (evento: EventoBitacora) => {
   await sendEmail(evento);

@@ -24,6 +24,14 @@ public class DocumentoBitacoralmpl implements IDocumentoBitacoraService {
     }
 
     @Override
+    public List<DocumentosBitacoraDTO> findAllDocumentosRespuestaBitacoraByBitCodigo(Long bitCodigo) {
+        return iDocumentoBitacoraDao.findAllDocsRespuestaTramiteByBitCodigo(bitCodigo)
+                .stream()
+                .map(DocumentosBitacoraDTO::toDTO)
+                .toList();
+    }
+
+    @Override
     public void saveDocumentoBitacora(DocumentosBitacoraDTO documentosBitacoraDTO) {
         try {
             iDocumentoBitacoraDao.save(new SgadDocumentoBitacora(documentosBitacoraDTO));

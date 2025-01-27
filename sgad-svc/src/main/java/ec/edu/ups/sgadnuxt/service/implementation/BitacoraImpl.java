@@ -93,7 +93,7 @@ public class BitacoraImpl implements IBitacoraService {
                     LocalDate.now(),
                     'S',
                     bitacoraDTO1,
-                    EstadoDTO.toDTO(new SgadEstado(2L)),
+                    EstadoDTO.toDTO(new SgadEstado(bitacoraDTO.documentoReasignado() ? 8L : 2L)),
                     bitacoraDTO1.adicionado(),
                     bitacoraDTO1.receptorDocumento(),
                     null

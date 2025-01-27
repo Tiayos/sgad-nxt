@@ -84,6 +84,11 @@ public class BitacoraController {
         return ResponseEntity.ok(this.iDocumentoBitacoraService.findAllDocumentosByBitCodigo(bitCodigo));
     }
 
+    @GetMapping("/getDocsRespuestaByBitCodigo")
+    public ResponseEntity<?> findDocsRespuestaTramiteByBitCodigo(@RequestParam Long bitCodigo){
+        return ResponseEntity.ok(this.iDocumentoBitacoraService.findAllDocumentosRespuestaBitacoraByBitCodigo(bitCodigo));
+    }
+
     @DeleteMapping("/deleteDocumentos")
     public void deleteDocumentosByBitCodigo(@RequestParam Long bitCodigo){
         this.iDocumentoBitacoraService.deleteDocumentosByBitCodigo(bitCodigo);
