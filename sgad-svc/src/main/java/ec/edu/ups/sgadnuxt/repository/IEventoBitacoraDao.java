@@ -14,19 +14,19 @@ public interface IEventoBitacoraDao extends JpaRepository<SgadEventoBitacora, Lo
     @Query("SELECT ebi FROM BitacoraModel bit, SgadEventoBitacora ebi WHERE bit.codigo = ebi.bitacoraModel.codigo and bit.codigo=?1 and ebi.ebiVigencia='S'")
     SgadEventoBitacora getEventosBitacora(Long bitCodigo);
 
-        @Query(nativeQuery = true, value = "SELECT ebi.*\n" +
-                "                FROM sgad.sgad_bitacora bit\n" +
-                "                JOIN sgad.sgad_evento_bitacora ebi ON bit.bit_codigo = ebi.bit_codigo\n" +
-                "                WHERE (\n" +
-                "                    (ebi.per_codigo_reasignado = ?1\n" +
-                "                     AND ebi.est_codigo != 2 \n" +
-                "                     AND ebi.ebi_vigencia = 'S')\n" +
-                "                    OR\n" +
-                "                    (bit.PER_CODIGO_DESTINATARIO = ?1\n" +
-                "                     AND ebi.est_codigo != 2 \n" +
-                "                     AND ebi.ebi_vigencia = 'S')\n" +
-                "                )\n" +
-                "                ORDER BY ebi.bit_codigo DESC ")
+        @Query(nativeQuery = true, value = "SELECT ebi.* \n" +
+                "                                FROM sgad.sgad_bitacora bitt \n" +
+                "                                JOIN sgad.sgad_evento_bitacora ebi ON bitt.bit_codigo = ebi.bit_codigo\n" +
+                "                                WHERE (\n" +
+                "                                    (ebi.per_codigo_reasignado = ?1 \n" +
+                "                                     AND ebi.est_codigo not in (2,8) \n" +
+                "                                     AND ebi.ebi_vigencia = 'S')\n" +
+                "                                    OR\n" +
+                "                                    (bitt.PER_CODIGO_DESTINATARIO = ?1 \n" +
+                "                                     AND ebi.est_codigo not in (2,8) \n" +
+                "                                     AND ebi.ebi_vigencia = 'S')\n" +
+                "                                )\n" +
+                "                                ORDER BY ebi.bit_codigo DESC")
     List<SgadEventoBitacora> getAllEventosByPerCodigo(Long perCodigo);
 
     @Query("select ebi from SgadEventoBitacora ebi where ebi.bitacoraModel.codigo = ?1 order by ebi.ebiCodigo asc")

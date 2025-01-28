@@ -5,7 +5,8 @@ export default NuxtAuthHandler({
     secret: process.env.AUTH_SECRET,
     // pages: {
     //   // Change the default behavior to use `/login` as the path for the sign-in page
-    //   signIn: '/',
+    // //   signIn: '/',
+    //     // signIn: 'http://localhost:3000/',
     // },
 
     session: {

@@ -103,7 +103,7 @@ public class BitacoraModel implements Serializable {
         this.destinatario = dto.destinatario() != null ? new GthPersona(dto.destinatario().codigo()) : null;
         this.asunto = dto.asunto();
         this.lugarDestino = dto.lugarDestino();
-        this.mensajero = dto.mensajero()!=null ? new GthPersona(dto.mensajero().codigo()): null;
+        this.mensajero = dto.mensajero() != null ? new GthPersona(dto.mensajero().codigo()): null;
         this.numeroGuia = dto.numeroGuia();
         this.observaciones = dto.observaciones();
         this.usrEmisor = dto.usrEmisor() != null ? new GthPersona(dto.usrEmisor().codigo()) : null;

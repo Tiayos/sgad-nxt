@@ -77,7 +77,6 @@ public class EventoBitacoralmpl implements IEventoBitacoraService {
             SgadEventoBitacora sgadEventoBitacora1 = new SgadEventoBitacora(eventoBitacoraDTO);
             iEventoBitacoraDao.save(sgadEventoBitacora1);
 
-
             Long ultimoIdSumilla = eventoBitacoraDTO.bitacora().sumilla().sumCodSede(); // se cambia por el sumCodSede
             Long numeroReferenciaSumilla = iSumillaDao.completarNumSumilla(eventoBitacoraDTO.bitacora().sumilla().codigo());
 

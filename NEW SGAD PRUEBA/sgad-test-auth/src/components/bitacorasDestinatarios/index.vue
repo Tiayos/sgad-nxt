@@ -14,7 +14,7 @@
             :rows="10"
         >
           <Column field="bitacora.sumilla.numero_sumilla" header="No. de sumilla" style="width: 5px"></Column>
-          <Column header="Remitente" style="width: 5px">
+          <Column header="Remitente" body-style="width: 1px" >
             <template #body="slotProps">
               {{ slotProps.data.bitacora.nombres_remitente }}
               {{ slotProps.data.bitacora.apellidos_remitente }}
@@ -26,6 +26,7 @@
               header="Asunto"
               style="width: 10px"
               bodyStyle="text-align: center;"
+              headerStyle="text-align: center"
           >
           </Column>
 
@@ -34,6 +35,7 @@
               header="Número de guia"
               style="width: 10px"
               bodyStyle="text-align: center;"
+              headerStyle="text-align: center"
           >
           </Column>
 
@@ -307,24 +309,31 @@
                 </FVerticalStack>
 
                 <FVerticalStack gap="4">
-                  <FText id="estadoLbl" as="h6" variant="bodyMd" fontWeight="semibold" style="margin-left: 20px; margin-top: 25px;">
-                    Documentos de respuesta al trámite (si aplica):
-                  </FText>
+                  <FTooltip
+                      activator-wrapper="div"
+                      content="Sección para visualizar los documentos que lleguen a recepción que sean respuesta al mismo trámite."
+                      placement="right"
+                      width="wide">
+                      <template #activator="{props}" >
+                        <FHorizontalStack gap="1" v-bind="props">
+                          <FText  id="estadoLbl" as="h6" variant="bodyMd" fontWeight="semibold" style="margin-left: 20px; margin-top: 25px;">
+                            Documentos de respuesta al trámite (si aplica):
+                          </FText>
+                          <FHorizontalStack align="center" block-align="center" style="margin-top: 20px;">
+                            <FIcon :source="CircleQuestionSolid" color="primary"/>
+                          </FHorizontalStack>
+                        </FHorizontalStack>
+                      </template>
+                    </FTooltip>
                   <FBox>
                     <div v-if="documentosRespuestaBitacoraList.length > 0">
-                      <!-- <h3 style="margin-left: 20px; margin-top: 25px;">Documentos guardados:</h3> -->
                       <ul>
                         <li
                             v-for="(documento, index) in documentosBitacoraList"
                             :key="documento.doc_nombre_archivo"
                         >
                           <a
-                              :href="
-                              createDownloadLink(
-                                documento.doc_archivo,
-                                documento.doc_nombre_archivo
-                              )
-                            "
+                              :href="createDownloadLink(documento.doc_archivo,documento.doc_nombre_archivo)"
                               :download="documento.doc_nombre_archivo">
                             {{ documento.doc_nombre_archivo }}
                           </a>
@@ -347,29 +356,7 @@
                   </FText>
                   </FBox>
                   <FDivider :border-width="'4'" />
-                  <FTooltip
-                  modelValue
-                  content="Este contenido está ubicado encima del componente"
-                  placement="bottom"
-                  width="wide">
-                  
-                  <template #activator="{props}">
-                    <FHorizontalStack gap="1" v-bind="props">
-                      <FText variant="bodyLg" fontWeight="medium" as="span">
-                        Tooltip ubicado
-                      </FText>
-                      <FText variant="bodyLg" fontWeight="bold" as="span" color="success">
-                        encima
-                      </FText>
-                      <FText variant="bodyLg" fontWeight="medium" as="span">
-                        del componente
-                      </FText>
-                      <FHorizontalStack>
-                        <FIcon :source="CircleQuestionSolid" color="base"/>
-                      </FHorizontalStack>
-                    </FHorizontalStack>
-                  </template>
-              </FTooltip>
+                    
                 </FVerticalStack>
               
       <FCardSection v-show="!desabilitarGuardarCambios">
@@ -571,17 +558,13 @@ const {
   documentosBitacoraList,
   getAllEventosByBitCodigo,
   getAllEstados,
-  getUsers,
   saveEventoBitacora,
   sendEmail,
   getDocumentosByBitCodigo,
   bitacorasExternasList,
-  findBitacorasElectronicas,
-  getDocumentoExternoByBidCodigo,
   saveDocumentoExterno,
   getDocumentoExternoByBidCodigoRecibidos,
   getDocumentoExternoByBidCodigoRespuesta,
-  editBitacoraExterna,
   editBitacoraElectronica,
   sendEmailSolDocumentacionFisica,
   sendEmailRespuestaElectronicaRemitente,

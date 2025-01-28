@@ -903,6 +903,9 @@ const prepareCreate = async () => {
   files.value = [];
   filesRespuesta.value = [];
   documentosBitacoraList.value = [];
+  checked.value = false;
+  checkedReasignacion.value = false;
+  resetMensajeroExterno();
   resetNumHojas();
   resetnombres_remitente();
   resetapellidos_remitente();

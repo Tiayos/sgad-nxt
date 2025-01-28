@@ -23,9 +23,9 @@ export const useSumillaComposable = () =>{
     const {bitacorasList, filtersSumillaBitacora, eventoBitacora} = storeToRefs(useStore);
 
     //*services
-    const {getSumillas, getSumillasBySede, saveSumilla, deleteSumilla, getSumillaByNumeroSumilla, editSumilla, getSedeByEmail } = useSumillaService();
+    const {getSumillasBySede, saveSumilla, deleteSumilla, getSumillaByNumeroSumilla, editSumilla, getSedeByEmail } = useSumillaService();
     const {getUsers, getUsersByFilterName, getUsrLogin, getUsersAmbitosGestionDocumental} = usePersonaService();
-    const {getBitacoras, getBitacorasBySede, getBitacorasByFechaAndEstado,
+    const {getBitacorasBySede, getBitacorasByFechaAndEstado,
         saveBitacora, deleteBitacora, editBitacora, editEstadoEnvioBitacora,
         getBitacoraByNumSumilla, deleteBitacoraByNumSumilla, saveDocumentoBitacora,
         getDocumentosByBitCodigo, deleteDocumentosByBitCodigo, getDocsRespuestaTramiteByBitCodigo} = useBitacoraService();

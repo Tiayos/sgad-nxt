@@ -115,18 +115,19 @@ public class BitacoraImpl implements IBitacoraService {
                         bitacoraMap -> {
                             bitacoraMap.setNombresRemitente(bitacoraDTO.nombresRemitente());
                             bitacoraMap.setApellidosRemitente(bitacoraDTO.apellidosRemitente());
+                            bitacoraMap.setReceptor(bitacoraDTO.usrReceptor() != null ? new GthPersona(bitacoraDTO.usrReceptor().codigo()) : null);
                             bitacoraMap.setDestinatario(new GthPersona(bitacoraDTO.destinatario().codigo()));
                             bitacoraMap.setAsunto(bitacoraDTO.asunto());
                             bitacoraMap.setLugarDestino(bitacoraDTO.lugarDestino());
-                            bitacoraMap.setMensajero(new GthPersona(bitacoraDTO.mensajero().codigo()));
+                            bitacoraMap.setMensajero(bitacoraDTO.mensajero().codigo() != null ? new GthPersona(bitacoraDTO.mensajero().codigo()) : null);
                             bitacoraMap.setNumeroGuia(bitacoraDTO.numeroGuia());
                             bitacoraMap.setObservaciones(bitacoraDTO.observaciones());
                             bitacoraMap.setUsrEmisor(bitacoraDTO.usrEmisor() != null ? new GthPersona(bitacoraDTO.usrEmisor().codigo()) : null);
-                            bitacoraMap.setReceptor(bitacoraDTO.usrReceptor() != null ? new GthPersona(bitacoraDTO.usrReceptor().codigo()) : null);
                             bitacoraMap.setFechaEntrega(bitacoraDTO.fechaEntrega());
                             bitacoraMap.setHoraEntrega(bitacoraDTO.horaEntrega());
                             bitacoraMap.setDocArchivo(bitacoraDTO.docArchivo());
                             bitacoraMap.setNombreArchivo(bitacoraDTO.nombreArchivo());
+                            bitacoraMap.setMensajeroExterno(bitacoraDTO.mensajeroExterno());
                             return BitacoraDTO.toDTO(bitacoraDao.save(bitacoraMap));
                         }) .orElseThrow(
                         () -> new NotFoundException("No se encontró la bitácora con número: ".concat(codigo.toString()))
