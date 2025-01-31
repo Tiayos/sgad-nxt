@@ -306,7 +306,7 @@
           </FHorizontalStack>
 
           <FText id="mensajeroLbl" as="h6" variant="bodyMd" fontWeight="semibold" >
-            Mensajero:
+            {{ checked==true ? 'Mensajero externo' : 'Mensajero interno' }}
           </FText>
 
           <FTextField
@@ -357,8 +357,8 @@
            <FVerticalStack gap="4">
 
               <FHorizontalStack gap="8">
-                <FText as="h6" variant="bodyLg" fontWeight="semibold"  >
-                  Este documento se reasigna a otra sede?:
+                <FText as="h6" variant="bodyLg" fontWeight="bold"  >
+                  Pertenece el documento a otra sede?:
                 </FText>
                 <ToggleButton v-model="checkedReasignacion" onLabel="Si" offLabel="No" />
               </FHorizontalStack>

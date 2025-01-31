@@ -61,10 +61,17 @@ const handleSearchResultsDismiss = () => {
 const toggleMobileNavigationActive = () =>
     (mobileNavigationActive.value = !mobileNavigationActive.value);
 
+// const cerrarSesion = async () => {
+//   try {
+//     sessionStorage.clear();
+//     await signOut({ callbackUrl: "/" });
+//   } catch (error) {}
+// };
+
 const cerrarSesion = async () => {
   try {
     sessionStorage.clear();
-    await signOut();
+    await signOut({ redirect: true });
   } catch (error) {}
 };
 

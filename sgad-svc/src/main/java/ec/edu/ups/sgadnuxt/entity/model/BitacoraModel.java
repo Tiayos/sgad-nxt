@@ -73,9 +73,17 @@ public class BitacoraModel implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SUM_CODIGO", referencedColumnName = "SUM_CODIGO")
     private SumillaModel sumilla;
-
     @Column(name = "BIT_MENSAJERO_EXTERNO")
     private String mensajeroExterno;
+
+    @Column(name = "BIT_SECUENCIAL_SEDE")
+    private Long secuencialSede;
+
+    @Column(name = "BIT_SECUENCIAL_DOCUMENTO")
+    private Long secuencialDocumento;
+
+    @Column(name = "PER_CODIGO_RECEPCION_REASIGNADO")
+    private Long codigoRecepcionReasignado;
 
     @Column(name = "AUD_ELIMINADO")
     private String eliminado;
@@ -118,6 +126,9 @@ public class BitacoraModel implements Serializable {
         this.estadoTransferencia = dto.estadoTransferencia();
         this.adicionado = dto.adicionado();
         this.mensajeroExterno = dto.mensajeroExterno();
+        this.secuencialSede = dto.secuencialSede();
+        this.secuencialDocumento = dto.secuencialDocumento();
+        this.codigoRecepcionReasignado = dto.codigoRecepcionReasignado();
     }
 
     @PrePersist
@@ -339,5 +350,29 @@ public class BitacoraModel implements Serializable {
 
     public void setMensajeroExterno(String mensajeroExterno) {
         this.mensajeroExterno = mensajeroExterno;
+    }
+
+    public Long getSecuencialSede() {
+        return secuencialSede;
+    }
+
+    public void setSecuencialSede(Long secuencialSede) {
+        this.secuencialSede = secuencialSede;
+    }
+
+    public Long getSecuencialDocumento() {
+        return secuencialDocumento;
+    }
+
+    public void setSecuencialDocumento(Long secuencialDocumento) {
+        this.secuencialDocumento = secuencialDocumento;
+    }
+
+    public Long getCodigoRecepcionReasignado() {
+        return codigoRecepcionReasignado;
+    }
+
+    public void setCodigoRecepcionReasignado(Long codigoRecepcionReasignado) {
+        this.codigoRecepcionReasignado = codigoRecepcionReasignado;
     }
 }

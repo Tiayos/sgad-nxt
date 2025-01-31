@@ -30,7 +30,11 @@ public record BitacoraDTO(
         @JsonProperty("estado_transferencia") char estadoTransferencia,
         String adicionado,
         @JsonProperty("mensajero_externo") String mensajeroExterno,
-        @JsonProperty("documento_reasignado") boolean documentoReasignado
+        @JsonProperty("documento_reasignado") boolean documentoReasignado,
+        @JsonProperty("secuencial_sede") Long secuencialSede,
+        @JsonProperty("secuencial_documento") Long secuencialDocumento,
+        @JsonProperty("codigo_recepcion_reasignado") Long codigoRecepcionReasignado
+
 
 ) {
 
@@ -58,7 +62,10 @@ public record BitacoraDTO(
                 model.getEstadoTransferencia(),
                 model.getAdicionado(),
                 model.getMensajeroExterno(),
-                false
+                false,
+                model.getSecuencialSede(),
+                model.getSecuencialDocumento(),
+                model.getCodigoRecepcionReasignado()
         );
     }
 }

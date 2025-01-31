@@ -37,6 +37,7 @@ export default NuxtAuthHandler({
             return token
         },
         async session({session,token}){
+            if (!token.access_token) return null // Si no hay token, forzar logout
             session.access_token = token.access_token
             session.refresh_token = token.refresh_token; // Make refresh token available in the session
             return session

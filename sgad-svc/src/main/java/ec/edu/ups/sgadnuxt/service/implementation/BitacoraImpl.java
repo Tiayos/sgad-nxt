@@ -16,6 +16,7 @@ import ec.edu.ups.sgadnuxt.repository.IEventoBitacoraDao;
 import ec.edu.ups.sgadnuxt.repository.ISumillaDao;
 import ec.edu.ups.sgadnuxt.service.IBitacoraService;
 import ec.edu.ups.sgadnuxt.service.ISumillaService;
+import ec.edu.ups.sgadnuxt.utils.Empresa;
 import jakarta.persistence.PersistenceException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,19 +82,53 @@ public class BitacoraImpl implements IBitacoraService {
                 .map(BitacoraDTO::toDTO)
                 .toList();
     }
+
     @Override
     public BitacoraDTO saveBitacora(BitacoraDTO bitacoraDTO) {
         try {
+            if (bitacoraDTO.documentoReasignado()) {
+                Long sedeByEmp = bitacoraDao.getEmpCodigoByPerCodigo(bitacoraDTO.destinatario().codigo());
+                Long perCodigo = Empresa.getPerCodigoBySedeCode(sedeByEmp.intValue());
+
+                BitacoraDTO bitacoraDTO2 = new BitacoraDTO(
+                        bitacoraDTO.codigo(),
+                        bitacoraDTO.nombresRemitente(),
+                        bitacoraDTO.apellidosRemitente(),
+                        bitacoraDTO.usrReceptor(),
+                        bitacoraDTO.destinatario(),
+                        bitacoraDTO.asunto(),
+                        bitacoraDTO.lugarDestino(),
+                        bitacoraDTO.mensajero(),
+                        bitacoraDTO.numeroGuia(),
+                        bitacoraDTO.observaciones(),
+                        bitacoraDTO.usrEmisor(),
+                        bitacoraDTO.usrReceptor(),
+                        bitacoraDTO.fechaEntrega(),
+                        bitacoraDTO.horaEntrega(),
+                        bitacoraDTO.fechaRecepcion(),
+                        bitacoraDTO.horaRecepcion(),
+                        bitacoraDTO.sumilla(),
+                        bitacoraDTO.docArchivo(),
+                        bitacoraDTO.nombreArchivo(),
+                        bitacoraDTO.estadoTransferencia(),
+                        bitacoraDTO.adicionado(),
+                        bitacoraDTO.mensajeroExterno(),
+                        bitacoraDTO.documentoReasignado(),
+                        bitacoraDTO.secuencialSede(),
+                        bitacoraDTO.secuencialDocumento(),
+                        perCodigo
+                );
+            }
 
             BitacoraModel bitacoraModel = bitacoraDao.save(new BitacoraModel(bitacoraDTO));
-            BitacoraDTO bitacoraDTO1 = BitacoraDTO.toDTO(bitacoraModel);  // Asegúrate de usar el DTO correcto
+            BitacoraDTO bitacoraDTO1 = BitacoraDTO.toDTO(bitacoraModel);
 
-            EventoBitacoraDTO eventoBitacoraDTO  = new EventoBitacoraDTO(
+            EventoBitacoraDTO eventoBitacoraDTO = new EventoBitacoraDTO(
                     null,
                     LocalDate.now(),
                     'S',
                     bitacoraDTO1,
-                    EstadoDTO.toDTO(new SgadEstado(bitacoraDTO.documentoReasignado() ? 8L : 2L)),
+                    EstadoDTO.toDTO(new SgadEstado(2L)),
                     bitacoraDTO1.adicionado(),
                     bitacoraDTO1.receptorDocumento(),
                     null
@@ -101,12 +136,11 @@ public class BitacoraImpl implements IBitacoraService {
             iEventoBitacoraDao.save(new SgadEventoBitacora(eventoBitacoraDTO));
             return bitacoraDTO1;
 
-        }catch (PersistenceException e){
+        } catch (PersistenceException e) {
             e.printStackTrace();
             return null;
         }
-
-        }
+    }
 
     @Override
     public void updateBitacora(BitacoraDTO bitacoraDTO, Long codigo) {

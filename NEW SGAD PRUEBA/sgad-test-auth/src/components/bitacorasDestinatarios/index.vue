@@ -77,6 +77,7 @@
       </FLayoutSection>
       </FFormLayout>
 
+// * 
       <FFormLayout v-if="selected==1">
       <FLayoutSection>
         <DataTable
@@ -101,8 +102,6 @@
               }}
             </template>
         </Column>
-        <!-- <Column field="nombre_completo_destinatario" header="Destinatario" style="width: 5px"></Column> -->
-        <!-- <Column field="correo_remitente" header="Correo remitente" style="width: 5px"></Column> -->
         <Column header="Estado" style="width: 5px" header-style="text-align: center;" bodyStyle="text-align: center;">
           <template #body="slotProps">
             <FBadge v-if="slotProps.data.estado == 1" status="critical">En trámite</FBadge>
@@ -449,7 +448,7 @@
             <FileUpload
               ref="fileUpload"
               name="file"
-              accept=".pdf"
+              accept=".pdf, .jpg, .jpeg, .png"
               multiple
               :maxFileSize="10485760"
               :auto="false"
@@ -701,15 +700,6 @@ watch(
 const filteredItems = ref<Persona[]>([]);
 const receptorPersonaList = ref<Persona[]>([]);
 
-// const searchItem = (event: any) => {
-//   const query = event.query.toLowerCase();
-//   filteredItems.value = receptorPersonaList.value.filter(
-//       (item:any) =>
-//           item.per_nombres.toLowerCase().includes(query) ||
-//           item.per_apellidos.toLowerCase().includes(query)
-//   );
-// };
-
 const searchItem = async(event: any) => {
   const query = event.query.toLowerCase();
   receptorPersonaList.value = await getPersonasByFilterName(query);
@@ -749,8 +739,6 @@ const prepareAcciones = async (eventoParam: EventoBitacora) => {
       eventoParam.bitacora.codigo
   );
   estadosList.value = await getAllEstados();
-
-  // receptorPersonaList.value = await getUsers();
 
   const lastEvent: EventoBitacora =
       eventosBitacorasAcciones.value[eventosBitacorasAcciones.value.length - 1];
