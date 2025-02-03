@@ -873,7 +873,7 @@ const {
   mensajeroExternoError,
   resetMensajeroExterno,
   checkedReasignacion,
-  docBitacoraListRespuesta
+  docBitacoraListRespuesta,
 } = useSumillaComposable();
 
 const { data: userLogin } = useSessionStorage<Persona>("userLogin");
@@ -1145,7 +1145,8 @@ const onSubmitEnviarDocumento = async () => {
     eventoBitacora.value.fecha = new Date();
     eventoBitacora.value.vigencia = "S";
     eventoBitacora.value.bitacora = bitacora.value;
-    eventoBitacora.value.estado.codigo = eventoBitacoraAux.value.estado.codigo == 8  ? 9 : 5;
+    // eventoBitacora.value.estado.codigo = eventoBitacoraAux.value.estado.codigo == 8  ? 9 : 5;
+    eventoBitacora.value.estado.codigo = 5;
     eventoBitacora.value.adicionado = data.value?.user?.email!;
     eventoBitacora.value.per_codigo_responsable.codigo =
     bitacora.value.receptor_documento.codigo;

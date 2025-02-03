@@ -23,6 +23,6 @@ export interface Bitacora {
     estado_transferencia: string;
     adicionado:          string;
     mensajero_externo:   string;
-
     documento_reasignado: boolean;
+    codigo_recepcion_reasignado: number;
 }

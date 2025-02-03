@@ -64,7 +64,7 @@
             </template>
           </Column>
 
-          <Column header="Acciones" style="width: 5px" bodyStyle="text-align:center">
+          <Column header="Acciones" style="width: 5px" headerStyle="text-align: center" bodyStyle="text-align:center">
             <template #body="slotProps">
               <FButton
                   size="medium"
@@ -73,11 +73,19 @@
               />
             </template>
           </Column>
+          <Column style="width: 10px" v-if="appRoles.includes('recepcionist') ">
+          <template #body="slotProps">
+            <FButton
+                size="medium"
+                :icon="PencilSolid"
+                @click="prepareEdit(slotProps.data.bitacora.sumilla, persistAction.edit)"
+            >Editar</FButton>
+          </template>
+        </Column>
         </DataTable>
       </FLayoutSection>
       </FFormLayout>
 
-// * 
       <FFormLayout v-if="selected==1">
       <FLayoutSection>
         <DataTable
@@ -521,6 +529,396 @@
 </FCardSection>
     </FModal>
 
+<!-- modal para editar bitácoras-->
+
+<FModal
+        v-model="createModal"
+        title=""
+        title-hidden
+        large
+        :primaryAction="{
+        content: 'Guardar Cambios',
+        onAction: onSubmited,
+      }"
+        :secondaryActions="[
+        {
+          content: 'Cancelar',
+          onAction: handleChangeCreateModal,
+        },
+      ]"
+    >
+      <FModalSection title-hidden style="text-align: center">
+        <FVerticalStack gap="4">
+          <FText
+              as="h5"
+              variant="headingMd"
+              :font-weight="'semibold'"
+              style="text-align: center"
+          >
+            {{ sede.dee_descripcion }}
+          </FText>
+          <FText as="h6" variant="headingMd" style="text-align: center">
+            {{ $t("app.sgadNuxt.sumilla.title") }}
+          </FText>
+        </FVerticalStack>
+      </FModalSection>
+
+      <FModalSection>
+        <FVerticalStack gap="4" align="center">
+          <FHorizontalStack gap="4" align="center">
+            <FText as="h5" variant="bodyMd" :font-weight="'semibold'">
+              {{ $t("app.sgadNuxt.sumilla.fecha") }}
+            </FText>
+            <FText
+                as="h5"
+                variant="bodyMd"
+                :font-weight="'regular'"
+            >
+              {{ fechaSumillaView }}
+            </FText>
+            <FText
+                as="h5"
+                variant="bodyMd"
+                :font-weight="'regular'"
+            >
+              {{ sumilla.fecha_sumilla }}
+            </FText>
+
+            <FText as="h5" variant="bodyMd" :font-weight="'semibold'">
+              {{ $t("app.sgadNuxt.sumilla.hora") }}
+            </FText>
+            <FText as="h5" variant="bodyMd" :font-weight="'regular'">
+              {{ sumilla.hora_sumilla }}
+            </FText>
+          </FHorizontalStack>
+
+          <FHorizontalStack gap="4" align="center">
+            <FText as="h5" variant="bodyMd" :font-weight="'semibold'">
+              {{ $t("app.sgadNuxt.sumilla.nombreResponsable") }}
+            </FText>
+            <FText as="h5" variant="bodyMd" :font-weight="'semibold'">
+              {{ sumilla.responsable.per_nombres }}
+              {{ sumilla.responsable.per_apellidos }}
+            </FText>
+          </FHorizontalStack>
+          <FHorizontalStack gap="4" align="center">
+            <FText as="h5" variant="bodyMd" :font-weight="'semibold'">
+              {{ $t("app.sgadNuxt.sumilla.numHojas") }}
+            </FText>
+            <FTextField
+                type="number"
+                v-model="numHojas"
+                id="numHojas"
+                :error="numHojasError"
+            />
+          </FHorizontalStack>
+        </FVerticalStack>
+      </FModalSection>
+
+      <FModalSection>
+        <FVerticalStack gap="4" align="center">
+          <FText id="remitenteNombreLbl" as="h6" variant="bodyMd" fontWeight="semibold">
+            Nombres remitente:
+          </FText>
+          <FTextField
+              id="remitenteNombre"
+              v-model="nombres_remitente"
+              :error="nombres_remitenteError"
+          />
+          <FText id="remitenteApellidoLbl" as="h6" variant="bodyMd" fontWeight="semibold">
+            Apellidos remitente:
+          </FText>
+          <FTextField
+              id="remitenteApellido"
+              v-model="apellidos_remitente"
+              :error="apellidos_remitenteError"
+          />
+          
+          <FHorizontalStack gap="8">
+            <FText as="h6" variant="bodyLg" fontWeight="semibold"  >
+            Es un mensajero externo?:
+            </FText>
+            <ToggleButton v-model="checked" onLabel="Si" offLabel="No" />
+          </FHorizontalStack>
+
+          <FText id="mensajeroLbl" as="h6" variant="bodyMd" fontWeight="semibold" >
+            {{ checked==true ? 'Mensajero externo' : 'Mensajero interno' }}
+          </FText>
+
+          <FTextField
+              id="mensajeroExterno"
+              v-model="mensajeroExterno"
+              :error="mensajeroExternoError"
+              v-if="checked==true"
+          />
+
+          <FBox
+              background="bg"
+              padding="0"
+              borderWidth="1"
+              borderColor="border"
+              style="border-radius: 5px"
+              :style="[mensajeroError != null ? { 'border-color': '#FF6767' } : {}]"
+              v-if="checked==false"
+          >
+            <AutoComplete
+                v-model="mensajero"
+                optionLabel="nombreCompleto"
+                :suggestions="filteredItems"
+                @Complete="searchItem"
+                class="full-width-autocomplete"
+            />
+          </FBox>
+
+          <FText id="numeroGuiaLbl" as="h6" variant="bodyMd" fontWeight="semibold">
+            Número de guia:
+          </FText>
+          <FTextField
+              id="numeroGuia"
+              v-model="bitacora.numero_guia"
+          />
+
+          <FText id="observacionesLbl" as="h6" variant="bodyMd" fontWeight="semibold">
+            Observaciones:
+          </FText>
+          <FTextField
+              id="observaciones"
+              v-model="bitacora.observaciones"
+          />
+
+          <FDivider border-width="5" border-color="border-inverse"/>
+           <FVerticalStack gap="4">
+
+              <!-- <FHorizontalStack gap="8">
+                <FText as="h6" variant="bodyLg" fontWeight="bold"  >
+                  Pertenece el documento a otra sede?:
+                </FText>
+                <ToggleButton v-model="checkedReasignacion" onLabel="Si" offLabel="No" />
+              </FHorizontalStack> -->
+
+                <FText
+                    id="destinatarioLbl"
+                    as="h6"
+                    variant="bodyMd"
+                    fontWeight="semibold"
+                >
+                  Destinatario:
+                </FText>
+                <FBox
+                    background="bg"
+                    padding="0"
+                    borderWidth="1"
+                    borderColor="border"
+                    style="border-radius: 5px"
+                    :style="[destinatarioError != null ? { 'border-color': '#FF6767' } : {}]"
+                >
+                  <AutoComplete
+                      v-model="destinatario"
+                      optionLabel="nombreCompleto"
+                      :suggestions="filteredItems"
+                      class="full-width-autocomplete"
+                      @Complete="searchItem"
+                  />
+                </FBox>
+
+                <FText id="asuntolbl" as="h6" variant="bodyMd" fontWeight="semibold">
+                  Asunto:
+                </FText>
+                <FTextField
+                    id="asunto"
+                    v-model="asunto"
+                    :error="asuntoError"
+                />
+                <FText
+                    id="lugarDestinolbl"
+                    as="h6"
+                    variant="bodyMd"
+                    fontWeight="semibold"
+                >
+                  Destino UPS:
+                </FText>
+                <FTextField
+                    id="lugarDestino"
+                    v-model="lugar_destino"
+                    :error="lugar_destinoError"
+                />
+
+                <FVerticalStack gap="4">
+                  <FileUpload
+                      ref="fileUpload"
+                      name="file"
+                      accept=".pdf, .jpg, .jpeg, .png"
+                      multiple
+                      class="f"
+                      :maxFileSize="10485760"
+                      :chooseLabel="'Seleccionar archivos'"
+                      :onSelect="handleFileSelect"
+                  />
+                  <div v-if="documentosBitacoraList.length > 0">
+                    <h3>Documentos guardados:</h3>
+                    <ul>
+                      <li
+                          v-for="(documento, index) in documentosBitacoraList"
+                          :key="documento.doc_nombre_archivo"
+                      >
+                        <a
+                            :href="
+                            createDownloadLink(
+                              documento.doc_archivo,
+                              documento.doc_nombre_archivo
+                            )
+                          "
+                            :download="documento.doc_nombre_archivo"
+                        >
+                          {{ documento.doc_nombre_archivo }}
+                        </a>
+                        <FButton
+                            plain
+                            destructive
+                            size="micro"
+                            :icon="TrashCanSolid"
+                            @click="deleteFile(index)"
+                            style="margin-left: 2rem; margin-top: 1rem; align-items: end"
+                        >Eliminar</FButton
+                        >
+                        <FDivider :border-width="'4'" />
+                      </li>
+                    </ul>
+                  </div>
+                </FVerticalStack>
+              </FVerticalStack>
+
+          <FDivider border-width="5" border-color="border-inverse" />
+            <FHorizontalStack gap="12">
+              <FText
+                  id="fechaRecepcionlbl"
+                  as="h6"
+                  variant="bodyMd"
+                  fontWeight="semibold"
+              >
+                Fecha de recepción:
+              </FText>
+              <FText
+                  id="fechaRecepcion"
+                  as="h6"
+                  variant="bodyMd"
+                  fontWeight="regular"
+              >
+              {{ sumilla?.fecha_sumilla }}
+              {{ sumilla?.hora_sumilla }}
+              </FText>
+            </FHorizontalStack>
+
+            <FVerticalStack gap="4">
+                <FText
+                    id="fechaRecepcionlbl"
+                    as="h6"
+                    variant="bodyMd"
+                    fontWeight="semibold"
+                >
+                  Fecha de entrega:
+                </FText>
+                <FTextField
+                    id="fechaEntrega"
+                    type="date"
+                    v-model="fechaEntrega"
+                />
+
+                <FText
+                    id="horaEntregaLbl"
+                    for="calendar-timeonly"
+                    as="h6"
+                    variant="bodyMd"
+                    fontWeight="semibold"
+                >
+                  Hora de entrega:
+                </FText>
+
+                <FTextField
+                    id="horaEntrega"
+                    type="time"
+                    v-model="bitacora.hora_entrega"
+                />
+
+
+              <FText
+                  id="personaEntregaLbl"
+                  as="h6"
+                  variant="bodyMd"
+                  fontWeight="semibold"
+              >
+                Persona que entrega:
+              </FText>
+
+              <AutoComplete
+                  class="full-width-autocomplete"
+                  v-model="bitacora.usr_emisor"
+                  optionLabel="nombreCompleto"
+                  :suggestions="filteredItems"
+                  @Complete="searchItem"
+              />
+
+              <FText id="personaRecibeLbl" as="h6" variant="bodyMd" fontWeight="semibold">
+                Persona que recibe:
+              </FText>
+              <AutoComplete
+                  class="full-width-autocomplete"
+                  v-model="bitacora.usr_receptor"
+                  optionLabel="nombreCompleto"
+                  :suggestions="filteredItems"
+                  @Complete="searchItem"
+              />
+              <FModalSection >
+                <FVerticalStack gap="4">
+                  <FDivider border-width="5" border-color="border-inverse"/>
+                  <FText id="personaRecibeLbl" as="h6" variant="bodyLg" fontWeight="semibold">
+                    Respuesta al trámite:
+                  </FText>
+
+                  <FVerticalStack gap="4">
+                  <FileUpload
+                      ref="fileUpload"
+                      name="file"
+                      accept=".pdf, .jpg, .jpeg, .png"
+                      multiple
+                      class="f"
+                      :maxFileSize="10485760"
+                      :chooseLabel="'Seleccionar archivos'"
+                      :onSelect="handleFileSelectDocumentosRespuesta"
+                  />
+                  <div v-if="docBitacoraListRespuesta.length > 0">
+                    <h3>Documentos de respuesta al trámite:</h3>
+                    <ul>
+                      <li
+                          v-for="(documento, index) in docBitacoraListRespuesta"
+                          :key="documento.doc_nombre_archivo">
+
+                        <a :href="createDownloadLink(documento.doc_archivo,documento.doc_nombre_archivo)"
+                            :download="documento.doc_nombre_archivo">
+                          {{ documento.doc_nombre_archivo }}
+                        </a>
+                        <FButton
+                            plain
+                            destructive
+                            size="micro"
+                            :icon="TrashCanSolid"
+                            @click="deleteFileDocsRespuesta(index)"
+                            style="margin-left: 2rem; margin-top: 1rem; align-items: end">
+                          Eliminar
+                        </FButton>
+                        <FDivider :border-width="'4'" />
+                      </li>
+                    </ul>
+                  </div>
+                </FVerticalStack>
+                </FVerticalStack>
+
+              </FModalSection>
+            </FVerticalStack>
+        </FVerticalStack>
+      </FModalSection>
+    </FModal>
+
     <FToast v-model="mostrarMsgError" :content=mensajeToast error :duration="5000" />
     <FToast v-model="mostrarMsgCorrecto" :content=mensajeToast  :duration="5000" />
   </FCard>
@@ -533,6 +931,7 @@ import {
   MinusSolid,
   HouseSolid,
   LayerGroupSolid,
+  PencilSolid,
   UserSolid,
   CaretDownSolid,
   CircleQuestionSolid
@@ -568,9 +967,54 @@ const {
   sendEmailSolDocumentacionFisica,
   sendEmailRespuestaElectronicaRemitente,
   enviarMailDocumentacionFisicaReasignada,
+  findBitacorasDestinatarios
 } = useBitacorasDestinatariosComposable();
 
-const {getPersonasByFilterName, deleteDocumentosByBitCodigo, saveDocumentoBitacora, getDocsRespuestaTramiteByBitCodigo} = useSumillaComposable();
+const {getPersonasByFilterName, 
+  deleteDocumentosByBitCodigo, 
+  saveDocumentoBitacora, 
+  getDocsRespuestaTramiteByBitCodigo,
+  nombres_remitente,
+  nombres_remitenteError,
+  resetnombres_remitente,
+  apellidos_remitente,
+  apellidos_remitenteError,
+  resetapellidos_remitente,
+  lugar_destino,
+  lugar_destinoError,
+  resetlugar_destino,
+  destinatario,
+  destinatarioError,
+  resetdestinatario,
+  mensajero,
+  mensajeroError,
+  resetmensajero,
+  asunto,
+  asuntoError,
+  resetasunto,
+  checked,
+  mensajeroExterno,
+  mensajeroExternoError,
+  resetMensajeroExterno,
+  checkedReasignacion,
+  sede,
+  sumilla,
+  numHojas,
+  numHojasError,
+  resetNumHojas,
+  bitacora,
+  fechaEntrega,
+  docBitacoraListRespuesta,
+  prepareEdit,
+  persistAction,
+  createModal,
+  appRoles,
+  editSumilla,
+  findSumillas,
+  editBitacora,
+  findBitacoras,
+  handleSubmit : handleEditSubmit
+} = useSumillaComposable();
 
 const eventoSelected = ref<EventoBitacora>({} as EventoBitacora);
 const accionesModal = ref<boolean>(false);
@@ -591,6 +1035,8 @@ const documentoExternoObj = ref<DocumentosExternos>({} as DocumentosExternos);
 const files = ref<File[]>([]); // Definir files como un ref que es un arreglo de File
 const documentObj = ref<DocumentoBitacora>({} as DocumentoBitacora);
 const documentosRespuestaBitacoraList = ref<DocumentoBitacora[]>([]);
+const changeEditModal = ref<boolean>(false);
+const fechaSumillaView = ref();
 
   const { data } = useAuth();
 
@@ -633,8 +1079,6 @@ const tabs: TabDescriptor[] = [
 const handleFileSelect = (event: any) => {
   files.value = event.files;
 };
-
-
 
 const handleChangeDocumentos = ()=>{
   accionesDocumentosElectronicosModal.value = !accionesDocumentosElectronicosModal.value;
@@ -729,6 +1173,99 @@ const handleChangeAcciones = () => {
   resetPersonaObj();
   accionesModal.value = !accionesModal.value;
 };
+
+
+const handleChangeCreateModal = () => {
+  createModal.value = !createModal.value;
+};
+
+
+const completeObjectBitacora = () =>{
+  bitacora.value.nombres_remitente = nombres_remitente.value;
+  bitacora.value.apellidos_remitente = apellidos_remitente.value;
+  bitacora.value.mensajero = mensajero.value;
+  bitacora.value.destinatario = destinatario.value;
+  bitacora.value.asunto = asunto.value;
+  bitacora.value.lugar_destino = lugar_destino.value;
+  bitacora.value.mensajero_externo = mensajeroExterno.value;
+  bitacora.value.documento_reasignado = checkedReasignacion.value;
+}
+
+const saveDocumentosRespuesta = async () => {
+  if (filesRespuesta.value.length > 0) {
+    try {
+      // Procesar cada archivo
+      for (const file of filesRespuesta.value) {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          try {
+            const result = e.target!.result as ArrayBuffer;
+            const byteArray = new Uint8Array(result);
+
+            // Convertir Uint8Array a byte[]
+            const byteArrayJava = Array.from(byteArray);
+            documentObj.value.bitacora = {} as Bitacora;
+            documentObj.value.codigo = 0;
+            documentObj.value.doc_archivo = byteArrayJava;
+            documentObj.value.doc_nombre_archivo = file.name;
+            documentObj.value.bitacora.codigo = bitacora.value.codigo;
+            documentObj.value.adicionado = bitacora.value.adicionado;
+            documentObj.value.estado_tramite = 'R'; // * C: creado - R: Respuesta al trámite 
+
+            await saveDocumentoBitacora(documentObj.value);
+          } catch (error) {
+            console.error("Error processing file:", error);
+            // Puedes manejar el error aquí si es necesario
+          }
+        };
+        reader.onerror = (error) => {
+          console.error("Error reading file:", error);
+        };
+        reader.readAsArrayBuffer(file);
+      }
+    } catch (error) {
+      console.error("Error processing files:", error);
+      // Puedes agregar más lógica de manejo de errores aquí si es necesario
+    }
+  }
+};
+
+const onSubmited = handleEditSubmit(async (values:any) => {
+    sumilla.value.numero_hojas = Number(numHojas.value);
+    await editSumilla(sumilla.value, sumilla.value.codigo!);
+    completeObjectBitacora();
+
+    await editBitacora(bitacora.value, bitacora.value.codigo);
+    if (files.value.length > 0) {
+      await saveDocumentos();
+    }
+    if(filesRespuesta.value.length > 0){
+      await saveDocumentosRespuesta();
+    }
+
+    await findBitacorasDestinatarios();
+
+    createModal.value = !createModal.value;
+    resetNumHojas();
+    mostrarMsgCorrecto.value = true;
+    mensajeToast.value = "La sumilla se editó correctamente";
+});
+
+
+const handleFileSelectDocumentosRespuesta = (event: any) => {
+  filesRespuesta.value = event.files;
+};
+
+const deleteFileDocsRespuesta = async (index: any) => {
+  const documento: DocumentoBitacora = docBitacoraListRespuesta.value[index];
+  try {
+    await deleteDocumentosByBitCodigo(documento.bitacora.codigo); 
+    docBitacoraListRespuesta.value.splice(index, 1);
+  } catch (error) {
+    console.error("Error eliminando el archivo:", error);
+  }
+};
+
 //prepare documentos físicos
 const prepareAcciones = async (eventoParam: EventoBitacora) => {
   documentosBitacoraList.value = await getDocumentosByBitCodigo(eventoParam.bitacora.codigo);

@@ -20,7 +20,7 @@ export const useSumillaComposable = () =>{
 //*Session storage
     const { data: userLogin } = useSessionStorage<Persona>("userLogin");
     const useStore = useArchivosStore();
-    const {bitacorasList, filtersSumillaBitacora, eventoBitacora} = storeToRefs(useStore);
+    const {bitacorasList, filtersSumillaBitacora, eventoBitacora, appRoles} = storeToRefs(useStore);
 
     //*services
     const {getSumillasBySede, saveSumilla, deleteSumilla, getSumillaByNumeroSumilla, editSumilla, getSedeByEmail } = useSumillaService();
@@ -80,8 +80,6 @@ export const useSumillaComposable = () =>{
             }),
         }),
     });
-
-
 
     const {
         value: numHojas,
@@ -172,6 +170,8 @@ export const useSumillaComposable = () =>{
         asunto.value = bitacora.value.asunto;
         mensajeroExterno.value = bitacora.value.mensajero_externo != null ? bitacora.value.mensajero_externo : "";
         checked.value = bitacora.value.mensajero_externo != null ? true : false;
+
+        checkedReasignacion.value = bitacora.value.documento_reasignado != null ? true : false;
 
         fechaEntrega.value =
             bitacora.value.fecha_entrega != null ? bitacora.value.fecha_entrega.toString() : "";
@@ -324,6 +324,7 @@ export const useSumillaComposable = () =>{
         checked,
         checkedReasignacion,
         docBitacoraListRespuesta, 
-        getDocsRespuestaTramiteByBitCodigo
+        getDocsRespuestaTramiteByBitCodigo,
+        appRoles
     }
 }

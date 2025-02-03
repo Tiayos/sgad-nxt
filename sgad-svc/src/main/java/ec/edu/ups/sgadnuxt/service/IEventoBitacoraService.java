@@ -7,6 +7,7 @@ public interface IEventoBitacoraService {
     List<EventoBitacoraDTO> findAllEventosBitacoras();
     EventoBitacoraDTO findEventosByBitCodigo(Long bitCodigo);
     List<EventoBitacoraDTO> findAllEventosByBitCodigo(Long bitCodigo);
+    List<EventoBitacoraDTO> findAllEventosByPerCodigoRecepcionReasignado(Long perCodigoRecepcionReasignado);
     List<EstadoDTO> findAllEstados();
     List<EventoBitacoraDTO> findEventosByPerCodigo(Long perCodigo);
     void saveEventoBitacora(EventoBitacoraDTO eventoBitacoraDTO);

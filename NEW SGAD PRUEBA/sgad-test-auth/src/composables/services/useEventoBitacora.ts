@@ -23,6 +23,15 @@ export const useEventoBitacora = () => {
         }
     }
 
+    
+    const getAllEventosByPerCodRecepcionReasignado = async(perCodigo:number): Promise<EventoBitacora[]> => {
+        try {
+            return await $fetch<EventoBitacora[]>(`${apiUrl}/getEventosByPerCodigoRecepcion?perCodigoRecepcion=${perCodigo}`, await authService.getHeaders())
+        } catch (error) {
+            throw new Error("Error al consultar los eventos");
+        }
+    }
+
     const getAllEventosByBitCodigo = async (bitCodigo: number): Promise<EventoBitacora[]> => {
         try {
             const resp = await $fetch<EventoBitacora[]>(`${apiUrl}/getAllEventos?bitCodigo=${bitCodigo}`, await authService.getHeaders());
@@ -98,6 +107,7 @@ export const useEventoBitacora = () => {
         getAllEstados,
         getAllEventosVigentesByPerCodigo,
         saveEventoBitacora,
-        deleteEventoBitacora
+        deleteEventoBitacora,
+        getAllEventosByPerCodRecepcionReasignado
     }
 }

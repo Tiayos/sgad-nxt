@@ -19,15 +19,18 @@ public interface IEventoBitacoraDao extends JpaRepository<SgadEventoBitacora, Lo
                 "                                JOIN sgad.sgad_evento_bitacora ebi ON bitt.bit_codigo = ebi.bit_codigo\n" +
                 "                                WHERE (\n" +
                 "                                    (ebi.per_codigo_reasignado = ?1 \n" +
-                "                                     AND ebi.est_codigo not in (2,8) \n" +
+                "                                     AND ebi.est_codigo not in (2) \n" +
                 "                                     AND ebi.ebi_vigencia = 'S')\n" +
                 "                                    OR\n" +
                 "                                    (bitt.PER_CODIGO_DESTINATARIO = ?1 \n" +
-                "                                     AND ebi.est_codigo not in (2,8) \n" +
+                "                                     AND ebi.est_codigo not in (2) \n" +
                 "                                     AND ebi.ebi_vigencia = 'S')\n" +
                 "                                )\n" +
                 "                                ORDER BY ebi.bit_codigo DESC")
     List<SgadEventoBitacora> getAllEventosByPerCodigo(Long perCodigo);
+
+    @Query("SELECT ebi FROM BitacoraModel bitt, SgadEventoBitacora ebi WHERE bitt.codigo = ebi.bitacoraModel.codigo and bitt.codigoRecepcionReasignado = ?1 and ebi.ebiVigencia = 'S' AND ebi.sgadEstado.estCodigo not in (2)")
+    List<SgadEventoBitacora> getEventosByPerCodigoRecepcionReasignado(Long perCodigoRecepcionReasignado);
 
     @Query("select ebi from SgadEventoBitacora ebi where ebi.bitacoraModel.codigo = ?1 order by ebi.ebiCodigo asc")
     List<SgadEventoBitacora> getAllEventosByBitCodigo(Long bitCodigo);

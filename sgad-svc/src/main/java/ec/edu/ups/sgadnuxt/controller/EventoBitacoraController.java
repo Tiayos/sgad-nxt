@@ -23,6 +23,13 @@ public class EventoBitacoraController {
     public ResponseEntity<?> findAllEventosVigentesByPerCodigo(@RequestParam Long perCodigo){
         return ResponseEntity.ok(this.iEventoBitacoraService.findEventosByPerCodigo(perCodigo));
     }
+
+    //* método que devuelve los eventos segun el perCodigoRecepcionReasignado y vigencia 'S'
+    @GetMapping("/getEventosByPerCodigoRecepcion")
+    public ResponseEntity<?> findAllEventosByPerCodigoRecepcion(@RequestParam Long perCodigoRecepcion){
+        return ResponseEntity.ok(this.iEventoBitacoraService.findAllEventosByPerCodigoRecepcionReasignado(perCodigoRecepcion));
+    }
+
 //* metodo que devuelve el evento que esté con estado en S segun el codigo de la bitacora
     @GetMapping("/getEventosCodBitacoraVigente")
     public ResponseEntity<?> findAllEventosByBitCodigo(@RequestParam Long bitCodigo){

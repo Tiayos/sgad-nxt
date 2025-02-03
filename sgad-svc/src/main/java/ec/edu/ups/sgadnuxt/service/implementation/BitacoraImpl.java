@@ -86,15 +86,16 @@ public class BitacoraImpl implements IBitacoraService {
     @Override
     public BitacoraDTO saveBitacora(BitacoraDTO bitacoraDTO) {
         try {
+            BitacoraModel bitacoraModel;
             if (bitacoraDTO.documentoReasignado()) {
                 Long sedeByEmp = bitacoraDao.getEmpCodigoByPerCodigo(bitacoraDTO.destinatario().codigo());
                 Long perCodigo = Empresa.getPerCodigoBySedeCode(sedeByEmp.intValue());
 
                 BitacoraDTO bitacoraDTO2 = new BitacoraDTO(
-                        bitacoraDTO.codigo(),
+                        null,
                         bitacoraDTO.nombresRemitente(),
                         bitacoraDTO.apellidosRemitente(),
-                        bitacoraDTO.usrReceptor(),
+                        bitacoraDTO.receptorDocumento(),
                         bitacoraDTO.destinatario(),
                         bitacoraDTO.asunto(),
                         bitacoraDTO.lugarDestino(),
@@ -113,14 +114,16 @@ public class BitacoraImpl implements IBitacoraService {
                         bitacoraDTO.estadoTransferencia(),
                         bitacoraDTO.adicionado(),
                         bitacoraDTO.mensajeroExterno(),
-                        bitacoraDTO.documentoReasignado(),
+                        true,
                         bitacoraDTO.secuencialSede(),
                         bitacoraDTO.secuencialDocumento(),
                         perCodigo
                 );
+                 bitacoraModel = bitacoraDao.save(new BitacoraModel(bitacoraDTO2));
+            } else {
+                 bitacoraModel = bitacoraDao.save(new BitacoraModel(bitacoraDTO));
             }
 
-            BitacoraModel bitacoraModel = bitacoraDao.save(new BitacoraModel(bitacoraDTO));
             BitacoraDTO bitacoraDTO1 = BitacoraDTO.toDTO(bitacoraModel);
 
             EventoBitacoraDTO eventoBitacoraDTO = new EventoBitacoraDTO(

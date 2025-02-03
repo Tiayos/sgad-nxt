@@ -66,6 +66,19 @@ public class EventoBitacoralmpl implements IEventoBitacoraService {
     }
 
     @Override
+    public List<EventoBitacoraDTO> findAllEventosByPerCodigoRecepcionReasignado(Long perCodigoRecepcionReasignado) {
+        List<EventoBitacoraDTO> eventoBitacoraDTOList = iEventoBitacoraDao.getEventosByPerCodigoRecepcionReasignado(perCodigoRecepcionReasignado)
+                .stream()
+                .map(EventoBitacoraDTO::toDTO)
+                .toList();
+        if(eventoBitacoraDTOList.size()!=0){
+            return eventoBitacoraDTOList;
+        }else{
+            return eventoBitacoraDTOList;
+        }
+    }
+
+    @Override
     public void saveEventoBitacora(EventoBitacoraDTO eventoBitacoraDTO) {
         //Consultamos el ultimo vigente y cambiamos el estado
         try {

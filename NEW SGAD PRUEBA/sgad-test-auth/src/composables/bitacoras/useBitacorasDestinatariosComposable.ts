@@ -15,13 +15,13 @@ import { useDocumentosExternosService } from "../services/useDocumentosExternos"
 export const useBitacorasDestinatariosComposable = () =>{
 //* store
     const useStore = useArchivosStore();
-    const {eventosBitacorasList} = storeToRefs(useStore);
+    const {eventosBitacorasList, appRoles} = storeToRefs(useStore);
     const documentosBitacoraList = ref<DocumentoBitacora[]>([]);
 
     //*Services
     const {getUsrLogin,getUsers} = usePersonaService();
     const {getAllEventosVigentesByPerCodigo, getAllEventosByBitCodigo,
-        getAllEstados, saveEventoBitacora, getEventoBitacoraService} = useEventoBitacora();
+        getAllEstados, saveEventoBitacora, getEventoBitacoraService, getAllEventosByPerCodRecepcionReasignado} = useEventoBitacora();
     const {getDocumentosByBitCodigo} = useBitacoraService();
     const {getAllBitacorasExternosBySede, getAllBitacorasExternosByPerCodigo, editBitacoraExterna, editBitacoraElectronica} = useBitacoraExternaService();
     const { getSedeByEmail} = useSumillaService();
@@ -40,10 +40,16 @@ export const useBitacorasDestinatariosComposable = () =>{
         await findBitacorasElectronicas();
     })
 
-    const findBitacorasDestinatarios = async() =>{
+    const findBitacorasDestinatarios = async () => {
         userLogin.value = await getUsrLogin(data.value?.user?.email!);
         eventosBitacorasList.value = await getAllEventosVigentesByPerCodigo(userLogin.value.codigo);
-    }
+        
+        if (appRoles.value.includes("recepcionist")) {
+            const nuevosEventos = await getAllEventosByPerCodRecepcionReasignado(userLogin.value.codigo);
+            eventosBitacorasList.value = eventosBitacorasList.value.concat(nuevosEventos);
+        }
+    };
+    
 
     const findBitacorasElectronicas = async() =>{
         sede.value = await getSedeByEmail(data.value?.user?.email!);
@@ -71,7 +77,8 @@ export const useBitacorasDestinatariosComposable = () =>{
         editBitacoraElectronica,
         sendEmailSolDocumentacionFisica,
         sendEmailRespuestaElectronicaRemitente,
-        enviarMailDocumentacionFisicaReasignada
+        enviarMailDocumentacionFisicaReasignada,
+        findBitacorasDestinatarios
     }
 
 }
