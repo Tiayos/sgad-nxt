@@ -12,8 +12,29 @@
             tableStyle="min-width: 50rem"
             :paginator="true"
             :rows="10"
+            v-model:filters="filtersSumillaBitacora"
         >
-          <Column field="bitacora.sumilla.numero_sumilla" header="No. de sumilla" style="width: 5px"></Column>
+
+        <template #header>
+          <div
+              class="datatable-header-toolbar flex flex-wrap align-items-center justify-content-between gap-2"
+          >
+          
+            <FHorizontalStack gap="4" align="space-between">
+              <FHorizontalStack gap="4">
+                <FTextField
+                    type="text"
+                    id="filterSumilla"
+                    v-model="filtersSumillaBitacora['global'].value"
+                    placeholder="N° Sumilla"
+                >
+                </FTextField>
+              </FHorizontalStack>
+            </FHorizontalStack>
+          </div>
+        </template>
+
+          <Column field="bitacora.sumilla.numero_sumilla" header="No. de sumilla" style="width: 5px" sortable></Column>
           <Column header="Remitente" body-style="width: 1px" >
             <template #body="slotProps">
               {{ slotProps.data.bitacora.nombres_remitente }}
@@ -1013,7 +1034,8 @@ const {getPersonasByFilterName,
   findSumillas,
   editBitacora,
   findBitacoras,
-  handleSubmit : handleEditSubmit
+  handleSubmit : handleEditSubmit,
+  filtersSumillaBitacora,
 } = useSumillaComposable();
 
 const eventoSelected = ref<EventoBitacora>({} as EventoBitacora);

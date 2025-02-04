@@ -47,7 +47,15 @@ public class EnviarCorreoImpl implements EnviarCorreoService {
 		String mesaggeAtt = "Atentamente,";
 
 		try {
-			GTHPersonaProjection gthPersonaProjection = iPersonaDao.getGthPersonaAmbitoByPerCodigo(eventoBitacoraDTO.bitacora().receptorDocumento().codigo());
+
+			GTHPersonaProjection gthPersonaProjection;
+
+			if(eventoBitacoraDTO.bitacora().codigoRecepcionReasignado()!=null) {
+				gthPersonaProjection = iPersonaDao.getGthPersonaAmbitoByPerCodigo(eventoBitacoraDTO.bitacora().codigoRecepcionReasignado());
+			} else {
+				gthPersonaProjection = iPersonaDao.getGthPersonaAmbitoByPerCodigo(eventoBitacoraDTO.bitacora().receptorDocumento().codigo());
+			}
+
 			String emailResponsable = gthPersonaProjection.getMAIL();
 			String nombreResponsable = "";
 
@@ -57,7 +65,13 @@ public class EnviarCorreoImpl implements EnviarCorreoService {
 				 nombreResponsable = eventoBitacoraDTO.bitacora().destinatario().perNombres() + " " + eventoBitacoraDTO.bitacora().destinatario().perApellidos();  //REVISAR
 			}
 //			String nombreResponsable = eventoBitacoraDTO.perCodigoResponsable().perNombres() + " " + eventoBitacoraDTO.perCodigoResponsable().perApellidos();  //REVISAR
-			String nombreDestinatario = eventoBitacoraDTO.bitacora().receptorDocumento().perNombres() + " " + eventoBitacoraDTO.bitacora().receptorDocumento().perApellidos() ;
+			String nombreDestinatario = "";
+			if(eventoBitacoraDTO.bitacora().codigoRecepcionReasignado() != null){
+				nombreDestinatario = gthPersonaProjection.getPERNOMBRES() + " " + gthPersonaProjection.getPERAPELLIDOS() ;
+			} else {
+				nombreDestinatario = eventoBitacoraDTO.bitacora().receptorDocumento().perNombres() + " " + eventoBitacoraDTO.bitacora().receptorDocumento().perApellidos() ;
+			}
+
 			String numeroTramite = eventoBitacoraDTO.bitacora().sumilla().numeroSumilla();
 			String messageContent3 = "Se solicita su colaboración, proporcionado la documentación física del trámite  N° " + numeroTramite + " ya que, se requiere para su verificación y cumplir con el trámite."  ;
 			if( numeroSolicitud != null ){
