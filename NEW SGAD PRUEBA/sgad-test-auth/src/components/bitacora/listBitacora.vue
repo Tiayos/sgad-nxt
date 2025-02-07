@@ -545,7 +545,7 @@
                   @Complete="searchItem"
                   :disabled="action == persistAction.view"
               />
-              <FModalSection v-if="action == persistAction.edit">
+              <!-- <FModalSection v-if="action == persistAction.edit">
                 <FVerticalStack gap="4">
                   <FDivider border-width="5" border-color="border-inverse"/>
                   <FText id="personaRecibeLbl" as="h6" variant="bodyLg" fontWeight="semibold">
@@ -591,7 +591,7 @@
                 </FVerticalStack>
                 </FVerticalStack>
 
-              </FModalSection>
+              </FModalSection> -->
             </FVerticalStack>
         </FVerticalStack>
       </FModalSection>

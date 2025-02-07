@@ -2,6 +2,7 @@ package ec.edu.ups.sgadnuxt.entity.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ec.edu.ups.sgadnuxt.entity.model.BitacoraModel;
+import ec.edu.ups.sgadnuxt.entity.model.gth.GthPersona;
 import jakarta.annotation.Nullable;
 import java.time.LocalDate;
 
@@ -33,8 +34,11 @@ public record BitacoraDTO(
         @JsonProperty("documento_reasignado") boolean documentoReasignado,
         @JsonProperty("secuencial_sede") Long secuencialSede,
         @JsonProperty("secuencial_documento") Long secuencialDocumento,
-        @JsonProperty("codigo_recepcion_reasignado") Long codigoRecepcionReasignado
-
+        @JsonProperty("codigo_recepcion_reasignado") Long codigoRecepcionReasignado,
+        @JsonProperty("per_codigo_entrega_documentacion") PersonaDTO perCodigoEntregaDocumentacion,
+        @JsonProperty("per_codigo_recibe_documentacion") PersonaDTO perCodigoRecibeDocumentacion,
+        @JsonProperty("fecha_entrega_documentacion") LocalDate fechaEntregaDocumentacion,
+        @JsonProperty("hora_entrega_documentacion") String horaEntreagaDocumentacion
 
 ) {
 
@@ -65,7 +69,11 @@ public record BitacoraDTO(
                 false,
                 model.getSecuencialSede(),
                 model.getSecuencialDocumento(),
-                model.getCodigoRecepcionReasignado()
-        );
+                model.getCodigoRecepcionReasignado(),
+                model.getPerCodigoEntregaDocumentacion() != null ? PersonaDTO.toDTO(model.getPerCodigoEntregaDocumentacion()) : null,
+                model.getPerCodigoRecibeDocumentacion() != null ? PersonaDTO.toDTO(model.getPerCodigoRecibeDocumentacion()) : null,
+                model.getFechaEntregaDocumentacion(),
+                model.getHoraEntregaDocumentacion()
+                );
     }
 }

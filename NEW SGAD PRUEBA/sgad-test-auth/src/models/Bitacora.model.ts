@@ -25,4 +25,8 @@ export interface Bitacora {
     mensajero_externo:   string;
     documento_reasignado: boolean;
     codigo_recepcion_reasignado: number;
+    per_codigo_entrega_documentacion: Persona;
+    per_codigo_recibe_documentacion: Persona;
+    fecha_entrega_documentacion: Date;
+    hora_entrega_documentacion: string;
 }

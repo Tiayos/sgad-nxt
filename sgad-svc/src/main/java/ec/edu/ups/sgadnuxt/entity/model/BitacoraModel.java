@@ -85,6 +85,19 @@ public class BitacoraModel implements Serializable {
     @Column(name = "PER_CODIGO_RECEPCION_REASIGNADO")
     private Long codigoRecepcionReasignado;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PER_COD_RECIBE_DOCUMENTACION", referencedColumnName = "PER_CODIGO")
+    private GthPersona perCodigoRecibeDocumentacion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PER_COD_ENTREGA_DOCUMENTACION", referencedColumnName = "PER_CODIGO")
+    private GthPersona perCodigoEntregaDocumentacion;
+
+    @Column(name = "BIT_FECHA_ENTREGA_DOCUMENTACION")
+    private LocalDate fechaEntregaDocumentacion;
+    @Column(name = "BIT_HORA_ENTREGA_DOCUMENTACION")
+    private String horaEntregaDocumentacion;
+
     @Column(name = "AUD_ELIMINADO")
     private String eliminado;
     @Column(name = "AUD_ADICIONADO")
@@ -129,6 +142,10 @@ public class BitacoraModel implements Serializable {
         this.secuencialSede = dto.secuencialSede();
         this.secuencialDocumento = dto.secuencialDocumento();
         this.codigoRecepcionReasignado = dto.codigoRecepcionReasignado();
+        this.perCodigoEntregaDocumentacion = dto.perCodigoEntregaDocumentacion() != null ? new GthPersona(dto.perCodigoEntregaDocumentacion().codigo()) : null;
+        this.perCodigoRecibeDocumentacion = dto.perCodigoRecibeDocumentacion() != null ? new GthPersona(dto.perCodigoRecibeDocumentacion().codigo()) : null;
+        this.fechaEntregaDocumentacion = dto.fechaEntregaDocumentacion();
+        this.horaEntregaDocumentacion = dto.horaEntreagaDocumentacion();
     }
 
     @PrePersist
@@ -374,5 +391,37 @@ public class BitacoraModel implements Serializable {
 
     public void setCodigoRecepcionReasignado(Long codigoRecepcionReasignado) {
         this.codigoRecepcionReasignado = codigoRecepcionReasignado;
+    }
+
+    public GthPersona getPerCodigoRecibeDocumentacion() {
+        return perCodigoRecibeDocumentacion;
+    }
+
+    public void setPerCodigoRecibeDocumentacion(GthPersona perCodigoRecibeDocumentacion) {
+        this.perCodigoRecibeDocumentacion = perCodigoRecibeDocumentacion;
+    }
+
+    public GthPersona getPerCodigoEntregaDocumentacion() {
+        return perCodigoEntregaDocumentacion;
+    }
+
+    public void setPerCodigoEntregaDocumentacion(GthPersona perCodigoEntregaDocumentacion) {
+        this.perCodigoEntregaDocumentacion = perCodigoEntregaDocumentacion;
+    }
+
+    public LocalDate getFechaEntregaDocumentacion() {
+        return fechaEntregaDocumentacion;
+    }
+
+    public void setFechaEntregaDocumentacion(LocalDate fechaEntregaDocumentacion) {
+        this.fechaEntregaDocumentacion = fechaEntregaDocumentacion;
+    }
+
+    public String getHoraEntregaDocumentacion() {
+        return horaEntregaDocumentacion;
+    }
+
+    public void setHoraEntregaDocumentacion(String horaEntregaDocumentacion) {
+        this.horaEntregaDocumentacion = horaEntregaDocumentacion;
     }
 }

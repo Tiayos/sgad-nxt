@@ -6,28 +6,34 @@
       <FLayoutSection>
         <!-- tabla en bitácora para ver documentos físicos -->
         <DataTable
-            :value="eventosBitacorasList"
-            show-gridlines
-            :stripedRows="true"
-            tableStyle="min-width: 50rem"
-            :paginator="true"
-            :rows="10"
-            v-model:filters="filtersSumillaBitacora"
+          v-model:selection="eventoBitacoraSelected"
+          selectionMode="single"
+          :value="eventosBitacorasList"
+          show-gridlines
+          :stripedRows="true"
+          tableStyle="min-width: 50rem"
+          :paginator="true"
+          :rows="10"
+          v-model:filters="filtersSumillaBitacora"
         >
 
         <template #header>
-          <div
-              class="datatable-header-toolbar flex flex-wrap align-items-center justify-content-between gap-2"
-          >
+          <div class="datatable-header-toolbar flex flex-wrap align-items-center justify-content-between gap-2">
           
-            <FHorizontalStack gap="4" align="space-between">
+            <FHorizontalStack gap="4" align="space-between" style=" padding: 10px; margin-bottom: 10px; margin-top: 10px; background-color: rgb(241, 241, 241);">
+              <FButton
+                @click="handleChangeCrearEvento"
+                size="medium"
+                :icon="PlusDuotone"
+                :disabled="eventoBitacoraSelected?.estado?.codigo !== 3"
+                secondary> Respuesta trámite 
+              </FButton>
               <FHorizontalStack gap="4">
                 <FTextField
-                    type="text"
-                    id="filterSumilla"
-                    v-model="filtersSumillaBitacora['global'].value"
-                    placeholder="N° Sumilla"
-                >
+                  type="text"
+                  id="filterSumilla"
+                  v-model="filtersSumillaBitacora['global'].value"
+                  placeholder="N° Sumilla">
                 </FTextField>
               </FHorizontalStack>
             </FHorizontalStack>
@@ -79,8 +85,8 @@
               <FBadge status="attention" v-if="slotProps.data.estado.codigo === 7"
               >Reasignado para trámite</FBadge
               >
-              <FBadge status="new" v-if="slotProps.data.estado.codigo === 9"
-              >Reasignado desde otra sede</FBadge
+              <FBadge status="new" v-if="slotProps.data.estado.codigo === 8"
+              >Entregado físicamente</FBadge
               >
             </template>
           </Column>
@@ -163,9 +169,9 @@
       </FFormLayout>
     </FTabs>
 
-    <!-- Documentos fisicos -->
+<!-- Documentos fisicos -->
 
-    <FModal
+  <FModal
         large
         v-model="accionesModal"
         title=""
@@ -262,7 +268,7 @@
         </FModalSection>
       </FCollapsible>
 
-      <FModalSection v-if="documentosBitacoraList.length > 0 && eventoSelected.estado.codigo != 9">
+      <FModalSection v-if="documentosBitacoraList.length > 0 ">
         <div >
           <FVerticalStack gap="4">
             <FText as="h6" variant="bodyMd" font-weight="semibold">Documentos recibidos:</FText>
@@ -287,7 +293,7 @@
       </FModalSection>
 
 
-                <FVerticalStack gap="4" v-if="eventoSelected.estado.codigo == 9">
+                <FVerticalStack gap="4" >
                   <FText id="estadoLbl" as="h6" variant="bodyMd" fontWeight="semibold" alignment="justify" style="margin-left: 20px; margin-top: 25px;">
                     Adjuntar Documentos:
                   </FText>
@@ -436,10 +442,10 @@
           </FFormLayout>
         </FCardSubsection>
       </FCardSection>
-    </FModal>
+  </FModal>
 
 <!-- Documentos electronicos -->
-    <FModal
+  <FModal
         v-model="accionesDocumentosElectronicosModal"
         title=""
         title-hidden
@@ -488,11 +494,11 @@
 
         </FVerticalStack>
       </FCardSection>
-    </FModal>
+  </FModal>
 
 <!-- modal para ver documentos -->
 
-    <FModal
+  <FModal
         v-model="modalVerDocumentos"
         title=""
         title-hidden
@@ -548,11 +554,11 @@
   </FVerticalStack>
   
 </FCardSection>
-    </FModal>
+  </FModal>
 
 <!-- modal para editar bitácoras-->
 
-<FModal
+  <FModal
         v-model="createModal"
         title=""
         title-hidden
@@ -889,56 +895,97 @@
                   :suggestions="filteredItems"
                   @Complete="searchItem"
               />
-              <FModalSection >
-                <FVerticalStack gap="4">
-                  <FDivider border-width="5" border-color="border-inverse"/>
-                  <FText id="personaRecibeLbl" as="h6" variant="bodyLg" fontWeight="semibold">
-                    Respuesta al trámite:
-                  </FText>
-
-                  <FVerticalStack gap="4">
-                  <FileUpload
-                      ref="fileUpload"
-                      name="file"
-                      accept=".pdf, .jpg, .jpeg, .png"
-                      multiple
-                      class="f"
-                      :maxFileSize="10485760"
-                      :chooseLabel="'Seleccionar archivos'"
-                      :onSelect="handleFileSelectDocumentosRespuesta"
-                  />
-                  <div v-if="docBitacoraListRespuesta.length > 0">
-                    <h3>Documentos de respuesta al trámite:</h3>
-                    <ul>
-                      <li
-                          v-for="(documento, index) in docBitacoraListRespuesta"
-                          :key="documento.doc_nombre_archivo">
-
-                        <a :href="createDownloadLink(documento.doc_archivo,documento.doc_nombre_archivo)"
-                            :download="documento.doc_nombre_archivo">
-                          {{ documento.doc_nombre_archivo }}
-                        </a>
-                        <FButton
-                            plain
-                            destructive
-                            size="micro"
-                            :icon="TrashCanSolid"
-                            @click="deleteFileDocsRespuesta(index)"
-                            style="margin-left: 2rem; margin-top: 1rem; align-items: end">
-                          Eliminar
-                        </FButton>
-                        <FDivider :border-width="'4'" />
-                      </li>
-                    </ul>
-                  </div>
-                </FVerticalStack>
-                </FVerticalStack>
-
-              </FModalSection>
+            
             </FVerticalStack>
         </FVerticalStack>
       </FModalSection>
-    </FModal>
+  </FModal>
+
+<!-- modal para crear nuevo evento bitácora -->
+<FModal
+        v-model="crearEventoModal"
+        title=""
+        title-hidden
+        large
+        :primaryAction="{
+        content: 'Guardar Cambios',
+        onAction: onSubmitedNuevoEvento,
+      }"
+        :secondaryActions="[
+        {
+          content: 'Cancelar',
+          onAction: handleChangeCrearEvento,
+        },
+      ]"
+    >
+
+      <FModalSection>
+          <FVerticalStack gap="4">
+
+            <FVerticalStack gap="4">
+                <FText
+                    id="fechaRecepcionlbl"
+                    as="h6"
+                    variant="bodyMd"
+                    fontWeight="semibold"
+                >
+                  Fecha de entrega:
+                </FText>
+                <FTextField
+                    id="fechaEntrega"
+                    type="date"
+                    v-model="eventoBitacoraSelected.bitacora.fecha_entrega_documentacion"
+                />
+
+                <FText
+                    id="horaEntregaLbl"
+                    for="calendar-timeonly"
+                    as="h6"
+                    variant="bodyMd"
+                    fontWeight="semibold"
+                >
+                  Hora de entrega:
+                </FText>
+
+                <FTextField
+                    id="horaEntrega"
+                    type="time"
+                    v-model="eventoBitacoraSelected.bitacora.hora_entrega_documentacion"
+                />
+
+
+              <FText
+                  id="personaEntregaLbl"
+                  as="h6"
+                  variant="bodyMd"
+                  fontWeight="semibold"
+              >
+                Persona que entrega:
+              </FText>
+
+              <AutoComplete
+                  class="full-width-autocomplete"
+                  v-model="eventoBitacoraSelected.bitacora.per_codigo_entrega_documentacion"
+                  optionLabel="nombreCompleto"
+                  :suggestions="filteredItems"
+                  @Complete="searchItem"
+              />
+
+              <FText id="personaRecibeLbl" as="h6" variant="bodyMd" fontWeight="semibold">
+                Persona que recibe:
+              </FText>
+              <AutoComplete
+                  class="full-width-autocomplete"
+                  v-model="eventoBitacoraSelected.bitacora.per_codigo_recibe_documentacion"
+                  optionLabel="nombreCompleto"
+                  :suggestions="filteredItems"
+                  @Complete="searchItem"
+              />
+            
+            </FVerticalStack>
+        </FVerticalStack>
+      </FModalSection>
+  </FModal>
 
     <FToast v-model="mostrarMsgError" :content=mensajeToast error :duration="5000" />
     <FToast v-model="mostrarMsgCorrecto" :content=mensajeToast  :duration="5000" />
@@ -949,6 +996,8 @@ import {
   MagnifyingGlassSolid,
   TrashCanSolid,
   PlusSolid,
+  PlusRegular,
+  PlusDuotone,
   MinusSolid,
   HouseSolid,
   LayerGroupSolid,
@@ -1059,8 +1108,16 @@ const documentObj = ref<DocumentoBitacora>({} as DocumentoBitacora);
 const documentosRespuestaBitacoraList = ref<DocumentoBitacora[]>([]);
 const changeEditModal = ref<boolean>(false);
 const fechaSumillaView = ref();
+const eventoBitacoraSelected = ref<EventoBitacora>({} as EventoBitacora);
+const crearEventoModal = ref<boolean>(false);
+const horaEntregaNuevoEvento = ref<string>('');
+const personaEntregaNuevoEvento = ref<Persona>({} as Persona);
+const personaRecibeNuevoEvento = ref<Persona>({} as Persona);
 
-  const { data } = useAuth();
+const { data } = useAuth();
+
+
+
 
 const tramiteAccionList = ref(
     [   { label: 'RESPUESTA FÍSICA', value: 1 },
@@ -1097,6 +1154,8 @@ const tabs: TabDescriptor[] = [
     content: "Documentos electrónicos",
   },
 ];
+
+
 
 const handleFileSelect = (event: any) => {
   files.value = event.files;
@@ -1252,6 +1311,16 @@ const saveDocumentosRespuesta = async () => {
   }
 };
 
+const onSubmitedNuevoEvento = async() =>{
+  eventoBitacoraSelected.value.estado.codigo = 8;
+  saveEventoBitacora(eventoBitacoraSelected.value);
+  handleChangeCrearEvento();
+}
+
+const handleChangeCrearEvento = () => {
+  crearEventoModal.value = !crearEventoModal.value;
+}
+
 const onSubmited = handleEditSubmit(async (values:any) => {
     sumilla.value.numero_hojas = Number(numHojas.value);
     await editSumilla(sumilla.value, sumilla.value.codigo!);
@@ -1261,9 +1330,9 @@ const onSubmited = handleEditSubmit(async (values:any) => {
     if (files.value.length > 0) {
       await saveDocumentos();
     }
-    if(filesRespuesta.value.length > 0){
-      await saveDocumentosRespuesta();
-    }
+    // if(filesRespuesta.value.length > 0){
+    //   await saveDocumentosRespuesta();
+    // }
 
     await findBitacorasDestinatarios();
 

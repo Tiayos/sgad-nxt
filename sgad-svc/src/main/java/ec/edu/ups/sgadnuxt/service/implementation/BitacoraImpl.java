@@ -117,7 +117,11 @@ public class BitacoraImpl implements IBitacoraService {
                         true,
                         bitacoraDTO.secuencialSede(),
                         bitacoraDTO.secuencialDocumento(),
-                        perCodigo
+                        perCodigo,
+                        bitacoraDTO.perCodigoEntregaDocumentacion(),
+                        bitacoraDTO.perCodigoRecibeDocumentacion(),
+                        bitacoraDTO.fechaEntregaDocumentacion(),
+                        bitacoraDTO.horaEntreagaDocumentacion()
                 );
                  bitacoraModel = bitacoraDao.save(new BitacoraModel(bitacoraDTO2));
             } else {
