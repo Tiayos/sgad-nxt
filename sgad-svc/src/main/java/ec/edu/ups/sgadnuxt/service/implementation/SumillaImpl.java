@@ -44,18 +44,7 @@ public class SumillaImpl implements ISumillaService {
     @Override
     public SumillaDTO saveSumilla(SumillaDTO sumillaDTO, String email) {
         SedeProjection sedeProjection = sumillaDao.ObtenerSedeByEmail(email);
-        String numSumilla = "";
-        Long ultimoIdSumilla = sumillaDao.obtenerUltimoIdSumilla(sedeProjection.getDeeCodigo()) + 1;
-
-        Long sumCodSede = sumillaDao.secuencialEstructura(sedeProjection.getDeeCodigo());
-
-        if(sedeProjection.getDeeCodigo()== 2){ //cuenca
-            numSumilla = "00"+ sumCodSede + "-00"+ 1 + "-UPSCUE";
-        } else if (sedeProjection.getDeeCodigo() == 3) { //QUITO
-            numSumilla = "00"+ sumCodSede + "-00"+ 1 + "-UPSUIO";
-        }else if (sedeProjection.getDeeCodigo() == 4) { //GUAYAQUIL
-            numSumilla = "00"+ sumCodSede + "-00"+ 1 + "-UPSGYE";
-        }
+        String numSumilla = "0";
 
         SumillaDTO sumillaDTO1 = new SumillaDTO(
                 sumillaDTO.codigo(),
@@ -64,9 +53,9 @@ public class SumillaImpl implements ISumillaService {
                 sumillaDTO.responsable(),
                 sumillaDTO.numeroHojas(),
                 numSumilla,
-                ultimoIdSumilla,
+                0L,
                 sedeProjection.getDeeCodigo(),
-                sumCodSede
+                null
         );
         return SumillaDTO.toDTO(sumillaDao.save(new SumillaModel(sumillaDTO1)));
     }

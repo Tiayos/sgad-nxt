@@ -20,13 +20,13 @@
         <template #header>
           <div class="datatable-header-toolbar flex flex-wrap align-items-center justify-content-between gap-2">
           
-            <FHorizontalStack gap="4" align="space-between" style=" padding: 10px; margin-bottom: 10px; margin-top: 10px; background-color: rgb(241, 241, 241);">
+            <FHorizontalStack gap="4" align="space-between" style="margin-bottom: 5px; margin-top: 10px; background-color: rgb(241, 241, 241);">
               <FButton
                 @click="handleChangeCrearEvento"
                 size="medium"
                 :icon="PlusDuotone"
                 :disabled="eventoBitacoraSelected?.estado?.codigo !== 3"
-                secondary> Respuesta trámite 
+                secondary> Respuesta trámite
               </FButton>
               <FHorizontalStack gap="4">
                 <FTextField
@@ -214,7 +214,7 @@
                 :resourceName="{ singular: 'evento', plural: 'eventos' }"
                 :items="eventosBitacorasAcciones"
             >
-              <template #item="{ item }">
+              <template #item="{ item }: { item: EventoBitacora }">
                 <FResourceItem id="item.codigo">
                   <template #media>
                     <FAvatar customer size="medium" />
@@ -223,10 +223,10 @@
                   <FVerticalStack gap="1">
                     <FHorizontalStack gap="2">
                       <FText fontWeight="bold" as="span">
-                        {{ item.per_codigo_responsable.per_nombres }}
+                        {{ item.estado.codigo == 8 ? item.per_codigo_reasignado.per_nombres : item.per_codigo_responsable.per_nombres }}
                       </FText>
                       <FText fontWeight="bold" as="span">
-                        {{ item.per_codigo_responsable.per_apellidos }}
+                        {{ item.estado.codigo == 8 ? item.per_codigo_reasignado.per_apellidos : item.per_codigo_responsable.per_apellidos }}
                       </FText>
                     </FHorizontalStack>
 
@@ -256,9 +256,31 @@
 
                     <FHorizontalStack gap="12">
                       <FText fontWeight="semibold" as="span"> Estado documento: </FText>
-                      <FBadge :status="item.estado.codigo === 5 ? 'success' : 'default'">
+                      <FBadge :status="item.estado.codigo === 5 ? 'success' : 'info'">
                         {{ item.estado.estado_descripcion }}
                       </FBadge>
+                    </FHorizontalStack>
+
+                    <FHorizontalStack gap="12" v-if="item.estado.codigo === 8">
+                      <FText fontWeight="semibold" as="span"> Fecha y hora de entrega de documentacion</FText>
+                      <FText fontWeight="semibold" as="span">
+                        {{ item.bitacora.fecha_entrega_documentacion }}
+                        {{ item.bitacora.hora_entrega_documentacion }}
+                      </FText>
+                    </FHorizontalStack>
+                    <FHorizontalStack gap="12" v-if="item.estado.codigo === 8">
+                      <FText fontWeight="semibold" as="span"> Persona que entrega documentación</FText>
+                      <FText fontWeight="semibold" as="span">
+                        {{ item.bitacora.per_codigo_entrega_documentacion.per_nombres }}
+                        {{ item.bitacora.per_codigo_entrega_documentacion.per_apellidos }}
+                      </FText>
+                    </FHorizontalStack>
+                    <FHorizontalStack gap="12" v-if="item.estado.codigo === 8">
+                      <FText fontWeight="semibold" as="span"> Persona que recibe documentación</FText>
+                      <FText fontWeight="semibold" as="span">
+                        {{ item.bitacora.per_codigo_recibe_documentacion.per_nombres }}
+                        {{ item.bitacora.per_codigo_recibe_documentacion.per_apellidos }}
+                      </FText>
                     </FHorizontalStack>
                   </FVerticalStack>
                 </FResourceItem>
@@ -293,7 +315,7 @@
       </FModalSection>
 
 
-                <FVerticalStack gap="4" >
+                <!-- <FVerticalStack gap="4" >
                   <FText id="estadoLbl" as="h6" variant="bodyMd" fontWeight="semibold" alignment="justify" style="margin-left: 20px; margin-top: 25px;">
                     Adjuntar Documentos:
                   </FText>
@@ -340,9 +362,9 @@
                       </li>
                     </ul>
                   </div>
-                </FVerticalStack>
+                </FVerticalStack> -->
 
-                <FVerticalStack gap="4">
+                <!-- <FVerticalStack gap="4">
                   <FTooltip
                       activator-wrapper="div"
                       content="Sección para visualizar los documentos que lleguen a recepción que sean respuesta al mismo trámite."
@@ -391,7 +413,7 @@
                   </FBox>
                   <FDivider :border-width="'4'" />
                     
-                </FVerticalStack>
+                </FVerticalStack> -->
               
       <FCardSection v-show="!desabilitarGuardarCambios">
         <FCardSubsection>
@@ -895,7 +917,7 @@
                   :suggestions="filteredItems"
                   @Complete="searchItem"
               />
-            
+
             </FVerticalStack>
         </FVerticalStack>
       </FModalSection>
@@ -981,7 +1003,7 @@
                   :suggestions="filteredItems"
                   @Complete="searchItem"
               />
-            
+
             </FVerticalStack>
         </FVerticalStack>
       </FModalSection>
@@ -1312,12 +1334,30 @@ const saveDocumentosRespuesta = async () => {
 };
 
 const onSubmitedNuevoEvento = async() =>{
+
+  eventoBitacoraSelected.value.per_codigo_reasignado = {} as Persona;
+
   eventoBitacoraSelected.value.estado.codigo = 8;
-  saveEventoBitacora(eventoBitacoraSelected.value);
+  eventoBitacoraSelected.value.codigo = 0;
+  eventoBitacoraSelected.value.adicionado = data.value?.user?.email!;
+  eventoBitacoraSelected.value.fecha = new Date();
+  eventoBitacoraSelected.value.per_codigo_reasignado.codigo = userLogin.value.codigo;
+  bitacora.value = eventoBitacoraSelected.value.bitacora;
+
+  await editBitacora(bitacora.value, bitacora.value.codigo);
+  await saveEventoBitacora(eventoBitacoraSelected.value);
   handleChangeCrearEvento();
+  findBitacorasDestinatarios();
+
+}
+
+const limpiarEventoSelected = () =>{
+  bitacora.value = {} as Bitacora;
+  eventoBitacoraSelected.value.estado = {} as Estado;
 }
 
 const handleChangeCrearEvento = () => {
+  limpiarEventoSelected();
   crearEventoModal.value = !crearEventoModal.value;
 }
 

@@ -59,7 +59,7 @@ public class SumillaModel implements Serializable {
         this.codigo = dto.codigo();
         this.fechaSumilla = dto.fechaSumilla();
         this.horaSumilla = dto.horaSumilla();
-        this.responsable = new GthPersona(dto.responsable().codigo());
+        this.responsable = dto.responsable() != null ? new GthPersona(dto.responsable().codigo()) : null;
         this.numeroHojas = dto.numeroHojas();
         this.numeroSumilla = dto.numeroSumilla();
         this.numeroTramite = dto.numeroTramite();

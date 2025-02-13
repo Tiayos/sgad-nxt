@@ -8,7 +8,6 @@ public interface IBitacoraService {
     List<BitacoraDTO> findAllBitacora();
     List<BitacoraDTO> findAllBitacorasBySede(Long sede);
     List<BitacoraDTO> findAllBitacorasByFechasAndEstado(String fechaInicio, String fechaFin, Long resPerCodigo);
-
     BitacoraDTO findBitacoraByNumSumilla(String numSumilla);
     List<BitacoraDTO> getBitacorasByPerCodigoDestinatario(Long perCodigoDestinatario);
     BitacoraDTO saveBitacora(BitacoraDTO bitacoraDTO);

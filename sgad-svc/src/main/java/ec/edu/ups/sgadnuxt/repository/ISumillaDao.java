@@ -46,6 +46,30 @@ public interface ISumillaDao extends JpaRepository<SumillaModel, Long> {
         "sumi.numeroSumilla like '%EXT%'")
     Long obtenerUltimoIdSumillaExterna(Long sede);
 
+
+//SECUENCIAL SEDE PUEDE SER CONSIDERADO NUMERO TRAMITE segun la SEDE
+@Query(nativeQuery = true, value = " SELECT  \n" +
+        "    NVL(MAX(bitt.bit_numero_tramite),0)+1  \n" +
+        "FROM \n" +
+        "    sgad.sgad_bitacora bitt, \n" +
+        "    sgad.sgad_sumilla sumi \n" +
+        "WHERE \n" +
+        "    bitt.sum_codigo = sumi.sum_codigo and \n" +
+        "    sumi.sum_sede = ?1 and \n" +
+        "    sumi.sum_numero_sumilla not like '%EXT%'")
+    Long secuencialNumeroTramiteBySede(Long sumCodigo);
+
+@Query(nativeQuery = true, value = "SELECT  \n" +
+        "    NVL(MAX(bitt.BIT_SECUENCIAL_DOCUMENTO),0)+1  \n" +
+        "FROM \n" +
+        "    sgad.sgad_bitacora bitt, \n" +
+        "    sgad.sgad_sumilla sumi \n" +
+        "WHERE \n" +
+        "    bitt.sum_codigo = sumi.sum_codigo and \n" +
+        "    sumi.sum_sede = ?1 ")
+    Long secuencialNumDocumentoBySedeAndTramite(Long sumCodigo);
+
+
     @Query(nativeQuery = true, value = "select count(*)\n" +
             "    from \n" +
             "        sgad.sgad_evento_bitacora ebi, \n" +

@@ -13,6 +13,15 @@ public interface IDocumentoBitacoraDao extends JpaRepository<SgadDocumentoBitaco
     @Query("select doc from SgadDocumentoBitacora doc where doc.bitacoraModel.codigo = ?1 and (doc.estadoTramite = 'C' or doc.estadoTramite is null )")
     List<SgadDocumentoBitacora> findAllDocumentosByBitCodigo(Long bitCodigo);
 
+    @Query("select doc from SgadDocumentoBitacora doc, " +
+            "BitacoraModel bit, " +
+            "SumillaModel sumi " +
+            "where bit.sumilla.codigo = sumi.codigo and " +
+            "bit.codigo = doc.bitacoraModel.codigo and " +
+            "bit.numeroTramite = ?1 and " +
+            "sumi.sumSede = ?2")
+    List<SgadDocumentoBitacora> findAllDocumentosByNumeroTramiteAndSede(Long tramite, Long sede);
+
     @Query("select doc from SgadDocumentoBitacora doc where doc.bitacoraModel.codigo = ?1 and doc.estadoTramite = 'R'")
     List<SgadDocumentoBitacora> findAllDocsRespuestaTramiteByBitCodigo(Long bitCodigo);
     @Query("select doc from BitacoraModel bit, " +

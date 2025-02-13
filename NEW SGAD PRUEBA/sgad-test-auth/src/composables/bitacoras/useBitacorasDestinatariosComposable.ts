@@ -25,7 +25,7 @@ export const useBitacorasDestinatariosComposable = () =>{
     const {getDocumentosByBitCodigo} = useBitacoraService();
     const {getAllBitacorasExternosBySede, getAllBitacorasExternosByPerCodigo, editBitacoraExterna, editBitacoraElectronica} = useBitacoraExternaService();
     const { getSedeByEmail} = useSumillaService();
-    const { getDocumentoExternoByBidCodigo, saveDocumentoExterno, getDocumentoExternoByBidCodigoRecibidos, getDocumentoExternoByBidCodigoRespuesta} = useDocumentosExternosService();
+    const { getDocumentoExternoByBidCodigo, saveDocumentoExterno, getDocumentoExternoByBidCodigoRecibidos, getDocumentoExternoByBidCodigoRespuesta, } = useDocumentosExternosService();
     const {sendEmail, sendEmailSolDocumentacionFisica, sendEmailRespuestaElectronicaRemitente, enviarMailDocumentacionFisicaReasignada} = useSendEmailService();
 
     //*Auth

@@ -29,4 +29,6 @@ export interface Bitacora {
     per_codigo_recibe_documentacion: Persona;
     fecha_entrega_documentacion: Date;
     hora_entrega_documentacion: string;
+    numero_tramite : number;
+    secuencial_documento: number;
 }

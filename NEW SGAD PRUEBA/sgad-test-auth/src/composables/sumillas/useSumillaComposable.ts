@@ -28,7 +28,7 @@ export const useSumillaComposable = () =>{
     const {getBitacorasBySede, getBitacorasByFechaAndEstado,
         saveBitacora, deleteBitacora, editBitacora, editEstadoEnvioBitacora,
         getBitacoraByNumSumilla, deleteBitacoraByNumSumilla, saveDocumentoBitacora,
-        getDocumentosByBitCodigo, deleteDocumentosByBitCodigo, getDocsRespuestaTramiteByBitCodigo} = useBitacoraService();
+        getDocumentosByBitCodigo, deleteDocumentosByBitCodigo, getDocsRespuestaTramiteByBitCodigo, getDocumentosByTramiteAndSede} = useBitacoraService();
     const {saveTransferencia} = useTransferenciaDocumentalService();
     const {getEventoBitacoraService, saveEventoBitacora, deleteEventoBitacora} = useEventoBitacora();
     const {sendEmailDocFisicaBitacora} = useSendEmailService();
@@ -325,6 +325,7 @@ export const useSumillaComposable = () =>{
         checkedReasignacion,
         docBitacoraListRespuesta, 
         getDocsRespuestaTramiteByBitCodigo,
+        getDocumentosByTramiteAndSede,
         appRoles
     }
 }

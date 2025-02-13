@@ -23,6 +23,15 @@ public class DocumentoBitacoralmpl implements IDocumentoBitacoraService {
                 .toList();
     }
 
+    // Servicio que devuelve todos los documentos segun trámite y sede (expanded sumilla)
+    @Override
+    public List<DocumentosBitacoraDTO> findAllDocumentosByTramiteAndSede(Long tramite, Long sede) {
+        return iDocumentoBitacoraDao.findAllDocumentosByNumeroTramiteAndSede(tramite, sede)
+                .stream()
+                .map(DocumentosBitacoraDTO::toDTO)
+                .toList();
+    }
+
     @Override
     public List<DocumentosBitacoraDTO> findAllDocumentosRespuestaBitacoraByBitCodigo(Long bitCodigo) {
         return iDocumentoBitacoraDao.findAllDocsRespuestaTramiteByBitCodigo(bitCodigo)

@@ -116,6 +116,7 @@ public class BitacoraImpl implements IBitacoraService {
                         bitacoraDTO.mensajeroExterno(),
                         true,
                         bitacoraDTO.secuencialSede(),
+                        bitacoraDTO.numeroTramite(),
                         bitacoraDTO.secuencialDocumento(),
                         perCodigo,
                         bitacoraDTO.perCodigoEntregaDocumentacion(),
@@ -125,7 +126,53 @@ public class BitacoraImpl implements IBitacoraService {
                 );
                  bitacoraModel = bitacoraDao.save(new BitacoraModel(bitacoraDTO2));
             } else {
-                 bitacoraModel = bitacoraDao.save(new BitacoraModel(bitacoraDTO));
+                Long secuencialTramite;
+                Long secuencialDocumento;
+                String numeroSumilla;
+
+                if(bitacoraDTO.numeroTramite() == null || bitacoraDTO.numeroTramite() == 0){
+                    secuencialTramite = sumillaDao.secuencialNumeroTramiteBySede( bitacoraDTO.sumilla().sumSede());
+                }else {
+                    secuencialTramite = bitacoraDTO.numeroTramite();
+                }
+
+                if(bitacoraDTO.numeroTramite() == null || bitacoraDTO.numeroTramite() == 0 ){
+                     secuencialDocumento = sumillaDao.secuencialNumDocumentoBySedeAndTramite(bitacoraDTO.sumilla().sumSede());
+                }else {
+                    secuencialDocumento = sumillaDao.secuencialNumDocumentoBySedeAndTramite(bitacoraDTO.sumilla().sumSede());
+                }
+
+
+                bitacoraModel = bitacoraDao.save(new BitacoraModel(bitacoraDTO));
+
+                if(bitacoraDTO.sumilla().sumSede() == 2){ //cuenca
+                    numeroSumilla = "00"+ secuencialDocumento.toString() + "-00"+ secuencialTramite.toString() + "-UPSCUE";
+                } else if (bitacoraDTO.sumilla().sumSede() == 3) { //QUITO
+                    numeroSumilla = "00"+ secuencialDocumento.toString() + "-00"+ secuencialTramite.toString() + "-UPSUIO";
+                }else if (bitacoraDTO.sumilla().sumSede() == 4) { //GUAYAQUIL
+                    numeroSumilla = "00"+ secuencialDocumento.toString() + "-00"+ secuencialTramite.toString() + "-UPSGYE";
+                } else {
+                    numeroSumilla = "";
+                }
+
+                sumillaDao.findById(bitacoraDTO.sumilla().codigo())
+                        .map(
+                                sumillaMap -> {
+                                    sumillaMap.setNumeroSumilla(numeroSumilla);
+                                    return SumillaDTO.toDTO(sumillaDao.save(sumillaMap));
+                                }) .orElseThrow(
+                                () -> new NotFoundException("No se encontró la sumilla con número: ")
+                        );
+
+                bitacoraDao.findById(bitacoraModel.getCodigo())
+                        .map(
+                                bitacoraMap -> {
+                                    bitacoraMap.setNumeroTramite(secuencialTramite);
+                                    bitacoraMap.setSecuencialDocumento(secuencialDocumento);
+                                    return BitacoraDTO.toDTO(bitacoraDao.save(bitacoraMap));
+                                }) .orElseThrow(
+                                () -> new NotFoundException("No se encontró la bitácora con número: ")
+                        );
             }
 
             BitacoraDTO bitacoraDTO1 = BitacoraDTO.toDTO(bitacoraModel);
@@ -160,7 +207,7 @@ public class BitacoraImpl implements IBitacoraService {
                             bitacoraMap.setDestinatario(new GthPersona(bitacoraDTO.destinatario().codigo()));
                             bitacoraMap.setAsunto(bitacoraDTO.asunto());
                             bitacoraMap.setLugarDestino(bitacoraDTO.lugarDestino());
-                            bitacoraMap.setMensajero(bitacoraDTO.mensajero().codigo() != null ? new GthPersona(bitacoraDTO.mensajero().codigo()) : null);
+                            bitacoraMap.setMensajero(bitacoraDTO.mensajero() != null ? new GthPersona(bitacoraDTO.mensajero().codigo()) : null);
                             bitacoraMap.setNumeroGuia(bitacoraDTO.numeroGuia());
                             bitacoraMap.setObservaciones(bitacoraDTO.observaciones());
                             bitacoraMap.setUsrEmisor(bitacoraDTO.usrEmisor() != null ? new GthPersona(bitacoraDTO.usrEmisor().codigo()) : null);
@@ -169,6 +216,10 @@ public class BitacoraImpl implements IBitacoraService {
                             bitacoraMap.setDocArchivo(bitacoraDTO.docArchivo());
                             bitacoraMap.setNombreArchivo(bitacoraDTO.nombreArchivo());
                             bitacoraMap.setMensajeroExterno(bitacoraDTO.mensajeroExterno());
+                            bitacoraMap.setFechaEntregaDocumentacion(bitacoraDTO.fechaEntregaDocumentacion());
+                            bitacoraMap.setHoraEntregaDocumentacion(bitacoraDTO.horaEntreagaDocumentacion());
+                            bitacoraMap.setPerCodigoEntregaDocumentacion(bitacoraDTO.perCodigoEntregaDocumentacion() != null ? new GthPersona(bitacoraDTO.perCodigoEntregaDocumentacion().codigo()) : null);
+                            bitacoraMap.setPerCodigoRecibeDocumentacion(bitacoraDTO.perCodigoRecibeDocumentacion() != null ? new GthPersona(bitacoraDTO.perCodigoRecibeDocumentacion().codigo()) : null);
                             return BitacoraDTO.toDTO(bitacoraDao.save(bitacoraMap));
                         }) .orElseThrow(
                         () -> new NotFoundException("No se encontró la bitácora con número: ".concat(codigo.toString()))

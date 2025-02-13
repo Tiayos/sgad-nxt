@@ -84,6 +84,12 @@ public class BitacoraController {
         return ResponseEntity.ok(this.iDocumentoBitacoraService.findAllDocumentosByBitCodigo(bitCodigo));
     }
 
+    //Servicio para obtener los documentos segun trámite y sede (expanded sumilla)
+    @GetMapping("/getDocumentosByTramiteAndSede")
+    public ResponseEntity<?> findDocumentosByTramiteAndSede(@RequestParam Long tramite,  @RequestParam Long sede){
+        return ResponseEntity.ok(this.iDocumentoBitacoraService.findAllDocumentosByTramiteAndSede(tramite, sede));
+    }
+
     @GetMapping("/getDocsRespuestaByBitCodigo")
     public ResponseEntity<?> findDocsRespuestaTramiteByBitCodigo(@RequestParam Long bitCodigo){
         return ResponseEntity.ok(this.iDocumentoBitacoraService.findAllDocumentosRespuestaBitacoraByBitCodigo(bitCodigo));

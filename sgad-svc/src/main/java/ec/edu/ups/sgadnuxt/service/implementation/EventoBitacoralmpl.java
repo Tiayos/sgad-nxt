@@ -12,6 +12,8 @@ import ec.edu.ups.sgadnuxt.service.IEventoBitacoraService;
 import jakarta.persistence.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -88,29 +90,30 @@ public class EventoBitacoralmpl implements IEventoBitacoraService {
             iEventoBitacoraDao.save(sgadEventoBitacora);
 
             SgadEventoBitacora sgadEventoBitacora1 = new SgadEventoBitacora(eventoBitacoraDTO);
+            sgadEventoBitacora1.setAudFechaAdicion(LocalDateTime.now());
             iEventoBitacoraDao.save(sgadEventoBitacora1);
 
             Long ultimoIdSumilla = eventoBitacoraDTO.bitacora().sumilla().sumCodSede(); // se cambia por el sumCodSede
             Long numeroReferenciaSumilla = iSumillaDao.completarNumSumilla(eventoBitacoraDTO.bitacora().sumilla().codigo());
 
-            if(eventoBitacoraDTO.bitacora().sumilla().sumSede() == 2){ //cuenca
-                numSumilla1 = "00"+ ultimoIdSumilla + "-00"+ numeroReferenciaSumilla + "-UPSCUE";
-            } else if (eventoBitacoraDTO.bitacora().sumilla().sumSede() == 3) { //QUITO
-                numSumilla1 = "00"+ ultimoIdSumilla + "-00"+ numeroReferenciaSumilla + "-UPSUIO";
-            }else if (eventoBitacoraDTO.bitacora().sumilla().sumSede() == 4) { //GUAYAQUIL
-                numSumilla1 = "00"+ ultimoIdSumilla + "-00"+ numeroReferenciaSumilla + "-UPSGYE";
-            } else {
-                numSumilla1 = null;
-            }
-
-            iSumillaDao.findById(eventoBitacoraDTO.bitacora().sumilla().codigo())
-                    .map(
-                            sumillaMap -> {
-                                sumillaMap.setNumeroSumilla(numSumilla1);
-                                return SumillaDTO.toDTO(iSumillaDao.save(sumillaMap));
-                            }) .orElseThrow(
-                            () -> new NotFoundException("No se encontró la sumilla con número: ")
-                    );
+//            if(eventoBitacoraDTO.bitacora().sumilla().sumSede() == 2){ //cuenca
+//                numSumilla1 = "00"+ ultimoIdSumilla + "-00"+ numeroReferenciaSumilla + "-UPSCUE";
+//            } else if (eventoBitacoraDTO.bitacora().sumilla().sumSede() == 3) { //QUITO
+//                numSumilla1 = "00"+ ultimoIdSumilla + "-00"+ numeroReferenciaSumilla + "-UPSUIO";
+//            }else if (eventoBitacoraDTO.bitacora().sumilla().sumSede() == 4) { //GUAYAQUIL
+//                numSumilla1 = "00"+ ultimoIdSumilla + "-00"+ numeroReferenciaSumilla + "-UPSGYE";
+//            } else {
+//                numSumilla1 = null;
+//            }
+//
+//            iSumillaDao.findById(eventoBitacoraDTO.bitacora().sumilla().codigo())
+//                    .map(
+//                            sumillaMap -> {
+//                                sumillaMap.setNumeroSumilla(numSumilla1);
+//                                return SumillaDTO.toDTO(iSumillaDao.save(sumillaMap));
+//                            }) .orElseThrow(
+//                            () -> new NotFoundException("No se encontró la sumilla con número: ")
+//                    );
 
         }catch (PersistenceException e){
             e.printStackTrace();

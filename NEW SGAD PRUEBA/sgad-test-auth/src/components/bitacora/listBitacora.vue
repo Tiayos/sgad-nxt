@@ -12,6 +12,9 @@
           tableStyle="min-width: 50rem"
           :paginator="true"
           :rows="10"
+          v-model:expanded-rows="expandedRows"
+          @rowExpand="onRowExpand" 
+          @rowCollapse="onRowCollapse"
       >
         <template #header>
           <div
@@ -59,12 +62,20 @@
           </div>
         </template>
 
-        <Column field="sumilla.sum_cod_sede" header="No. de ref" style="width: 5px"></Column>
-        <Column
-            field="sumilla.numero_sumilla"
-            header="Número Sumilla"
-            style="width: 5px"
-        ></Column>
+        <Column expander style="width: 5rem"  />
+
+        <Column field="sumilla.numero_sumilla" header="Número Sumilla" style="width: 5px">
+          <template #body="slotProps">
+            <FLink 
+              @click="handleFilePrepareCreateRespuesta( slotProps.data)"
+              monochrome
+            >
+            <FText as="h6" variant="bodyMd" :font-weight="'semibold'">
+              {{ slotProps.data.sumilla.numero_sumilla }}
+            </FText>
+            </FLink>
+          </template>
+        </Column>
 
         <Column header="Nombre del responsable" style="width: 5px">
           <template #body="slotProps">
@@ -148,6 +159,26 @@
             >
           </template>
         </Column>
+
+        <template #expansion="slotProps">
+          <FModalSection>
+          <DataTable :value="objDocumentsList">
+            <Column field="bitacora.numero_tramite" header="No. de trámite" headerStyle="width:10px;text-align:center;" body-style="text-align:center;"></Column>
+            <Column field="bitacora.secuencial_documento" header="No. de documento"  headerStyle="width:10px;text-align:center;" body-style="text-align:center;"></Column>
+            <Column field="doc_nombre_archivo" header="Nombre de archivo"  ></Column>
+            <Column field="doc_archivo" header="Archivo">
+              <template #body="slotProps">
+                  <a
+                      :href="createDownloadLink(slotProps.data.doc_archivo, slotProps.data.doc_nombre_archivo)"
+                      :download="slotProps.data.doc_nombre_archivo"
+                  >
+                      {{ slotProps.data.doc_nombre_archivo }}
+                  </a>          
+              </template>
+            </Column>
+          </DataTable>
+        </FModalSection>
+      </template>
       </DataTable>
 
       <BitacoraDocumentosExternosListDocumentosExternos></BitacoraDocumentosExternosListDocumentosExternos>
@@ -278,7 +309,20 @@
       </FModalSection>
 
       <FModalSection>
+
         <FVerticalStack gap="4" align="center">
+          
+          <FVerticalStack gap="4" align="center" v-if="bitacoraRespuesta.codigo != null">
+            <FHorizontalStack gap="4">
+              <FText id="respuesta_tramite" as="h6" variant="bodyLg" fontWeight="semibold" >
+                Respuesta al número de sumilla:
+              </FText>
+              <FText id="remitenteNombreLbl" as="h6" variant="bodyMd" fontWeight="regular" color="warning" style="text-decoration: underline;">
+                {{ bitacoraRespuesta.sumilla.numero_sumilla }}
+              </FText>
+            </FHorizontalStack>
+          </FVerticalStack>
+          
           <FText id="remitenteNombreLbl" as="h6" variant="bodyMd" fontWeight="semibold">
             Nombres remitente:
           </FText>
@@ -874,6 +918,7 @@ const {
   resetMensajeroExterno,
   checkedReasignacion,
   docBitacoraListRespuesta,
+  getDocumentosByTramiteAndSede,
 } = useSumillaComposable();
 
 const { data: userLogin } = useSessionStorage<Persona>("userLogin");
@@ -892,7 +937,25 @@ const mostrarMsgCorrecto = ref<boolean>(false);
 const mostrarMsgError = ref<boolean>(false);
 const mensajeToast = ref<string>('');
 const eventoBitacoraAux = ref<EventoBitacora>({} as EventoBitacora);
+const respuestaTramiteModal = ref<boolean>(false);
+const bitacoraRespuesta = ref<Bitacora>({} as Bitacora);
 
+// * expanded
+const expandedRows = ref<any[]>([]);
+const objDocumentsList = ref<DocumentoBitacora[]>([]);  // Lista de documentos de la bitacora según tramite (Histórico)
+
+const onRowExpand = async(event: any) => {
+  objDocumentsList.value = await getDocumentosByTramiteAndSede(event.data.numero_tramite, event.data.sumilla.sum_sede);
+};
+
+const onRowCollapse = () => {
+  objDocumentsList.value = [];
+};
+
+const handleFilePrepareCreateRespuesta = async(bitRespuesta : Bitacora) => {
+  await prepareCreate();
+  bitacoraRespuesta.value = bitRespuesta;
+}
 
 const prepareCreate = async () => {
   sede.value = await getSedeByEmail(data.value?.user?.email!);
@@ -900,6 +963,7 @@ const prepareCreate = async () => {
   action.value = persistAction.create;
   bitacora.value = {} as Bitacora;
   sumilla.value = {} as Sumilla;
+  bitacoraRespuesta.value = {} as Bitacora;
   files.value = [];
   filesRespuesta.value = [];
   documentosBitacoraList.value = [];
@@ -913,9 +977,7 @@ const prepareCreate = async () => {
   resetmensajero();
   resetlugar_destino()
   resetdestinatario();
-  resetMensajeroExterno
-  // v$.value.$reset();
-  // resetForm();
+  resetMensajeroExterno;
   sumilla.value.responsable = userLogin.value;
   sumilla.value.fecha_sumilla = new Date();
   sumilla.value.hora_sumilla = new Date().getHours() + ":" + new Date().getMinutes();
@@ -983,6 +1045,8 @@ const onSubmited = handleSubmit(async (values:any) => {
       bitacora.value.sumilla = sumilla.value;
       bitacora.value.estado_transferencia = "N";
       bitacora.value.adicionado = data.value?.user?.email!;
+      bitacora.value.numero_tramite = bitacoraRespuesta.value.codigo != null ? bitacoraRespuesta.value.numero_tramite : 0;
+      bitacora.value.secuencial_documento = bitacoraRespuesta.value.codigo != null ? bitacoraRespuesta.value.secuencial_documento : 0;
       bitacora.value = await saveBitacora(bitacora.value);
       await saveDocumentos();
     }
@@ -1305,6 +1369,34 @@ const deleteFileDocsRespuesta = async (index: any) => {
 
 .p-togglebutton .p-focus {
   outline: none; /* Elimina el borde azul en enfoque */
+}
+
+.p-datatable .p-datatable-tbody > tr > td .p-row-toggler {
+  width: 2rem;
+  height: 2rem;
+  color: #6c757d;
+  border: 0 none;
+  background: transparent;
+  border-radius: 50%;
+  transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.p-datatable .p-datatable-tbody > tr > td .p-row-toggler:enabled:hover {
+  color: #343a40;
+  border-color: transparent;
+  background: #e9ecef;
+}
+
+.p-datatable .p-datatable-tbody > tr > td .p-row-toggler:focus{
+  outline: 0 none;
+  outline-offset: 0;
+  box-shadow: 0 0 0 0.2rem #1e7be6;
+}
+.p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even).p-highlight .p-row-toggler {
+  color: #1e7be6;
+}
+.p-datatable.p-datatable-striped .p-datatable-tbody > tr:nth-child(even).p-highlight .p-row-toggler:hover {
+  color: #1e7be6;
 }
 
 </style>

@@ -79,6 +79,9 @@ public class BitacoraModel implements Serializable {
     @Column(name = "BIT_SECUENCIAL_SEDE")
     private Long secuencialSede;
 
+    @Column(name = "BIT_NUMERO_TRAMITE")
+    private Long numeroTramite;
+
     @Column(name = "BIT_SECUENCIAL_DOCUMENTO")
     private Long secuencialDocumento;
 
@@ -140,6 +143,7 @@ public class BitacoraModel implements Serializable {
         this.adicionado = dto.adicionado();
         this.mensajeroExterno = dto.mensajeroExterno();
         this.secuencialSede = dto.secuencialSede();
+        this.numeroTramite = dto.numeroTramite();
         this.secuencialDocumento = dto.secuencialDocumento();
         this.codigoRecepcionReasignado = dto.codigoRecepcionReasignado();
         this.perCodigoEntregaDocumentacion = dto.perCodigoEntregaDocumentacion() != null ? new GthPersona(dto.perCodigoEntregaDocumentacion().codigo()) : null;
@@ -423,5 +427,13 @@ public class BitacoraModel implements Serializable {
 
     public void setHoraEntregaDocumentacion(String horaEntregaDocumentacion) {
         this.horaEntregaDocumentacion = horaEntregaDocumentacion;
+    }
+
+    public Long getNumeroTramite() {
+        return numeroTramite;
+    }
+
+    public void setNumeroTramite(Long numeroTramite) {
+        this.numeroTramite = numeroTramite;
     }
 }
