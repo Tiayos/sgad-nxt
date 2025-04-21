@@ -589,53 +589,6 @@
                   @Complete="searchItem"
                   :disabled="action == persistAction.view"
               />
-              <!-- <FModalSection v-if="action == persistAction.edit">
-                <FVerticalStack gap="4">
-                  <FDivider border-width="5" border-color="border-inverse"/>
-                  <FText id="personaRecibeLbl" as="h6" variant="bodyLg" fontWeight="semibold">
-                    Respuesta al trámite:
-                  </FText>
-
-                  <FVerticalStack gap="4">
-                  <FileUpload
-                      ref="fileUpload"
-                      name="file"
-                      accept=".pdf, .jpg, .jpeg, .png"
-                      multiple
-                      class="f"
-                      :maxFileSize="10485760"
-                      :chooseLabel="'Seleccionar archivos'"
-                      :onSelect="handleFileSelectDocumentosRespuesta"
-                      :disabled="action == persistAction.view"
-                  />
-                  <div v-if="docBitacoraListRespuesta.length > 0">
-                    <h3>Documentos de respuesta al trámite:</h3>
-                    <ul>
-                      <li
-                          v-for="(documento, index) in docBitacoraListRespuesta"
-                          :key="documento.doc_nombre_archivo">
-
-                        <a :href="createDownloadLink(documento.doc_archivo,documento.doc_nombre_archivo)"
-                            :download="documento.doc_nombre_archivo">
-                          {{ documento.doc_nombre_archivo }}
-                        </a>
-                        <FButton
-                            plain
-                            destructive
-                            size="micro"
-                            :icon="TrashCanSolid"
-                            @click="deleteFileDocsRespuesta(index)"
-                            style="margin-left: 2rem; margin-top: 1rem; align-items: end"
-                            :disabled="action == persistAction.view">Eliminar
-                        </FButton>
-                        <FDivider :border-width="'4'" />
-                      </li>
-                    </ul>
-                  </div>
-                </FVerticalStack>
-                </FVerticalStack>
-
-              </FModalSection> -->
             </FVerticalStack>
         </FVerticalStack>
       </FModalSection>
@@ -867,7 +820,6 @@ const {
   getUsrLogin,
   deleteBitacoraByNumSumilla,
   saveTransferencia,
-  // v$,
   receptorPersonaList,
   getBitacoraByNumSumilla,
   getSedeByEmail,
@@ -917,7 +869,6 @@ const {
   mensajeroExternoError,
   resetMensajeroExterno,
   checkedReasignacion,
-  docBitacoraListRespuesta,
   getDocumentosByTramiteAndSede,
 } = useSumillaComposable();
 
@@ -937,7 +888,6 @@ const mostrarMsgCorrecto = ref<boolean>(false);
 const mostrarMsgError = ref<boolean>(false);
 const mensajeToast = ref<string>('');
 const eventoBitacoraAux = ref<EventoBitacora>({} as EventoBitacora);
-const respuestaTramiteModal = ref<boolean>(false);
 const bitacoraRespuesta = ref<Bitacora>({} as Bitacora);
 
 // * expanded
@@ -998,10 +948,6 @@ const prepareTransferencia = async () => {
 
 const handleFileSelect = (event: any) => {
   files.value = event.files;
-};
-
-const handleFileSelectDocumentosRespuesta = (event: any) => {
-  filesRespuesta.value = event.files;
 };
 
 const completeObjectBitacora = () =>{
@@ -1097,7 +1043,6 @@ const saveDocumentos = async () => {
   }
 };
 
-
 const saveDocumentosRespuesta = async () => {
   if (filesRespuesta.value.length > 0) {
     try {
@@ -1175,12 +1120,6 @@ const searchItem = async(event: any) => {
   );
 };
 
-const changeHour = () => {
-  const fecha = new Date(bitacora.value.hora_entrega);
-  const hora = fecha.getHours();
-  const minutos = fecha.getMinutes();
-  bitacora.value.hora_entrega = `${hora}:${minutos}`;
-};
 
 const onSubmitTransferencia = async () => {
   await saveTransferencia(
@@ -1308,15 +1247,6 @@ const deleteFile = async (index: any) => {
   }
 };
 
-const deleteFileDocsRespuesta = async (index: any) => {
-  const documento: DocumentoBitacora = docBitacoraListRespuesta.value[index];
-  try {
-    await deleteDocumentosByBitCodigo(documento.bitacora.codigo); 
-    docBitacoraListRespuesta.value.splice(index, 1);
-  } catch (error) {
-    console.error("Error eliminando el archivo:", error);
-  }
-};
 </script>
 
 <style lang="css">

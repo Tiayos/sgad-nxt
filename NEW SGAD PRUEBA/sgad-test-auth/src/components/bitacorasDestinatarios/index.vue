@@ -40,7 +40,21 @@
           </div>
         </template>
 
-          <Column field="bitacora.sumilla.numero_sumilla" header="No. de sumilla" style="width: 5px" sortable></Column>
+          <!-- <Column field="bitacora.sumilla.numero_sumilla" header="No. de sumilla" style="width: 5px" sortable></Column> -->
+
+          <Column field="bitacora.sumilla.numero_sumilla" header="No. de Sumilla" style="width: 5px" sortable>
+            <template #body="slotProps">
+              <FLink 
+                @click="handleFilePrepareCreateRespuesta( slotProps.data)"
+                monochrome
+              >
+              <FText as="h6" variant="bodyMd" :font-weight="'semibold'">
+                {{ slotProps.data.bitacora.sumilla.numero_sumilla }}
+              </FText>
+              </FLink>
+            </template>
+          </Column>
+
           <Column header="Remitente" body-style="width: 1px" >
             <template #body="slotProps">
               {{ slotProps.data.bitacora.nombres_remitente }}
@@ -168,6 +182,383 @@
       </FLayoutSection>
       </FFormLayout>
     </FTabs>
+
+<!-- Crear Modal Respuesta-->
+
+  <FModal
+        v-model="crearRespuestaModal"
+        title=""
+        title-hidden
+        large
+        :primaryAction="{
+        content: 'Guardar Sumilla',
+        onAction: onSubmitedRespuesta,
+        disabled: action == persistAction.view,
+      }"
+        :secondaryActions="[
+        {
+          content: 'Cancelar',
+          onAction: handleChangeCreateModal,
+        },
+      ]"
+    >
+      <FModalSection title-hidden style="text-align: center">
+        <FVerticalStack gap="4">
+          <FText
+              as="h5"
+              variant="headingMd"
+              :font-weight="'semibold'"
+              style="text-align: center"
+          >
+            {{ sede.dee_descripcion }}
+          </FText>
+          <FText as="h6" variant="headingMd" style="text-align: center">
+            {{ $t("app.sgadNuxt.sumilla.title") }}
+          </FText>
+        </FVerticalStack>
+      </FModalSection>
+
+      <FModalSection>
+        <FVerticalStack gap="4" align="center">
+          <FHorizontalStack gap="4" align="center">
+            <FText as="h5" variant="bodyMd" :font-weight="'semibold'">
+              {{ $t("app.sgadNuxt.sumilla.fecha") }}
+            </FText>
+            <FText
+                as="h5"
+                variant="bodyMd"
+                :font-weight="'regular'"
+                v-if="action == persistAction.create"
+            >
+              {{ fechaSumillaView }}
+            </FText>
+            <FText
+                as="h5"
+                variant="bodyMd"
+                :font-weight="'regular'"
+                v-if="action == persistAction.edit || action == persistAction.view"
+            >
+              {{ sumilla.fecha_sumilla }}
+            </FText>
+
+            <FText as="h5" variant="bodyMd" :font-weight="'semibold'">
+              {{ $t("app.sgadNuxt.sumilla.hora") }}
+            </FText>
+            <FText as="h5" variant="bodyMd" :font-weight="'regular'">
+              {{ sumilla.hora_sumilla }}
+            </FText>
+          </FHorizontalStack>
+
+          <FHorizontalStack gap="4" align="center">
+            <FText as="h5" variant="bodyMd" :font-weight="'semibold'">
+              {{ $t("app.sgadNuxt.sumilla.nombreResponsable") }}
+            </FText>
+            <FText as="h5" variant="bodyMd" :font-weight="'semibold'">
+              {{ sumilla.responsable.per_nombres }}
+              {{ sumilla.responsable.per_apellidos }}
+            </FText>
+          </FHorizontalStack>
+          <FHorizontalStack gap="4" align="center">
+            <FText as="h5" variant="bodyMd" :font-weight="'semibold'">
+              {{ $t("app.sgadNuxt.sumilla.numHojas") }}
+            </FText>
+            <FTextField
+                type="number"
+                v-model="numHojas"
+                id="numHojas"
+                :error="numHojasError"
+                :disabled="action == persistAction.view"
+            />
+          </FHorizontalStack>
+        </FVerticalStack>
+      </FModalSection>
+
+      <FModalSection>
+
+        <FVerticalStack gap="4" align="center">
+          
+          <FVerticalStack gap="4" align="center" v-if="bitacoraRespuesta.codigo != null">
+            <FHorizontalStack gap="4">
+              <FText id="respuesta_tramite" as="h6" variant="bodyLg" fontWeight="semibold" >
+                Respuesta al número de sumilla:
+              </FText>
+              <FText id="remitenteNombreLbl" as="h6" variant="bodyMd" fontWeight="regular" color="warning" style="text-decoration: underline;">
+                {{ bitacoraRespuesta.sumilla.numero_sumilla }}
+              </FText>
+            </FHorizontalStack>
+          </FVerticalStack>
+          
+          <FText id="remitenteNombreLbl" as="h6" variant="bodyMd" fontWeight="semibold">
+            Nombres remitente:
+          </FText>
+          <FTextField
+              id="remitenteNombre"
+              v-model="nombres_remitente"
+              :error="nombres_remitenteError"
+              :disabled="action == persistAction.view"
+          />
+          <FText id="remitenteApellidoLbl" as="h6" variant="bodyMd" fontWeight="semibold">
+            Apellidos remitente:
+          </FText>
+          <FTextField
+              id="remitenteApellido"
+              v-model="apellidos_remitente"
+              :error="apellidos_remitenteError"
+              :disabled="action == persistAction.view"
+          />
+          
+          <FHorizontalStack gap="8">
+            <FText as="h6" variant="bodyLg" fontWeight="semibold"  >
+            Es un mensajero externo?:
+            </FText>
+            <ToggleButton v-model="checked" onLabel="Si" offLabel="No" />
+          </FHorizontalStack>
+
+          <FText id="mensajeroLbl" as="h6" variant="bodyMd" fontWeight="semibold" >
+            {{ checked==true ? 'Mensajero externo' : 'Mensajero interno' }}
+          </FText>
+
+          <FTextField
+              id="mensajeroExterno"
+              v-model="mensajeroExterno"
+              :error="mensajeroExternoError"
+              v-if="checked==true"
+          />
+
+          <FBox
+              background="bg"
+              padding="0"
+              borderWidth="1"
+              borderColor="border"
+              style="border-radius: 5px"
+              :style="[mensajeroError != null ? { 'border-color': '#FF6767' } : {}]"
+              v-if="checked==false"
+          >
+            <AutoComplete
+                v-model="mensajero"
+                optionLabel="nombreCompleto"
+                :suggestions="filteredItems"
+                @Complete="searchItem"
+                class="full-width-autocomplete"
+                :disabled="action == persistAction.view"
+            />
+          </FBox>
+
+          <FText id="numeroGuiaLbl" as="h6" variant="bodyMd" fontWeight="semibold">
+            Número de guia:
+          </FText>
+          <FTextField
+              id="numeroGuia"
+              v-model="bitacora.numero_guia"
+              :disabled="action == persistAction.view"
+          />
+
+          <FText id="observacionesLbl" as="h6" variant="bodyMd" fontWeight="semibold">
+            Observaciones:
+          </FText>
+          <FTextField
+              id="observaciones"
+              v-model="bitacora.observaciones"
+              :disabled="action == persistAction.view"
+          />
+
+          <FDivider border-width="5" border-color="border-inverse"/>
+           <FVerticalStack gap="4">
+
+              <FHorizontalStack gap="8">
+                <FText as="h6" variant="bodyLg" fontWeight="bold"  >
+                  Pertenece el documento a otra sede?:
+                </FText>
+                <ToggleButton v-model="checkedReasignacion" onLabel="Si" offLabel="No" />
+              </FHorizontalStack>
+
+                <FText
+                    id="destinatarioLbl"
+                    as="h6"
+                    variant="bodyMd"
+                    fontWeight="semibold"
+                >
+                  Destinatario:
+                </FText>
+                <FBox
+                    background="bg"
+                    padding="0"
+                    borderWidth="1"
+                    borderColor="border"
+                    style="border-radius: 5px"
+                    :style="[destinatarioError != null ? { 'border-color': '#FF6767' } : {}]"
+                >
+                  <AutoComplete
+                      v-model="destinatario"
+                      optionLabel="nombreCompleto"
+                      :disabled="action == persistAction.view"
+                      :suggestions="filteredItems"
+                      class="full-width-autocomplete"
+                      @Complete="searchItem"
+                  />
+                </FBox>
+
+                <FText id="asuntolbl" as="h6" variant="bodyMd" fontWeight="semibold">
+                  Asunto:
+                </FText>
+                <FTextField
+                    id="asunto"
+                    v-model="asunto"
+                    :error="asuntoError"
+                    :disabled="action == persistAction.view"
+                />
+                <FText
+                    id="lugarDestinolbl"
+                    as="h6"
+                    variant="bodyMd"
+                    fontWeight="semibold"
+                >
+                  Destino UPS:
+                </FText>
+                <FTextField
+                    id="lugarDestino"
+                    v-model="lugar_destino"
+                    :error="lugar_destinoError"
+                    :disabled="action == persistAction.view"
+                />
+
+                <FVerticalStack gap="4">
+                  <FileUpload
+                      ref="fileUpload"
+                      name="file"
+                      accept=".pdf, .jpg, .jpeg, .png"
+                      multiple
+                      class="f"
+                      :maxFileSize="10485760"
+                      :chooseLabel="'Seleccionar archivos'"
+                      :onSelect="handleFileSelect"
+                      :disabled="action == persistAction.view"
+                  />
+                  <div v-if="documentosBitacoraList.length > 0">
+                    <h3>Documentos guardados:</h3>
+                    <ul>
+                      <li
+                          v-for="(documento, index) in documentosBitacoraList"
+                          :key="documento.doc_nombre_archivo"
+                      >
+                        <a
+                            :href="
+                            createDownloadLink(
+                              documento.doc_archivo,
+                              documento.doc_nombre_archivo
+                            )
+                          "
+                            :download="documento.doc_nombre_archivo"
+                        >
+                          {{ documento.doc_nombre_archivo }}
+                        </a>
+                        <FButton
+                            plain
+                            destructive
+                            size="micro"
+                            :icon="TrashCanSolid"
+                            @click="deleteFile(index)"
+                            style="margin-left: 2rem; margin-top: 1rem; align-items: end"
+                            :disabled="action == persistAction.view"
+                        >Eliminar</FButton
+                        >
+                        <FDivider :border-width="'4'" />
+                      </li>
+                    </ul>
+                  </div>
+                </FVerticalStack>
+              </FVerticalStack>
+
+          <FDivider border-width="5" border-color="border-inverse" />
+            <FHorizontalStack gap="12">
+              <FText
+                  id="fechaRecepcionlbl"
+                  as="h6"
+                  variant="bodyMd"
+                  fontWeight="semibold"
+              >
+                Fecha de recepción:
+              </FText>
+              <FText
+                  id="fechaRecepcion"
+                  as="h6"
+                  variant="bodyMd"
+                  fontWeight="regular"
+              >
+              {{ (action == persistAction.view) ? sumilla?.fecha_sumilla : ""  }}
+              {{ (action == persistAction.create) ? new Date(sumilla?.fecha_sumilla).toLocaleDateString() : '' }}
+              {{ sumilla?.hora_sumilla }}
+              </FText>
+            </FHorizontalStack>
+
+            <FVerticalStack gap="4">
+                <FText
+                    id="fechaRecepcionlbl"
+                    as="h6"
+                    variant="bodyMd"
+                    fontWeight="semibold"
+                >
+                  Fecha de entrega:
+                </FText>
+                <FTextField
+                    id="fechaEntrega"
+                    type="date"
+                    v-model="fechaEntrega"
+                    :disabled="action == persistAction.view"
+                />
+
+                <FText
+                    id="horaEntregaLbl"
+                    for="calendar-timeonly"
+                    as="h6"
+                    variant="bodyMd"
+                    fontWeight="semibold"
+                >
+                  Hora de entrega:
+                </FText>
+
+                <FTextField
+                    id="horaEntrega"
+                    type="time"
+                    v-model="bitacora.hora_entrega"
+                    :disabled="action == persistAction.view"
+                />
+
+
+              <FText
+                  id="personaEntregaLbl"
+                  as="h6"
+                  variant="bodyMd"
+                  fontWeight="semibold"
+              >
+                Persona que entrega:
+              </FText>
+
+              <AutoComplete
+                  class="full-width-autocomplete"
+                  v-model="bitacora.usr_emisor"
+                  optionLabel="nombreCompleto"
+                  :suggestions="filteredItems"
+                  @Complete="searchItem"
+                  :disabled="action == persistAction.view"
+              />
+
+              <FText id="personaRecibeLbl" as="h6" variant="bodyMd" fontWeight="semibold">
+                Persona que recibe:
+              </FText>
+              <AutoComplete
+                  class="full-width-autocomplete"
+                  v-model="bitacora.usr_receptor"
+                  optionLabel="nombreCompleto"
+                  :suggestions="filteredItems"
+                  @Complete="searchItem"
+                  :disabled="action == persistAction.view"
+              />
+
+            </FVerticalStack>
+        </FVerticalStack>
+      </FModalSection>
+  </FModal>
 
 <!-- Documentos fisicos -->
 
@@ -314,107 +705,6 @@
         </div>
       </FModalSection>
 
-
-                <!-- <FVerticalStack gap="4" >
-                  <FText id="estadoLbl" as="h6" variant="bodyMd" fontWeight="semibold" alignment="justify" style="margin-left: 20px; margin-top: 25px;">
-                    Adjuntar Documentos:
-                  </FText>
-                  <FileUpload
-                      ref="fileUpload"
-                      name="file"
-                      accept=".pdf, .jpg, .jpeg, .png"
-                      multiple
-                      class="f"
-                      :maxFileSize="10485760"
-                      :chooseLabel="'Seleccionar archivos'"
-                      :onSelect="handleFileSelect"
-                      
-                  />
-                  <div v-if="documentosBitacoraList.length > 0">
-                    <h3 style="margin-left: 20px; margin-top: 25px;">Documentos guardados:</h3>
-                    <ul>
-                      <li
-                          v-for="(documento, index) in documentosBitacoraList"
-                          :key="documento.doc_nombre_archivo"
-                      >
-                        <a
-                            :href="
-                            createDownloadLink(
-                              documento.doc_archivo,
-                              documento.doc_nombre_archivo
-                            )
-                          "
-                            :download="documento.doc_nombre_archivo"
-                        >
-                          {{ documento.doc_nombre_archivo }}
-                        </a>
-                        <FButton
-                            plain
-                            destructive
-                            size="micro"
-                            :icon="TrashCanSolid"
-                            @click="deleteFile(index)"
-                            style="margin-left: 2rem; margin-top: 1rem; align-items: end"
-                            
-                        >Eliminar</FButton
-                        >
-                        <FDivider :border-width="'4'" />
-                      </li>
-                    </ul>
-                  </div>
-                </FVerticalStack> -->
-
-                <!-- <FVerticalStack gap="4">
-                  <FTooltip
-                      activator-wrapper="div"
-                      content="Sección para visualizar los documentos que lleguen a recepción que sean respuesta al mismo trámite."
-                      placement="right"
-                      width="wide">
-                      <template #activator="{props}" >
-                        <FHorizontalStack gap="1" v-bind="props">
-                          <FText  id="estadoLbl" as="h6" variant="bodyMd" fontWeight="semibold" style="margin-left: 20px; margin-top: 25px;">
-                            Documentos de respuesta al trámite (si aplica):
-                          </FText>
-                          <FHorizontalStack align="center" block-align="center" style="margin-top: 20px;">
-                            <FIcon :source="CircleQuestionSolid" color="primary"/>
-                          </FHorizontalStack>
-                        </FHorizontalStack>
-                      </template>
-                    </FTooltip>
-                  <FBox>
-                    <div v-if="documentosRespuestaBitacoraList.length > 0">
-                      <ul>
-                        <li
-                            v-for="(documento, index) in documentosBitacoraList"
-                            :key="documento.doc_nombre_archivo"
-                        >
-                          <a
-                              :href="createDownloadLink(documento.doc_archivo,documento.doc_nombre_archivo)"
-                              :download="documento.doc_nombre_archivo">
-                            {{ documento.doc_nombre_archivo }}
-                          </a>
-                          <FButton
-                              plain
-                              destructive
-                              size="micro"
-                              :icon="TrashCanSolid"
-                              @click="deleteFile(index)"
-                              style="margin-left: 2rem; margin-top: 1rem; align-items: end"
-                              
-                          >Eliminar</FButton
-                          >
-                          <FDivider :border-width="'4'" />
-                        </li>
-                      </ul>
-                    </div>
-                  <FText id="estadoLbl" as="h6" variant="bodyMd" color="subdued" fontWeight="semibold" style="margin-left: 50px; margin-top: 25px;" v-if="documentosRespuestaBitacoraList.length == 0" >
-                      No se han adjuntado documentos de respuesta al trámite.
-                  </FText>
-                  </FBox>
-                  <FDivider :border-width="'4'" />
-                    
-                </FVerticalStack> -->
-              
       <FCardSection v-show="!desabilitarGuardarCambios">
         <FCardSubsection>
           <FFormLayout>
@@ -738,13 +1028,6 @@
           <FDivider border-width="5" border-color="border-inverse"/>
            <FVerticalStack gap="4">
 
-              <!-- <FHorizontalStack gap="8">
-                <FText as="h6" variant="bodyLg" fontWeight="bold"  >
-                  Pertenece el documento a otra sede?:
-                </FText>
-                <ToggleButton v-model="checkedReasignacion" onLabel="Si" offLabel="No" />
-              </FHorizontalStack> -->
-
                 <FText
                     id="destinatarioLbl"
                     as="h6"
@@ -924,7 +1207,7 @@
   </FModal>
 
 <!-- modal para crear nuevo evento bitácora -->
-<FModal
+  <FModal
         v-model="crearEventoModal"
         title=""
         title-hidden
@@ -1031,7 +1314,7 @@ import {
 import AutoComplete from "primevue/autocomplete";
 import {useBitacorasDestinatariosComposable} from "~/composables/bitacoras/useBitacorasDestinatariosComposable";
 import type {Estado} from "~/models/Estado.model";
-import type {Persona} from "~/models/Sumilla.model";
+import type {Persona, Sumilla} from "~/models/Sumilla.model";
 import type {EventoBitacora} from "~/models/EventoBitacora.model";
 import { useField, useForm} from 'vee-validate';
 import {required, toTypedSchema} from "@vee-validate/rules";
@@ -1096,7 +1379,6 @@ const {getPersonasByFilterName,
   resetNumHojas,
   bitacora,
   fechaEntrega,
-  docBitacoraListRespuesta,
   prepareEdit,
   persistAction,
   createModal,
@@ -1107,6 +1389,12 @@ const {getPersonasByFilterName,
   findBitacoras,
   handleSubmit : handleEditSubmit,
   filtersSumillaBitacora,
+  
+  getSedeByEmail, //respuesta al trámite
+  getUsrLogin,
+  action,
+  saveBitacora,
+  saveSumilla
 } = useSumillaComposable();
 
 const eventoSelected = ref<EventoBitacora>({} as EventoBitacora);
@@ -1128,18 +1416,56 @@ const documentoExternoObj = ref<DocumentosExternos>({} as DocumentosExternos);
 const files = ref<File[]>([]); // Definir files como un ref que es un arreglo de File
 const documentObj = ref<DocumentoBitacora>({} as DocumentoBitacora);
 const documentosRespuestaBitacoraList = ref<DocumentoBitacora[]>([]);
-const changeEditModal = ref<boolean>(false);
 const fechaSumillaView = ref();
 const eventoBitacoraSelected = ref<EventoBitacora>({} as EventoBitacora);
 const crearEventoModal = ref<boolean>(false);
-const horaEntregaNuevoEvento = ref<string>('');
-const personaEntregaNuevoEvento = ref<Persona>({} as Persona);
-const personaRecibeNuevoEvento = ref<Persona>({} as Persona);
+  
+// Crear nueva sumilla como respuesta al trámite
+const bitacoraRespuesta = ref<Bitacora>({} as Bitacora);
+const crearRespuestaModal = ref<boolean>(false);
+
 
 const { data } = useAuth();
 
+//* Respuesta modal
 
+const handleFilePrepareCreateRespuesta = async(eve : EventoBitacora) => {
+  await prepareCreate();
+  bitacoraRespuesta.value = eve.bitacora;
+}
 
+const prepareCreate = async () => {
+  sede.value = await getSedeByEmail(data.value?.user?.email!);
+  userLogin.value = await getUsrLogin(data.value?.user?.email!);
+  action.value = persistAction.create;
+  bitacora.value = {} as Bitacora;
+  sumilla.value = {} as Sumilla;
+  bitacoraRespuesta.value = {} as Bitacora;
+  files.value = [];
+  filesRespuesta.value = [];
+  documentosBitacoraList.value = [];
+  checked.value = false;
+  checkedReasignacion.value = false;
+  resetMensajeroExterno();
+  resetNumHojas();
+  resetnombres_remitente();
+  resetapellidos_remitente();
+  resetasunto();
+  resetmensajero();
+  resetlugar_destino()
+  resetdestinatario();
+  resetMensajeroExterno;
+  sumilla.value.responsable = userLogin.value;
+  sumilla.value.fecha_sumilla = new Date();
+  sumilla.value.hora_sumilla = new Date().getHours() + ":" + new Date().getMinutes();
+  bitacora.value.doc_archivo = null;
+  fechaSumillaView.value = sumilla.value.fecha_sumilla.toLocaleDateString();
+  handleChangeCrearRespuestaModal();
+};
+
+const handleChangeCrearRespuestaModal = () => {
+  crearRespuestaModal.value = !crearRespuestaModal.value;
+};
 
 const tramiteAccionList = ref(
     [   { label: 'RESPUESTA FÍSICA', value: 1 },
@@ -1176,7 +1502,6 @@ const tabs: TabDescriptor[] = [
     content: "Documentos electrónicos",
   },
 ];
-
 
 
 const handleFileSelect = (event: any) => {
@@ -1361,6 +1686,52 @@ const handleChangeCrearEvento = () => {
   crearEventoModal.value = !crearEventoModal.value;
 }
 
+
+const onSubmitedRespuesta = handleEditSubmit(async (values:any) => {
+
+  if (action.value == persistAction.create) {
+      sumilla.value.numero_hojas = parseInt(numHojas.value);
+      sumilla.value.fecha_sumilla = new Date();
+      sumilla.value.hora_sumilla = new Date().getHours() + ":" + new Date().getMinutes();
+      sumilla.value = await saveSumilla(sumilla.value, data.value?.user?.email!);
+    } else if (action.value == persistAction.edit) {
+      sumilla.value.numero_hojas = Number(numHojas.value);
+      await editSumilla(sumilla.value, sumilla.value.codigo!);
+    }
+
+    await findSumillas();
+
+    if (action.value == persistAction.edit) {
+      completeObjectBitacora();
+      await editBitacora(bitacora.value, bitacora.value.codigo);
+      if (files.value.length > 0) {
+      await  saveDocumentos();
+      }
+      if(filesRespuesta.value.length > 0){
+        await saveDocumentosRespuesta();
+      }
+    } else {
+      completeObjectBitacora();
+      bitacora.value.receptor_documento = sumilla.value?.responsable!;
+      bitacora.value.fecha_recepcion = sumilla.value?.fecha_sumilla!;
+      bitacora.value.hora_recepcion = sumilla.value?.hora_sumilla!;
+      bitacora.value.sumilla = sumilla.value;
+      bitacora.value.estado_transferencia = "N";
+      bitacora.value.adicionado = data.value?.user?.email!;
+      bitacora.value.numero_tramite = bitacoraRespuesta.value.codigo != null ? bitacoraRespuesta.value.numero_tramite : 0;
+      bitacora.value.secuencial_documento = bitacoraRespuesta.value.codigo != null ? bitacoraRespuesta.value.secuencial_documento : 0;
+      bitacora.value = await saveBitacora(bitacora.value);
+      await saveDocumentos();
+    }
+
+    await findBitacoras();
+    createModal.value = !createModal.value;
+    resetNumHojas();
+    mostrarMsgCorrecto.value = true;
+    mensajeToast.value = "La sumilla se guardó correctamente";
+
+});
+
 const onSubmited = handleEditSubmit(async (values:any) => {
     sumilla.value.numero_hojas = Number(numHojas.value);
     await editSumilla(sumilla.value, sumilla.value.codigo!);
@@ -1370,9 +1741,6 @@ const onSubmited = handleEditSubmit(async (values:any) => {
     if (files.value.length > 0) {
       await saveDocumentos();
     }
-    // if(filesRespuesta.value.length > 0){
-    //   await saveDocumentosRespuesta();
-    // }
 
     await findBitacorasDestinatarios();
 
@@ -1381,21 +1749,6 @@ const onSubmited = handleEditSubmit(async (values:any) => {
     mostrarMsgCorrecto.value = true;
     mensajeToast.value = "La sumilla se editó correctamente";
 });
-
-
-const handleFileSelectDocumentosRespuesta = (event: any) => {
-  filesRespuesta.value = event.files;
-};
-
-const deleteFileDocsRespuesta = async (index: any) => {
-  const documento: DocumentoBitacora = docBitacoraListRespuesta.value[index];
-  try {
-    await deleteDocumentosByBitCodigo(documento.bitacora.codigo); 
-    docBitacoraListRespuesta.value.splice(index, 1);
-  } catch (error) {
-    console.error("Error eliminando el archivo:", error);
-  }
-};
 
 //prepare documentos físicos
 const prepareAcciones = async (eventoParam: EventoBitacora) => {
@@ -1550,7 +1903,6 @@ const saveDocumentosReasignados = async () => {
             await saveDocumentoBitacora(documentObj.value);
           } catch (error) {
             console.error("Error processing file:", error);
-            // Puedes manejar el error aquí si es necesario
           }
         };
         reader.onerror = (error) => {

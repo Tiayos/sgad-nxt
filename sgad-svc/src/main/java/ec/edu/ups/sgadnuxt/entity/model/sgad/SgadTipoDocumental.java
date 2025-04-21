@@ -12,7 +12,8 @@ public class SgadTipoDocumental implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @Basic(optional = false)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sgad_documento_tipo_seq")
+    @SequenceGenerator(name = "sgad_documento_tipo_seq", sequenceName = "SGAD.SEQ_DOCUMENTO_TIPO", allocationSize = 1)
     @Column(name = "TID_CODIGO")
     private Long tidCodigo;
     @Column(name = "AUD_ADICIONADO")

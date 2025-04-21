@@ -1,4 +1,5 @@
 package ec.edu.ups.sgadnuxt.service.implementation;
+
 import ec.edu.ups.sgadnuxt.entity.dto.BitacoraDTO;
 import ec.edu.ups.sgadnuxt.entity.dto.sgad.*;
 import ec.edu.ups.sgadnuxt.entity.model.BitacoraModel;
@@ -15,15 +16,20 @@ import ec.edu.ups.sgadnuxt.repository.IPersonaDao;
 import ec.edu.ups.sgadnuxt.repository.transferencia.*;
 import ec.edu.ups.sgadnuxt.service.ITransferenciaDocumentalService;
 import jakarta.persistence.PersistenceException;
-import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
 public class TransferenciaDocumentalmpl implements ITransferenciaDocumentalService {
+
+    private static final Logger log = LoggerFactory.getLogger(TransferenciaDocumentalmpl.class);
 
     private ITransferenciaDocumentalDao iTransferenciaDocumentalDao;
 
@@ -39,10 +45,13 @@ public class TransferenciaDocumentalmpl implements ITransferenciaDocumentalServi
     private IDocumentoTipoDao iDocumentoTipoDao;
     @Autowired
     private ITipoDocumentalDao iTipoDocumentalDao;
+
     public TransferenciaDocumentalmpl(ITransferenciaDocumentalDao iTransferenciaDocumentalDao) {
         this.iTransferenciaDocumentalDao = iTransferenciaDocumentalDao;
     }
+
     @Override
+    @Transactional(readOnly = true)
     public List<TransDocumentalDTO> findAllTransferenciasDocumentales() {
         return iTransferenciaDocumentalDao.findAll()
                 .stream()
@@ -51,15 +60,22 @@ public class TransferenciaDocumentalmpl implements ITransferenciaDocumentalServi
     }
 
     @Override
+    @Transactional(readOnly = true)
     public TransDocumentalDTO findTransferenciaDocumentalByCodigo(Long codigo) {
-        return TransDocumentalDTO.toDTO(iTransferenciaDocumentalDao.findById(codigo).get());
+        try {
+            return TransDocumentalDTO.toDTO(iTransferenciaDocumentalDao.findById(codigo).orElseThrow());
+        } catch (Exception e) {
+            log.error("Error al buscar transferencia documental por código: {}", codigo, e);
+            throw new RuntimeException("No se pudo encontrar la transferencia documental", e);
+        }
     }
 
     @Override
-    public void saveTransferenciaDocumental(String fechaInicio, String fechaFin,Long perCodigoDestinatarioGW, Long perCodigoResponsable) {
+    @Transactional
+    public void saveTransferenciaDocumental(String fechaInicio, String fechaFin, Long perCodigoDestinatarioGW, Long perCodigoResponsable) {
         DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate initialDate = LocalDate.parse(fechaInicio,formatoFecha);
-        LocalDate lastDate = LocalDate.parse(fechaFin,formatoFecha);
+        LocalDate initialDate = LocalDate.parse(fechaInicio, formatoFecha);
+        LocalDate lastDate = LocalDate.parse(fechaFin, formatoFecha);
 
         try {
             List<BitacoraDTO> bitacoraModels = iBitacoraDao.getBitacorasByFechasEstadoResCodigo(initialDate, lastDate, perCodigoResponsable)
@@ -67,41 +83,39 @@ public class TransferenciaDocumentalmpl implements ITransferenciaDocumentalServi
                     .map(BitacoraDTO::toDTO)
                     .toList();
 
-            if(bitacoraModels.size()!=0){
-                for (BitacoraDTO bitacoraDTO : bitacoraModels){
+            if (!bitacoraModels.isEmpty()) {
+                for (BitacoraDTO bitacoraDTO : bitacoraModels) {
                     iBitacoraDao.findById(bitacoraDTO.codigo())
-                            .map(
-                                    bitacoraMap -> {
-                                        bitacoraMap.setNombresRemitente(bitacoraDTO.nombresRemitente());
-                                        bitacoraMap.setApellidosRemitente(bitacoraDTO.apellidosRemitente());
-                                        bitacoraMap.setDestinatario(new GthPersona(bitacoraDTO.destinatario().codigo()));
-                                        bitacoraMap.setAsunto(bitacoraDTO.asunto());
-                                        bitacoraMap.setLugarDestino(bitacoraDTO.lugarDestino());
-                                        bitacoraMap.setMensajero(new GthPersona(bitacoraDTO.mensajero().codigo()));
-                                        bitacoraMap.setNumeroGuia(bitacoraDTO.numeroGuia());
-                                        bitacoraMap.setObservaciones(bitacoraDTO.observaciones());
-                                        bitacoraMap.setUsrEmisor(bitacoraDTO.usrEmisor() != null ? new GthPersona(bitacoraDTO.usrEmisor().codigo()) : null);
-                                        bitacoraMap.setReceptor(bitacoraDTO.usrReceptor() != null ? new GthPersona(bitacoraDTO.usrReceptor().codigo()) : null);
-                                        bitacoraMap.setFechaEntrega(bitacoraDTO.fechaEntrega());
-                                        bitacoraMap.setHoraEntrega(bitacoraDTO.horaEntrega());
-                                        SumillaModel sumillaModel = bitacoraMap.getSumilla();
-                                        bitacoraMap.setDocArchivo(bitacoraDTO.docArchivo());
-                                        bitacoraMap.setNombreArchivo(bitacoraDTO.nombreArchivo());
-                                        if(sumillaModel != null ){
-                                            sumillaModel.setCodigo(bitacoraDTO.sumilla().codigo());
-                                        }
-                                        bitacoraMap.setSumilla(sumillaModel);
-                                        bitacoraMap.setEstadoTransferencia('S');
-                                        return BitacoraDTO.toDTO(iBitacoraDao.save(bitacoraMap));
-                                    }) .orElseThrow(
-                                    () -> new NotFoundException("No se encontró la bitácora con número: ".concat(bitacoraDTO.codigo().toString()))
-                            );
+                            .map(bitacoraMap -> {
+                                bitacoraMap.setNombresRemitente(bitacoraDTO.nombresRemitente());
+                                bitacoraMap.setApellidosRemitente(bitacoraDTO.apellidosRemitente());
+                                bitacoraMap.setDestinatario(new GthPersona(bitacoraDTO.destinatario().codigo()));
+                                bitacoraMap.setAsunto(bitacoraDTO.asunto());
+                                bitacoraMap.setLugarDestino(bitacoraDTO.lugarDestino());
+                                bitacoraMap.setMensajero(new GthPersona(bitacoraDTO.mensajero().codigo()));
+                                bitacoraMap.setNumeroGuia(bitacoraDTO.numeroGuia());
+                                bitacoraMap.setObservaciones(bitacoraDTO.observaciones());
+                                bitacoraMap.setUsrEmisor(bitacoraDTO.usrEmisor() != null ? new GthPersona(bitacoraDTO.usrEmisor().codigo()) : null);
+                                bitacoraMap.setReceptor(bitacoraDTO.usrReceptor() != null ? new GthPersona(bitacoraDTO.usrReceptor().codigo()) : null);
+                                bitacoraMap.setFechaEntrega(bitacoraDTO.fechaEntrega());
+                                bitacoraMap.setHoraEntrega(bitacoraDTO.horaEntrega());
+                                SumillaModel sumillaModel = bitacoraMap.getSumilla();
+                                bitacoraMap.setDocArchivo(bitacoraDTO.docArchivo());
+                                bitacoraMap.setNombreArchivo(bitacoraDTO.nombreArchivo());
+                                if (sumillaModel != null) {
+                                    sumillaModel.setCodigo(bitacoraDTO.sumilla().codigo());
+                                }
+                                bitacoraMap.setSumilla(sumillaModel);
+                                bitacoraMap.setEstadoTransferencia('S');
+                                return BitacoraDTO.toDTO(iBitacoraDao.save(bitacoraMap));
+                            })
+                            .orElseThrow(() -> new NotFoundException("No se encontró la bitácora con número: " + bitacoraDTO.codigo()));
                 }
 
-                Long trdCodigo = iTransferenciaDocumentalDao.lastIdTransferenciaDocumental()+1;
+                Long trdCodigo = iTransferenciaDocumentalDao.lastIdTransferenciaDocumental() + 1;
                 GTHPersonaProjection gthResponsableAmbito = iPersonaDao.getGthPersonaAmbitoByPerCodigo(bitacoraModels.get(0).sumilla().responsable().codigo());
-                GTHPersonaProjection gthReceptorAmbitoGW = iPersonaDao.getGthPersonaAmbitoByPerCodigo(perCodigoDestinatarioGW); //RECEPTOR PERSONA DE GESTION WEB
-                
+                GTHPersonaProjection gthReceptorAmbitoGW = iPersonaDao.getGthPersonaAmbitoByPerCodigo(perCodigoDestinatarioGW);
+
                 TransDocumentalDTO transDocumentalDTO1 = new TransDocumentalDTO(
                         trdCodigo,
                         gthReceptorAmbitoGW.getCODIGOAMBITO(),
@@ -123,22 +137,20 @@ public class TransferenciaDocumentalmpl implements ITransferenciaDocumentalServi
                         "I",
                         gthResponsableAmbito.getMAIL()
                 );
-              SgadTransDocumentales sgadTransDocumentalModel =  iTransferenciaDocumentalDao.save(new SgadTransDocumentales(transDocumentalDTO1));
-              crearExpediente(initialDate, lastDate, sgadTransDocumentalModel, bitacoraModels);
+                SgadTransDocumentales sgadTransDocumentalModel = iTransferenciaDocumentalDao.save(new SgadTransDocumentales(transDocumentalDTO1));
+                crearExpediente(initialDate, lastDate, sgadTransDocumentalModel, bitacoraModels);
             }
-
-        }catch (Exception e){
-            e.printStackTrace();
+        } catch (Exception e) {
+            log.error("Error al guardar transferencia documental para fechas: {} - {}", fechaInicio, fechaFin, e);
+            throw new RuntimeException("No se pudo guardar la transferencia documental", e);
         }
     }
 
     @Transactional
-    public void crearExpediente(LocalDate fechaInicio, LocalDate fechaFin, SgadTransDocumentales sgadTransDocumentalModel,  List<BitacoraDTO> bitacoraModels ) {
-
-        //CREAR EXPEDIENTE
+    public void crearExpediente(LocalDate fechaInicio, LocalDate fechaFin, SgadTransDocumentales sgadTransDocumentalModel, List<BitacoraDTO> bitacoraModels) {
         Long detCodigo = iDetalleTransferenciaDao.lastIdDetTransferenciaDocumental() + 1;
         try {
-            TransDocumentalDTO transDocumentalDTO = TransDocumentalDTO.toDTO(sgadTransDocumentalModel);  // Asegúrate de usar el DTO correcto
+            TransDocumentalDTO transDocumentalDTO = TransDocumentalDTO.toDTO(sgadTransDocumentalModel);
             DetalleTransferenciaDTO detalleTransferenciaDTO = new DetalleTransferenciaDTO(
                     detCodigo,
                     "RADICACIÓN DE DOCUMENTOS",
@@ -146,29 +158,28 @@ public class TransferenciaDocumentalmpl implements ITransferenciaDocumentalServi
                     fechaInicio,
                     1L,
                     "1",
-                    transDocumentalDTO,  // Usar el objeto guardado
+                    transDocumentalDTO,
                     sgadTransDocumentalModel.getAudAdicionado()
             );
 
             SgadDetalleTransferencia sgadDetalleTransferencia = new SgadDetalleTransferencia(detalleTransferenciaDTO);
-            sgadDetalleTransferencia.setTrdCodigo(sgadTransDocumentalModel); // Asegúrate de establecer la entidad guardada
+            sgadDetalleTransferencia.setTrdCodigo(sgadTransDocumentalModel);
             iDetalleTransferenciaDao.save(sgadDetalleTransferencia);
 
-            //CREAR DOCUMENTOS
             crearDocumento(bitacoraModels, sgadDetalleTransferencia);
-            
-        }catch (PersistenceException e){
-            e.printStackTrace();
+        } catch (PersistenceException e) {
+            log.error("Error al crear expediente para transferencia documental: {}", sgadTransDocumentalModel, e);
+            throw new RuntimeException("No se pudo crear el expediente", e);
         }
     }
 
-    public void crearDocumento(List<BitacoraDTO> bitacoraModels, SgadDetalleTransferencia sgadDetalleTransferencia){
-        try{
+    public void crearDocumento(List<BitacoraDTO> bitacoraModels, SgadDetalleTransferencia sgadDetalleTransferencia) {
+        try {
             DetalleTransferenciaDTO detalleTransferenciaDTO = DetalleTransferenciaDTO.toDTO(sgadDetalleTransferencia);
-            Long contadorNumOrden=0L;
-            for (BitacoraDTO bitacoraDTO : bitacoraModels){
-                Long lastIdDocumento = iDocumentoDao.lastIdDocumento()+1;
-                contadorNumOrden ++;
+            Long contadorNumOrden = 0L;
+            for (BitacoraDTO bitacoraDTO : bitacoraModels) {
+                Long lastIdDocumento = null; // Usar secuencia
+                contadorNumOrden++;
                 DocumentoDTO documentoDTO = new DocumentoDTO(
                         lastIdDocumento,
                         bitacoraDTO.asunto(),
@@ -177,45 +188,47 @@ public class TransferenciaDocumentalmpl implements ITransferenciaDocumentalServi
                         contadorNumOrden,
                         detalleTransferenciaDTO.audAdicionado(),
                         bitacoraDTO.sumilla().fechaSumilla()
-                        );
+                );
                 SgadDocumento sgadTransDocumentalModel = new SgadDocumento(documentoDTO);
                 sgadTransDocumentalModel.setDetCodigo(sgadDetalleTransferencia);
                 iDocumentoDao.save(sgadTransDocumentalModel);
 
                 crearDocumentoTipo(sgadTransDocumentalModel);
             }
-
-        }catch (PersistenceException e){
-            e.printStackTrace();
+        } catch (PersistenceException e) {
+            log.error("Error al crear documentos para detalle de transferencia: {}", sgadDetalleTransferencia, e);
+            throw new RuntimeException("No se pudo crear el documento", e);
         }
     }
 
-    public void crearDocumentoTipo(SgadDocumento sgadDocumento){
+    public void crearDocumentoTipo(SgadDocumento sgadDocumento) {
         try {
-            Long lastIdDocumentoTipo = iDocumentoTipoDao.lastIdDocumentoTipo()+1;
+            Long lastIdDocumentoTipo = null; // Usar secuencia
             DocumentoDTO documentoDTO = DocumentoDTO.toDTO(sgadDocumento);
-            TipoDocumentalDTO tipoDocumentalDTO = TipoDocumentalDTO.toDTO(iTipoDocumentalDao.findById(2L).get());
+            TipoDocumentalDTO tipoDocumentalDTO = TipoDocumentalDTO.toDTO(iTipoDocumentalDao.findById(2L).orElseThrow());
             DocumentoTipoDTO documentoTipoDTO = new DocumentoTipoDTO(
                     lastIdDocumentoTipo,
                     documentoDTO,
                     tipoDocumentalDTO,
                     documentoDTO.audAdicionado()
-                    );
+            );
             SgadDocumentoTipo sgadDocumentoTipo = new SgadDocumentoTipo(documentoTipoDTO);
             iDocumentoTipoDao.save(sgadDocumentoTipo);
-        }catch (PersistenceException e){
-            e.printStackTrace();
+        } catch (PersistenceException e) {
+            log.error("Error al crear tipo de documento para documento: {}", sgadDocumento, e);
+            throw new RuntimeException("No se pudo crear el tipo de documento", e);
         }
-
     }
 
     @Override
+    @Transactional
     public void updateTransferenciaDocumental(TransDocumentalDTO transDocumentalDTO, Long codigo) {
-
+        // Implementación pendiente según requerimientos
     }
 
     @Override
+    @Transactional
     public void deleteTransferenciaDocumentalByCodigo(Long codigo) {
-
+        // Implementación pendiente según requerimientos
     }
 }
