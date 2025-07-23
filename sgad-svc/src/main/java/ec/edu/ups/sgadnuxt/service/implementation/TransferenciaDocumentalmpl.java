@@ -98,12 +98,11 @@ public class TransferenciaDocumentalmpl implements ITransferenciaDocumentalServi
                             );
                 }
 
-                Long trdCodigo = iTransferenciaDocumentalDao.lastIdTransferenciaDocumental()+1;
                 GTHPersonaProjection gthResponsableAmbito = iPersonaDao.getGthPersonaAmbitoByPerCodigo(bitacoraModels.get(0).sumilla().responsable().codigo());
                 GTHPersonaProjection gthReceptorAmbitoGW = iPersonaDao.getGthPersonaAmbitoByPerCodigo(perCodigoDestinatarioGW); //RECEPTOR PERSONA DE GESTION WEB
                 
                 TransDocumentalDTO transDocumentalDTO1 = new TransDocumentalDTO(
-                        trdCodigo,
+                        null,
                         gthReceptorAmbitoGW.getCODIGOAMBITO(),
                         gthResponsableAmbito.getCODIGOAMBITO(),
                         gthReceptorAmbitoGW.getCARGOCODIGO(),
@@ -135,12 +134,10 @@ public class TransferenciaDocumentalmpl implements ITransferenciaDocumentalServi
     @Transactional
     public void crearExpediente(LocalDate fechaInicio, LocalDate fechaFin, SgadTransDocumentales sgadTransDocumentalModel,  List<BitacoraDTO> bitacoraModels ) {
 
-        //CREAR EXPEDIENTE
-        Long detCodigo = iDetalleTransferenciaDao.lastIdDetTransferenciaDocumental() + 1;
         try {
             TransDocumentalDTO transDocumentalDTO = TransDocumentalDTO.toDTO(sgadTransDocumentalModel);  // Asegúrate de usar el DTO correcto
             DetalleTransferenciaDTO detalleTransferenciaDTO = new DetalleTransferenciaDTO(
-                    detCodigo,
+                    null,
                     "RADICACIÓN DE DOCUMENTOS",
                     fechaFin,
                     fechaInicio,
@@ -167,10 +164,10 @@ public class TransferenciaDocumentalmpl implements ITransferenciaDocumentalServi
             DetalleTransferenciaDTO detalleTransferenciaDTO = DetalleTransferenciaDTO.toDTO(sgadDetalleTransferencia);
             Long contadorNumOrden=0L;
             for (BitacoraDTO bitacoraDTO : bitacoraModels){
-                Long lastIdDocumento = iDocumentoDao.lastIdDocumento()+1;
+//                Long lastIdDocumento = iDocumentoDao.lastIdDocumento()+1;
                 contadorNumOrden ++;
                 DocumentoDTO documentoDTO = new DocumentoDTO(
-                        lastIdDocumento,
+                        null,
                         bitacoraDTO.asunto(),
                         bitacoraDTO.sumilla().numeroHojas().longValue(),
                         detalleTransferenciaDTO,
@@ -192,11 +189,10 @@ public class TransferenciaDocumentalmpl implements ITransferenciaDocumentalServi
 
     public void crearDocumentoTipo(SgadDocumento sgadDocumento){
         try {
-            Long lastIdDocumentoTipo = iDocumentoTipoDao.lastIdDocumentoTipo()+1;
             DocumentoDTO documentoDTO = DocumentoDTO.toDTO(sgadDocumento);
             TipoDocumentalDTO tipoDocumentalDTO = TipoDocumentalDTO.toDTO(iTipoDocumentalDao.findById(2L).get());
             DocumentoTipoDTO documentoTipoDTO = new DocumentoTipoDTO(
-                    lastIdDocumentoTipo,
+                    null,
                     documentoDTO,
                     tipoDocumentalDTO,
                     documentoDTO.audAdicionado()

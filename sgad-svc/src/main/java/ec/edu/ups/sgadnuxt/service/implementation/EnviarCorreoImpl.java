@@ -446,7 +446,7 @@ public class EnviarCorreoImpl implements EnviarCorreoService {
 				"<tr>" +
 				"<td style=\"padding:10px;\">" +
 				"Tiene un nuevo documento electrónico asignado con número de sumilla: <b>" + bitacoraDocumentosExternosDTO.sumilla().numeroSumilla() +"</b>" +
-				"ingrese al siguiente enlace para visualizarlo: <a href=\"https://sgadui.ups.edu.ec/sumilla\">" + "Sistema gestión documental" + "</a>"+
+				"ingrese al siguiente enlace para visualizarlo: <a href=\"https://sgad.ups.edu.ec/sumilla\">" + "Sistema gestión documental" + "</a>"+
 				"</td>" +
 				"</tr>" +
 				"</tbody>" +
@@ -482,7 +482,7 @@ public class EnviarCorreoImpl implements EnviarCorreoService {
 				"<tr>" +
 				"<td style=\"padding:10px;\">" +
 				"Tiene un nuevo documento electrónico con número de sumilla: <b>" + bitacoraDocumentosExternosDTO.sumilla().numeroSumilla() +"</b>" +
-				"ingrese al siguiente enlace para visualizarlo: <a href=\"https://sgadui.ups.edu.ec/bitacora\">" + "Sistema gestión documental" + "</a>"+
+				"ingrese al siguiente enlace para visualizarlo: <a href=\"https://sgad.ups.edu.ec/bitacora\">" + "Sistema gestión documental" + "</a>"+
 				"</td>" +
 				"</tr>" +
 				"</tbody>" +
@@ -519,7 +519,7 @@ public class EnviarCorreoImpl implements EnviarCorreoService {
 				"<tr>" +
 				"<td style=\"padding:10px;\">" +
 				"Tiene un nuevo documento electrónico con número de sumilla: <b>" + bitacoraDTO.sumilla().numeroSumilla() +"</b> " + ", " +
-				"ingrese al siguiente enlace para visualizarlo: <a href=\"https://sgadui.ups.edu.ec/bitacora\">" + "Sistema gestión documental" + "</a>"+
+				"ingrese al siguiente enlace para visualizarlo: <a href=\"https://sgad.ups.edu.ec/bitacora\">" + "Sistema gestión documental" + "</a>"+
 				"</td>" +
 				"</tr>" +
 				"</tbody>" +
@@ -625,7 +625,7 @@ public class EnviarCorreoImpl implements EnviarCorreoService {
 				"<tr>" +
 				"<td style=\"padding:10px;\">" +
 				"Tiene un nuevo documento electrónico reasignado con número de sumilla: <b>" + bitacoraDTO.sumilla().numeroSumilla() +"</b>" + ", " +
-				"ingrese al siguiente enlace para visualizarlo: <a href=\"https://sgadui.ups.edu.ec/bitacora\">" + "Sistema gestión documental" + "</a>"+
+				"ingrese al siguiente enlace para visualizarlo: <a href=\"https://sgad.ups.edu.ec/bitacora\">" + "Sistema gestión documental" + "</a>"+
 				"</td>" +
 				"</tr>" +
 				"</tbody>" +

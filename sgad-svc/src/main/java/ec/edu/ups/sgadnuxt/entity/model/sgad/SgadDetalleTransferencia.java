@@ -19,8 +19,11 @@ public class SgadDetalleTransferencia implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private static final String SEQUENCE_NAME = "SEQ_DETALLE_TRAN";
+
     @Id
-    @Basic(optional = false)
+    @SequenceGenerator(name = SEQUENCE_NAME, sequenceName = SEQUENCE_NAME, allocationSize = 1, initialValue = 1, schema = "SGAD")
+    @GeneratedValue(generator = SEQUENCE_NAME, strategy = GenerationType.SEQUENCE)
     @Column(name = "DET_CODIGO")
     private Long detCodigo;
     @Basic(optional = false)

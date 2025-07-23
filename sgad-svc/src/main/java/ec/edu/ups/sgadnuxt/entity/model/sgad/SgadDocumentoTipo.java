@@ -14,9 +14,12 @@ public class SgadDocumentoTipo implements Serializable {
 
     private static final long serialVersionUID = 1L;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    private static final String SEQUENCE_NAME = "SEQ_DOCUMENTO_TIPO";
+
     @Id
-    @Basic(optional = false)
-    @Column(name = "DOT_CODIGO")
+    @SequenceGenerator(name = SEQUENCE_NAME, sequenceName = SEQUENCE_NAME, allocationSize = 1, initialValue = 1, schema = "SGAD")
+    @GeneratedValue(generator = SEQUENCE_NAME, strategy = GenerationType.SEQUENCE)
+    @Column(name = "DOT_CODIGO", nullable = false)
     private Long dotCodigo;
     @Basic(optional = false)
     @Column(name = "AUD_ADICIONADO")

@@ -1,10 +1,20 @@
 
 package ec.edu.ups.sgadnuxt.entity.model.sgad;
 
-import ec.edu.ups.sgadnuxt.entity.dto.sgad.DetalleTransferenciaDTO;
 import ec.edu.ups.sgadnuxt.entity.dto.sgad.DocumentoDTO;
-import ec.edu.ups.sgadnuxt.entity.model.gth.GthPersona;
-import jakarta.persistence.*;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,10 +24,12 @@ import java.time.LocalDateTime;
 public class SgadDocumento implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private static final String SEQUENCE_NAME = "SEQ_DOCUMENTO";
 
     @Id
-    @Basic(optional = false)
-    @Column(name = "DOC_CODIGO")
+    @SequenceGenerator(name = SEQUENCE_NAME, sequenceName = SEQUENCE_NAME, allocationSize = 1, initialValue = 1, schema = "SGAD")
+    @GeneratedValue(generator = SEQUENCE_NAME, strategy = GenerationType.SEQUENCE)
+    @Column(name = "DOC_CODIGO", nullable = false)
     private Long docCodigo;
     @Basic(optional = false)
     @Column(name = "DOC_ASUNTO")
@@ -71,14 +83,14 @@ public class SgadDocumento implements Serializable {
     }
 
     @PrePersist
-    public void prePersist(){
+    public void prePersist() {
         this.audFechaAdicion = LocalDateTime.now();
         this.audEliminado = "N";
         this.docNumCopias = 0L;
     }
 
     @PreUpdate
-    public void preUpdate(){
+    public void preUpdate() {
         this.audFechaModificacion = LocalDateTime.now();
         this.audEliminado = "N";
 //        this.audModificado="";
@@ -220,5 +232,5 @@ public class SgadDocumento implements Serializable {
     public String toString() {
         return "ups.edu.ec.sgadproject.SgadDocumento[ docCodigo=" + docCodigo + " ]";
     }
-    
+
 }
