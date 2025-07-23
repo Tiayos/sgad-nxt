@@ -14,8 +14,6 @@ import ec.edu.ups.sgadnuxt.repository.IPersonaDao;
 import ec.edu.ups.sgadnuxt.service.EnviarCorreoService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EnviarCorreoImpl implements EnviarCorreoService {
-
-	private static final Logger log = LoggerFactory.getLogger(EnviarCorreoImpl.class);
-
 	String title1 = "UNIVERSIDAD POLITÉCNICA SALESIANA";
 	String title2 = "SISTEMA DE GESTIÓN DOCUMENTAL";
 	String messageContent1 = "Estimado/a ";
@@ -103,7 +98,6 @@ public class EnviarCorreoImpl implements EnviarCorreoService {
 				return new ResponseEntity<>("Email enviado", HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			log.error("Error al enviar correo para evento de bitácora: {}", eventoBitacoraDTO, e);
 			return new ResponseEntity<>("No se pudo enviar el email al estudiante", HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>("Email no enviado", HttpStatus.OK);
@@ -176,7 +170,6 @@ public class EnviarCorreoImpl implements EnviarCorreoService {
 			helper.setText(htmlContent, true);
 			mailSender.send(message);
 		} catch (MessagingException e) {
-			log.error("Error al enviar email al destinatario: {}", destinatario, e);
 			throw new RuntimeException("Error en el envío de email: " + destinatario, e);
 		}
 	}
@@ -259,7 +252,6 @@ public class EnviarCorreoImpl implements EnviarCorreoService {
 				return new ResponseEntity<>("Email enviado", HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			log.error("Error al enviar código a usuario externo para bitácora: {}", bitacoraDocumentosExternosDTO, e);
 			return new ResponseEntity<>("No se pudo enviar el email al estudiante", HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>("Email no enviado", HttpStatus.OK);
@@ -286,7 +278,6 @@ public class EnviarCorreoImpl implements EnviarCorreoService {
 			}
 			return new ResponseEntity<>("Email enviado", HttpStatus.OK);
 		} catch (Exception e) {
-			log.error("Error al enviar email por sede reasignado para bitácora: {}", bitacoraDocumentosExternosDTO, e);
 			return new ResponseEntity<>("No se pudo enviar el email al estudiante", HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -302,7 +293,6 @@ public class EnviarCorreoImpl implements EnviarCorreoService {
 			sendEmailUsuario(gthMail.getMaiDireccion(), htmlContextBySede);
 			return new ResponseEntity<>("Email enviado", HttpStatus.OK);
 		} catch (Exception e) {
-			log.error("Error al enviar email al destinatario para bitácora: {}", bitacoraDocumentosExternosDTO, e);
 			return new ResponseEntity<>("No se pudo enviar el email al Destinatario", HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -315,7 +305,6 @@ public class EnviarCorreoImpl implements EnviarCorreoService {
 			sendEmailUsuario(bitacoraDocumentosExternosDTO.correoRemitente(), htmlContextDocFisica);
 			return new ResponseEntity<>("Email enviado", HttpStatus.OK);
 		} catch (Exception e) {
-			log.error("Error al enviar solicitud de documentación física para bitácora: {}", bitacoraDocumentosExternosDTO, e);
 			return new ResponseEntity<>("No se pudo enviar el email al remitente solicitando documentación física", HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -328,7 +317,6 @@ public class EnviarCorreoImpl implements EnviarCorreoService {
 			sendEmailUsuario(bitacoraDocumentosExternosDTO.correoRemitente(), htmlContextDocElectronica);
 			return new ResponseEntity<>("Email enviado", HttpStatus.OK);
 		} catch (Exception e) {
-			log.error("Error al enviar email de respuesta electrónica al remitente para bitácora: {}", bitacoraDocumentosExternosDTO, e);
 			return new ResponseEntity<>("No se pudo enviar el email al remitente con la respuesta correcta", HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -344,7 +332,6 @@ public class EnviarCorreoImpl implements EnviarCorreoService {
 			sendEmailUsuario(gthMail.getMaiDireccion(), htmlContextBySede);
 			return new ResponseEntity<>("Email enviado", HttpStatus.OK);
 		} catch (Exception e) {
-			log.error("Error al enviar email de documentación física al destinatario para bitácora: {}", bitacoraDTO, e);
 			return new ResponseEntity<>("No se pudo enviar el email al Destinatario", HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -360,7 +347,6 @@ public class EnviarCorreoImpl implements EnviarCorreoService {
 			sendEmailUsuario(gthMail.getMaiDireccion(), htmlContextBySede);
 			return new ResponseEntity<>("Email enviado", HttpStatus.OK);
 		} catch (Exception e) {
-			log.error("Error al enviar email a destinatario reasignado para evento de bitácora: {}", eventoBitacoraDTO, e);
 			return new ResponseEntity<>("No se pudo enviar el email al Destinatario", HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -455,8 +441,8 @@ public class EnviarCorreoImpl implements EnviarCorreoService {
 				"</tr>" +
 				"<tr>" +
 				"<td style=\"padding:10px;\">" +
-				"Tiene un nuevo documento electrónico asignado con número de sumilla: <b>" + bitacoraDocumentosExternosDTO.sumilla().numeroSumilla() + "</b>" +
-				"ingrese al siguiente enlace para visualizarlo: <a href=\"https://sgad.ups.edu.ec/sumilla\">" + "Sistema gestión documental" + "</a>" +
+				"Tiene un nuevo documento electrónico asignado con número de sumilla: <b>" + bitacoraDocumentosExternosDTO.sumilla().numeroSumilla() +"</b>" +
+				"ingrese al siguiente enlace para visualizarlo: <a href=\"https://sgad.ups.edu.ec/sumilla\">" + "Sistema gestión documental" + "</a>"+
 				"</td>" +
 				"</tr>" +
 				"</tbody>" +
@@ -491,8 +477,8 @@ public class EnviarCorreoImpl implements EnviarCorreoService {
 				"</tr>" +
 				"<tr>" +
 				"<td style=\"padding:10px;\">" +
-				"Tiene un nuevo documento electrónico con número de sumilla: <b>" + bitacoraDocumentosExternosDTO.sumilla().numeroSumilla() + "</b>" +
-				"ingrese al siguiente enlace para visualizarlo: <a href=\"https://sgad.ups.edu.ec/bitacora\">" + "Sistema gestión documental" + "</a>" +
+				"Tiene un nuevo documento electrónico con número de sumilla: <b>" + bitacoraDocumentosExternosDTO.sumilla().numeroSumilla() +"</b>" +
+				"ingrese al siguiente enlace para visualizarlo: <a href=\"https://sgad.ups.edu.ec/bitacora\">" + "Sistema gestión documental" + "</a>"+
 				"</td>" +
 				"</tr>" +
 				"</tbody>" +
@@ -527,8 +513,8 @@ public class EnviarCorreoImpl implements EnviarCorreoService {
 				"</tr>" +
 				"<tr>" +
 				"<td style=\"padding:10px;\">" +
-				"Tiene un nuevo documento electrónico con número de sumilla: <b>" + bitacoraDTO.sumilla().numeroSumilla() + "</b> " + ", " +
-				"ingrese al siguiente enlace para visualizarlo: <a href=\"https://sgad.ups.edu.ec/bitacora\">" + "Sistema gestión documental" + "</a>" +
+				"Tiene un nuevo documento electrónico con número de sumilla: <b>" + bitacoraDTO.sumilla().numeroSumilla() +"</b> " + ", " +
+				"ingrese al siguiente enlace para visualizarlo: <a href=\"https://sgad.ups.edu.ec/bitacora\">" + "Sistema gestión documental" + "</a>"+
 				"</td>" +
 				"</tr>" +
 				"</tbody>" +
@@ -633,8 +619,8 @@ public class EnviarCorreoImpl implements EnviarCorreoService {
 				"</tr>" +
 				"<tr>" +
 				"<td style=\"padding:10px;\">" +
-				"Tiene un nuevo documento electrónico reasignado con número de sumilla: <b>" + bitacoraDTO.sumilla().numeroSumilla() + "</b>" + ", " +
-				"ingrese al siguiente enlace para visualizarlo: <a href=\"https://sgad.ups.edu.ec/bitacora\">" + "Sistema gestión documental" + "</a>" +
+				"Tiene un nuevo documento electrónico reasignado con número de sumilla: <b>" + bitacoraDTO.sumilla().numeroSumilla() +"</b>" + ", " +
+				"ingrese al siguiente enlace para visualizarlo: <a href=\"https://sgad.ups.edu.ec/bitacora\">" + "Sistema gestión documental" + "</a>"+
 				"</td>" +
 				"</tr>" +
 				"</tbody>" +

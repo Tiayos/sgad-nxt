@@ -112,12 +112,11 @@ public class TransferenciaDocumentalmpl implements ITransferenciaDocumentalServi
                             .orElseThrow(() -> new NotFoundException("No se encontró la bitácora con número: " + bitacoraDTO.codigo()));
                 }
 
-                Long trdCodigo = iTransferenciaDocumentalDao.lastIdTransferenciaDocumental() + 1;
                 GTHPersonaProjection gthResponsableAmbito = iPersonaDao.getGthPersonaAmbitoByPerCodigo(bitacoraModels.get(0).sumilla().responsable().codigo());
-                GTHPersonaProjection gthReceptorAmbitoGW = iPersonaDao.getGthPersonaAmbitoByPerCodigo(perCodigoDestinatarioGW);
+                GTHPersonaProjection gthReceptorAmbitoGW = iPersonaDao.getGthPersonaAmbitoByPerCodigo(perCodigoDestinatarioGW); //RECEPTOR PERSONA DE GESTION WEB
 
                 TransDocumentalDTO transDocumentalDTO1 = new TransDocumentalDTO(
-                        trdCodigo,
+                        null,
                         gthReceptorAmbitoGW.getCODIGOAMBITO(),
                         gthResponsableAmbito.getCODIGOAMBITO(),
                         gthReceptorAmbitoGW.getCARGOCODIGO(),
@@ -147,12 +146,12 @@ public class TransferenciaDocumentalmpl implements ITransferenciaDocumentalServi
     }
 
     @Transactional
-    public void crearExpediente(LocalDate fechaInicio, LocalDate fechaFin, SgadTransDocumentales sgadTransDocumentalModel, List<BitacoraDTO> bitacoraModels) {
-        Long detCodigo = iDetalleTransferenciaDao.lastIdDetTransferenciaDocumental() + 1;
+    public void crearExpediente(LocalDate fechaInicio, LocalDate fechaFin, SgadTransDocumentales sgadTransDocumentalModel,  List<BitacoraDTO> bitacoraModels ) {
+
         try {
-            TransDocumentalDTO transDocumentalDTO = TransDocumentalDTO.toDTO(sgadTransDocumentalModel);
+            TransDocumentalDTO transDocumentalDTO = TransDocumentalDTO.toDTO(sgadTransDocumentalModel);  // Asegúrate de usar el DTO correcto
             DetalleTransferenciaDTO detalleTransferenciaDTO = new DetalleTransferenciaDTO(
-                    detCodigo,
+                    null,
                     "RADICACIÓN DE DOCUMENTOS",
                     fechaFin,
                     fechaInicio,
@@ -176,12 +175,12 @@ public class TransferenciaDocumentalmpl implements ITransferenciaDocumentalServi
     public void crearDocumento(List<BitacoraDTO> bitacoraModels, SgadDetalleTransferencia sgadDetalleTransferencia) {
         try {
             DetalleTransferenciaDTO detalleTransferenciaDTO = DetalleTransferenciaDTO.toDTO(sgadDetalleTransferencia);
-            Long contadorNumOrden = 0L;
-            for (BitacoraDTO bitacoraDTO : bitacoraModels) {
-                Long lastIdDocumento = null; // Usar secuencia
-                contadorNumOrden++;
+            Long contadorNumOrden=0L;
+            for (BitacoraDTO bitacoraDTO : bitacoraModels){
+//                Long lastIdDocumento = iDocumentoDao.lastIdDocumento()+1;
+                contadorNumOrden ++;
                 DocumentoDTO documentoDTO = new DocumentoDTO(
-                        lastIdDocumento,
+                        null,
                         bitacoraDTO.asunto(),
                         bitacoraDTO.sumilla().numeroHojas().longValue(),
                         detalleTransferenciaDTO,
@@ -203,11 +202,10 @@ public class TransferenciaDocumentalmpl implements ITransferenciaDocumentalServi
 
     public void crearDocumentoTipo(SgadDocumento sgadDocumento) {
         try {
-            Long lastIdDocumentoTipo = null; // Usar secuencia
             DocumentoDTO documentoDTO = DocumentoDTO.toDTO(sgadDocumento);
-            TipoDocumentalDTO tipoDocumentalDTO = TipoDocumentalDTO.toDTO(iTipoDocumentalDao.findById(2L).orElseThrow());
+            TipoDocumentalDTO tipoDocumentalDTO = TipoDocumentalDTO.toDTO(iTipoDocumentalDao.findById(2L).get());
             DocumentoTipoDTO documentoTipoDTO = new DocumentoTipoDTO(
-                    lastIdDocumentoTipo,
+                    null,
                     documentoDTO,
                     tipoDocumentalDTO,
                     documentoDTO.audAdicionado()
